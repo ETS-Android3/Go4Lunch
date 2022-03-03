@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Go4Lunch</string>
+
+    <string name="tabItem1">Map View</string>
+    <string name="tabItem2">List View</string>
+    <string name="tabItem3">Workmates</string>
+</resources>
