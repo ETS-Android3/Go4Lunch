@@ -13,7 +13,11 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -21,8 +25,29 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        startSignInActivity();
         initBottomNavigationView();
     }
+
+
+    private void startSignInActivity() {
+        List<AuthUI.IdpConfig> provider = Arrays.asList(
+                new AuthUI.IdpConfig.FacebookBuilder().build(),
+                new AuthUI.IdpConfig.GoogleBuilder().build());
+
+        startActivity(
+                AuthUI.getInstance()
+                    .createSignInIntentBuilder()
+                    .setTheme(R.style.LoginTheme)
+                    .setAvailableProviders(provider)
+                    .setIsSmartLockEnabled(false,true)
+                    .setLogo(R.drawable.logo)
+                    .build()
+        );
+    }
+
+
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actionbar_menu,menu);

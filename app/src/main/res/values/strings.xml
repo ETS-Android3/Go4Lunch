@@ -4,4 +4,8 @@
     <string name="tabItem1">Map View</string>
     <string name="tabItem2">List View</string>
     <string name="tabItem3">Workmates</string>
+
+    <string name="facebook_application_id">947763842588942</string>
+    <string name="fb_login_protocol_scheme">fb947763842588942</string>
+
 </resources>
