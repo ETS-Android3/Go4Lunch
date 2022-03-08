@@ -1,9 +1,15 @@
 <resources>
     <string name="app_name">Go4Lunch</string>
+    <string name="actionbar_title_map_view">I\'m Hungry</string>
+    <string name="actionbar_title_list_view">I\'m Hungry</string>
+    <string name="actionbar_title_workmates">Available workmates</string>
 
     <string name="tabItem1">Map View</string>
     <string name="tabItem2">List View</string>
     <string name="tabItem3">Workmates</string>
+    <string name="sideview1"> YOUR LUNCH </string>
+    <string name="sideview2"> SETTINGS </string>
+    <string name="sideview3"> LOGOUT </string>
 
     <string name="facebook_application_id">947763842588942</string>
     <string name="fb_login_protocol_scheme">fb947763842588942</string>

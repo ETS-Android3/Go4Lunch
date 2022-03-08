@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="logo_header_side_view_height">100dp</dimen>
+    <dimen name="logo_header_side_view_width">176dp</dimen>
+    <dimen name="profile_picture_header_side_view_height">60dp</dimen>
+    <dimen name="profile_picture_header_side_view_width">60dp</dimen>
+    <dimen name="margin_information_header"> 16dp </dimen>
+    <dimen name="margin_text_information_start"> 16dp </dimen>
+    <dimen name="margin_text_information_top"> 8dp </dimen>
+
+    // Calculation = 100 + 60 + 16
+    <dimen name="side_view_header_height"> 176dp </dimen>
+
+
+
+</resources>

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_your_lunch"
+        android:icon="@drawable/ic_local_dining_white_24dp"
+        android:title="@string/sideview1" />
+    <item
+        android:id="@+id/navigation_setting"
+        android:icon="@drawable/ic_settings_white_24dp"
+        android:title="@string/sideview2" />
+    <item
+        android:id="@+id/navigation_logout"
+        android:icon="@drawable/ic_power_settings_new_white_24dp"
+        android:title="@string/sideview3" />
+</menu>

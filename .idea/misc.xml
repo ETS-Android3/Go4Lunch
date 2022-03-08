@@ -6,14 +6,23 @@
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.174" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.174" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_list_black_24dp.xml" value="0.174" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_local_dining_black_24dp.xml" value="0.174" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_menu_white_24dp.xml" value="0.174" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_power_settings_new_black_24dp.xml" value="0.174" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_search_white_24dp.xml" value="0.174" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_settings_black_24dp.xml" value="0.174" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/activity_auth.xml" value="0.1956521739130435" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/activity_main.xml" value="0.1580547112462006" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/fragment_list_view.xml" value="0.1580547112462006" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/fragment_map_view.xml" value="0.1580547112462006" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/fragment_workmate.xml" value="0.1956521739130435" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/fragment_workmates.xml" value="0.1580547112462006" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/include_informations_side_view.xml" value="0.3333333333333333" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/side_menu_nav_view.xml" value="0.1956521739130435" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/side_menu_view_header.xml" value="0.22" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/menu/actionbar_menu.xml" value="0.3333333333333333" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/menu/bottom_nav_menu.xml" value="0.2796296296296296" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/menu/side_nav_menu.xml" value="0.325" />
       </map>
     </option>
   </component>

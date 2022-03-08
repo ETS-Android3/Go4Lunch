@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/side_view_header_height"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@drawable/background_sign_in"
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:id="@+id/logo_header_side_view"
+        android:layout_width="@dimen/logo_header_side_view_width"
+        android:layout_height="@dimen/logo_header_side_view_height"
+        android:layout_gravity="center"
+        app:srcCompat="@drawable/name_logo" />
+
+
+    <include
+        layout="@layout/include_informations_side_view" />
+
+</LinearLayout>
