@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         if (viewModel.isCurrentLogged()) {
+            viewModel.createUser();
             initSideView();
         }
     }

@@ -27,4 +27,8 @@ public class ViewModelUser extends ViewModel {
     public Task<Void> signOut(Context context) {
         return userRepository.signOut(context);
     }
+
+    public void createUser() {
+        userRepository.createUser();
+    }
 }
