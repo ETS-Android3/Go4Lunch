@@ -33,7 +33,7 @@ import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawer;
     private ViewModelUser viewModel;
@@ -44,13 +44,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        NavigationView nav = findViewById(R.id.side_menu_nav_view);
-        sideView = nav.getHeaderView(0);
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
-
         initActionBar();
         initBottomNavigationView();
-        init();
+        initStartActivity();
     }
 
     @Override
@@ -62,7 +59,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // INIT
-    private void init() {
+    private void initStartActivity() {
 
         if (viewModel.isCurrentLogged()) {
             initSideView();
@@ -142,6 +139,10 @@ public class MainActivity extends AppCompatActivity {
 
     private void initSideView () {
 
+        NavigationView nav = findViewById(R.id.side_menu_nav_view);
+        nav.setNavigationItemSelectedListener(this);
+        sideView = nav.getHeaderView(0);
+
         FirebaseUser user = viewModel.getCurrentUser();
 
         if (user.getPhotoUrl() != null) {
@@ -167,4 +168,25 @@ public class MainActivity extends AppCompatActivity {
         name.setText(user.getDisplayName());
     }
 
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+
+        switch (item.getItemId()) {
+            case R.id.navigation_your_lunch:
+                Log.d("TAG", "onNavigationItemSelected: 1");
+                break;
+            case R.id.navigation_setting:
+                Log.d("TAG", "onNavigationItemSelected: 2");
+                break;
+            case R.id.navigation_logout:
+                mDrawer.close();
+                viewModel.signOut(this);
+                startSignInActivity();
+                break;
+            default:
+                break;
+        }
+        return true;
+    }
 }
