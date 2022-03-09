@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 
 public class ViewModelUser extends ViewModel {
@@ -30,5 +31,9 @@ public class ViewModelUser extends ViewModel {
 
     public void createUser() {
         userRepository.createUser();
+    }
+
+    public CollectionReference getUsersCollection(){
+        return userRepository.getUsersCollection();
     }
 }

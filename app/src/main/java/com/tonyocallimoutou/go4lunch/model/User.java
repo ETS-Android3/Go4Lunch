@@ -9,6 +9,8 @@ public class User {
     @Nullable
     private String urlPicture;
 
+    public User() {}
+
     public User(String uid, String username, @Nullable String urlPicture) {
         this.uid = uid;
         this.username = username;

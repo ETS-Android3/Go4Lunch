@@ -5,12 +5,14 @@ import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,8 +27,12 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
+import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
+import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
+import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -36,8 +42,10 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawer;
+    private BottomNavigationView navigationView;
     private ViewModelUser viewModel;
     private View sideView ;
+    private ActionBar actionBar;
 
 
     @Override
@@ -45,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        navigationView = findViewById(R.id.bottom_nav_view);
         initActionBar();
         initBottomNavigationView();
         initStartActivity();
@@ -65,9 +74,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (viewModel.isCurrentLogged()) {
             initSideView();
         }
-        else {
-            startSignInActivity();
-        }
     }
 
 
@@ -80,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void initActionBar() {
-        ActionBar actionBar = getSupportActionBar();
+        actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         actionBar.setDisplayHomeAsUpEnabled(true);
         mDrawer = findViewById(R.id.drawer_layout);
@@ -183,6 +189,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.navigation_logout:
                 mDrawer.close();
                 viewModel.signOut(this);
+                navigationView.setSelectedItemId(R.id.navigation_map);
                 startSignInActivity();
                 break;
             default:
