@@ -14,6 +14,8 @@
     <string name="facebook_application_id">947763842588942</string>
     <string name="fb_login_protocol_scheme">fb947763842588942</string>
 
+    <string name="mapbox_access_token">pk.eyJ1IjoidG9ueW9jYWxsaW1vdXRvdSIsImEiOiJjbDBqbzFraXIwMmJkM2psYWZlY3JibjNzIn0.zCKG-2HjJ6oG3WIlsdQWTg</string>
+
     <string name="workmate_is_eating"> is eating </string>
     <string name="workmate_has_not_decided_yet"> hasn\'t decided yet </string>
 

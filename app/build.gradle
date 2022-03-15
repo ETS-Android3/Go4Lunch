@@ -55,4 +55,9 @@ dependencies {
     // ButterKnife
     implementation 'com.jakewharton:butterknife:10.0.0'
     annotationProcessor 'com.jakewharton:butterknife-compiler:10.0.0'
+
+    //MapBox
+    implementation 'com.mapbox.maps:android:10.3.0'
+    implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:6.2.0'
+    implementation 'com.google.android.gms:play-services-location:19.0.1'
 }

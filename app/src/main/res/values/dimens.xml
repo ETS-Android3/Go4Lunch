@@ -9,15 +9,21 @@
     <dimen name="margin_information_header"> 16dp </dimen>
     <dimen name="margin_text_information_start"> 16dp </dimen>
     <dimen name="margin_text_information_top"> 8dp </dimen>
-    // Calculation = 100 + 60 + 16
+        // Calculation = 100 + 60 + 16
     <dimen name="side_view_header_height"> 176dp </dimen>
 
     // workmates
     <dimen name="profile_picture_workmates_height"> 56dp </dimen>
     <dimen name="profile_picture_workmates_width"> 56dp </dimen>
     <dimen name="profile_picture_workmates_margin"> 16dp </dimen>
-    //Calculation 56/2 + 16
+        //Calculation 56/2 + 16
     <dimen name="text_workmates_margin"> 34dp </dimen>
+
+    // MapView
+    <dimen name="margin_end_fab_map"> 24dp </dimen>
+    <dimen name="margin_bottom_fab_map"> 84dp </dimen>
+
+
 
 
 

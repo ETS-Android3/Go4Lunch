@@ -1,13 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.mapbox.maps.MapView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mapView"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    mapbox:mapbox_cameraTargetLat="40.7128"
+    mapbox:mapbox_cameraTargetLng="-74.0060"
+    mapbox:mapbox_cameraZoom="9.0"
     tools:context=".ui.mapview.MapViewFragment">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="@string/tabItem1" />
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_map_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        mapbox:borderWidth="0dp"
+        android:layout_gravity="bottom|end"
+        android:layout_marginEnd="@dimen/margin_end_fab_map"
+        android:src="@drawable/ic_my_location_black_24dp"
+        android:backgroundTint="@color/white"
+        android:layout_marginBottom="@dimen/margin_bottom_fab_map"
+        android:contentDescription="center the camera" />
 
-</FrameLayout>
+</com.mapbox.maps.MapView>

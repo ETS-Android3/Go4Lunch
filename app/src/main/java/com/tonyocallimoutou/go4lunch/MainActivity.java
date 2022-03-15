@@ -39,7 +39,7 @@ import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
 
     private DrawerLayout mDrawer;
     private BottomNavigationView navigationView;
@@ -74,7 +74,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (viewModel.isCurrentLogged()) {
             initSideView();
         }
+        else {
+            startSignInActivity();
+        }
     }
+
 
 
     // INIT ACTION BAR
