@@ -1,6 +1,7 @@
 package com.tonyocallimoutou.go4lunch.ui.mapview;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -46,13 +47,11 @@ import butterknife.OnClick;
  * Use the {@link MapViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapViewFragment extends Fragment implements PermissionsListener{
+public class MapViewFragment extends Fragment{
 
     @BindView(R.id.mapView)
     MapView mapView;
 
-    int LOCATION_REFRESH_TIME = 15000; // 15 seconds to update
-    int LOCATION_REFRESH_DISTANCE = 500; // 500 meters to update
 
     PermissionsManager permissionsManager;
     LocationManager locationManager;
@@ -79,50 +78,17 @@ public class MapViewFragment extends Fragment implements PermissionsListener{
         ButterKnife.bind(this,view);
 
 
-        initLocalisationPermission();
+        //initLocalisation();
 
         return view;
     }
 
-    // Localisation Permission
-
-    public void initLocalisationPermission() {
-        if (permissionsManager.areLocationPermissionsGranted(getContext())) {
-            // Permission sensitive logic called here
-            Log.d("TAG", "initLocalisationPermission: MapFragPrincipal");
-
-            locationManager = (LocationManager) getContext().getSystemService(getContext().LOCATION_SERVICE);
-
-            Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            initPosition(location);
-
-        }
-        else {
-            permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(getActivity());
-        }
-    }
-
-    @Override
-    public void onExplanationNeeded(List<String> list) {
-        Log.d("TAG", "onExplanationNeeded: MapFrag");
-    }
-
-    @Override
-    public void onPermissionResult(boolean granted) {
-        if (granted) {
-            // Permission sensitive logic called here
-            Log.d("TAG", "onPermissionResult: MapFra1");
-        }
-        else {
-            // User denied the permission
-            Log.d("TAG", "onPermissionResult: MapFrag2");
-        }
-    }
-
-    public void initPosition(Location location) {
+    public void initLocalisation() {
         Log.d("TAG", "initPosition: coucou");
 
+        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+
+        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double positionLat = location.getLatitude();
         double positionLong = location.getLongitude();
 
@@ -134,9 +100,9 @@ public class MapViewFragment extends Fragment implements PermissionsListener{
         mapView.getMapboxMap().setCamera(cameraOptions);
     }
 
+
     @OnClick (R.id.fab_map_view)
     public void initCamera() {
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-        initPosition(location);
+        initLocalisation();
     }
 }

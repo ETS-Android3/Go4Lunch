@@ -12,7 +12,10 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
+import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +32,12 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
+import com.mapbox.android.core.permissions.PermissionsListener;
+import com.mapbox.android.core.permissions.PermissionsManager;
+import com.mapbox.geojson.Point;
+import com.mapbox.maps.CameraOptions;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
@@ -39,13 +47,16 @@ import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener , PermissionsListener {
 
     private DrawerLayout mDrawer;
     private BottomNavigationView navigationView;
     private ViewModelUser viewModel;
     private View sideView ;
     private ActionBar actionBar;
+
+    private PermissionsManager permissionsManager;
+    private LocationManager locationManager;
 
 
     @Override
@@ -65,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (viewModel.isCurrentLogged()) {
             viewModel.createUser();
             initSideView();
+            initLocalisationPermission();
         }
     }
 
@@ -73,6 +85,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         if (viewModel.isCurrentLogged()) {
             initSideView();
+            initLocalisationPermission();
         }
         else {
             startSignInActivity();
@@ -201,4 +214,50 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
         return true;
     }
+
+
+    // Localisation Permission
+
+    public void initLocalisationPermission() {
+        if (permissionsManager.areLocationPermissionsGranted(this)) {
+            // Permission sensitive logic called here
+            Log.d("TAG", "initLocalisationPermission: OK");
+
+        }
+        else {
+
+            Log.d("TAG", "initLocalisationPermission: Demande");
+
+            permissionsManager = new PermissionsManager(this);
+            permissionsManager.requestLocationPermissions(this);
+        }
+    }
+
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+    }
+
+    @Override
+    public void onExplanationNeeded(List<String> list) {
+        Log.d("TAG", "onExplanationNeeded: MapFrag" + list);
+    }
+
+    @Override
+    public void onPermissionResult(boolean granted) {
+        if (granted) {
+            // Permission sensitive logic called here
+            Log.d("TAG", "onPermissionResult: MapFrag1");
+        }
+        else {
+            // User denied the permission
+            Log.d("TAG", "onPermissionResult: MapFrag2");
+
+        }
+    }
+
+
+
 }
