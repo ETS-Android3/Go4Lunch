@@ -233,7 +233,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 showAlertDialog(this);
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            else {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            }
 
         } else {
             Log.d("TAG", "initLocalisationPermission: Demande");
@@ -267,7 +269,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 showAlertDialog(this);
             }
-            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            else {
+                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+            }
         } else {
             // User denied the permission
             Log.d("TAG", "onPermissionResult: MapFrag2");

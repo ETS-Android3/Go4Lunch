@@ -9,6 +9,7 @@ import android.location.LocationManager;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
@@ -53,9 +54,7 @@ public class MapViewFragment extends Fragment {
     @BindView(R.id.mapView)
     MapView mapView;
 
-
-    PermissionsManager permissionsManager;
-    LocationManager locationManager;
+    CameraOptions cameraOptions;
 
     public MapViewFragment() {
         // Required empty public constructor
@@ -81,13 +80,25 @@ public class MapViewFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (cameraOptions != null) {
+            initCamera();
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+    }
+
     public void initLocalisation(Location location) {
-        Log.d("TAG", "initPosition: coucou");
 
         double positionLat = location.getLatitude();
         double positionLong = location.getLongitude();
 
-        CameraOptions cameraOptions = new CameraOptions.Builder()
+        cameraOptions = new CameraOptions.Builder()
                 .center(Point.fromLngLat(positionLong, positionLat))
                 .zoom(15.0)
                 .build();
@@ -101,6 +112,5 @@ public class MapViewFragment extends Fragment {
         if (MainActivity.getUserLocation(getContext()) != null) {
             initLocalisation(MainActivity.getUserLocation(getContext()));
         }
-
     }
 }
