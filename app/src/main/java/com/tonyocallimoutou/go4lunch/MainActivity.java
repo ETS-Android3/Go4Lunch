@@ -2,7 +2,9 @@ package com.tonyocallimoutou.go4lunch;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
@@ -12,12 +14,18 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
@@ -25,6 +33,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -47,16 +56,16 @@ import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener , PermissionsListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PermissionsListener, LocationListener {
 
     private DrawerLayout mDrawer;
     private BottomNavigationView navigationView;
     private ViewModelUser viewModel;
-    private View sideView ;
+    private View sideView;
     private ActionBar actionBar;
 
-    private PermissionsManager permissionsManager;
-    private LocationManager locationManager;
+    private static PermissionsManager permissionsManager;
+    private static LocationManager locationManager;
 
 
     @Override
@@ -76,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (viewModel.isCurrentLogged()) {
             viewModel.createUser();
             initSideView();
-            initLocalisationPermission();
         }
     }
 
@@ -86,19 +94,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (viewModel.isCurrentLogged()) {
             initSideView();
             initLocalisationPermission();
-        }
-        else {
+        } else {
             startSignInActivity();
         }
     }
-
 
 
     // INIT ACTION BAR
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.actionbar_menu,menu);
+        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
         return true;
     }
 
@@ -115,8 +121,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case android.R.id.home:
                 if (mDrawer.isOpen()) {
                     mDrawer.close();
-                }
-                else {
+                } else {
                     mDrawer.open();
                 }
                 return true;
@@ -153,15 +158,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         .createSignInIntentBuilder()
                         .setTheme(R.style.LoginTheme)
                         .setAvailableProviders(provider)
-                        .setIsSmartLockEnabled(false,true)
+                        .setIsSmartLockEnabled(false, true)
                         .setLogo(R.drawable.logo)
                         .build()
         );
+
+        initLocalisationPermission();
     }
 
     //INIT SIDE VIEW
 
-    private void initSideView () {
+    private void initSideView() {
 
         NavigationView nav = findViewById(R.id.side_menu_nav_view);
         nav.setNavigationItemSelectedListener(this);
@@ -175,7 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setTextUser(user);
     }
 
-    private void setProfilePicture( Uri profilePictureUrl) {
+    private void setProfilePicture(Uri profilePictureUrl) {
         ImageView profilePicture = sideView.findViewById(R.id.profile_picture_header_side_view);
 
         Glide.with(this)
@@ -219,13 +226,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // Localisation Permission
 
     public void initLocalisationPermission() {
-        if (permissionsManager.areLocationPermissionsGranted(this)) {
+        if (PermissionsManager.areLocationPermissionsGranted(this)) {
             // Permission sensitive logic called here
             Log.d("TAG", "initLocalisationPermission: OK");
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                showAlertDialog(this);
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
 
-        }
-        else {
-
+        } else {
             Log.d("TAG", "initLocalisationPermission: Demande");
 
             permissionsManager = new PermissionsManager(this);
@@ -238,6 +248,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (grantResults[0] < 0) {
+            Log.d("TAG", "onRequestPermissionsResult: SnackBar");
+        }
     }
 
     @Override
@@ -250,14 +263,81 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (granted) {
             // Permission sensitive logic called here
             Log.d("TAG", "onPermissionResult: MapFrag1");
-        }
-        else {
+            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                showAlertDialog(this);
+            }
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        } else {
             // User denied the permission
             Log.d("TAG", "onPermissionResult: MapFrag2");
+            showAlertDialog(this);
 
         }
     }
 
+    public static void showAlertDialog(Context context) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
+        builder.setTitle(R.string.title_alertDialog_permission);
+        builder.setMessage(R.string.message_alertDialog_permission);
+        builder.setCancelable(false);
 
+        builder.setPositiveButton(context.getResources().getString(R.string.positive_button_alertDialog_permission), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Intent intent = new Intent();
+                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+                intent.setData(uri);
+                context.startActivity(intent);
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    // INIT LOCALISATION
+
+    public static Location getUserLocation(Context context) {
+        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            showAlertDialog(context);
+            return null;
+        }
+        else {
+            Location userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+            return userLocation;
+        }
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull Location location) {
+
+    }
+
+    @Override
+    public void onLocationChanged(@NonNull List<Location> locations) {
+        LocationListener.super.onLocationChanged(locations);
+    }
+
+    @Override
+    public void onFlushComplete(int requestCode) {
+        LocationListener.super.onFlushComplete(requestCode);
+    }
+
+    @Override
+    public void onProviderEnabled(@NonNull String provider) {
+        LocationListener.super.onProviderEnabled(provider);
+    }
+
+    @Override
+    public void onProviderDisabled(@NonNull String provider) {
+        LocationListener.super.onProviderDisabled(provider);
+    }
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+        super.onPointerCaptureChanged(hasCapture);
+    }
 }

@@ -34,6 +34,7 @@ import com.mapbox.maps.MapboxMap;
 import com.mapbox.maps.ResourceOptions;
 import com.mapbox.maps.plugin.Plugin;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener;
+import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 
 import java.util.List;
@@ -47,7 +48,7 @@ import butterknife.OnClick;
  * Use the {@link MapViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapViewFragment extends Fragment{
+public class MapViewFragment extends Fragment {
 
     @BindView(R.id.mapView)
     MapView mapView;
@@ -77,18 +78,12 @@ public class MapViewFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         ButterKnife.bind(this,view);
 
-
-        //initLocalisation();
-
         return view;
     }
 
-    public void initLocalisation() {
+    public void initLocalisation(Location location) {
         Log.d("TAG", "initPosition: coucou");
 
-        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-
-        Location location = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
         double positionLat = location.getLatitude();
         double positionLong = location.getLongitude();
 
@@ -103,6 +98,9 @@ public class MapViewFragment extends Fragment{
 
     @OnClick (R.id.fab_map_view)
     public void initCamera() {
-        initLocalisation();
+        if (MainActivity.getUserLocation(getContext()) != null) {
+            initLocalisation(MainActivity.getUserLocation(getContext()));
+        }
+
     }
 }
