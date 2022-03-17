@@ -23,6 +23,13 @@
     <dimen name="margin_end_fab_map"> 24dp </dimen>
     <dimen name="margin_bottom_fab_map"> 84dp </dimen>
 
+    // ListView
+    <dimen name="restaurant_picture_list_height"> 56dp </dimen>
+    <dimen name="restaurant_picture_list_width"> 56dp </dimen>
+    <dimen name="margin_restaurant_picture_list"> 8dp </dimen>
+
+
+
 
 
 

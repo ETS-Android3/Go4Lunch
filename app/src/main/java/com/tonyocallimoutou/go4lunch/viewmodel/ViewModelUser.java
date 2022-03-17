@@ -64,4 +64,8 @@ public class ViewModelUser extends ViewModel {
         restaurantRepository.createRestaurant(id,name);
     }
 
+    public CollectionReference getRestaurantsCollection(){
+        return restaurantRepository.getRestaurantsCollection();
+    }
+
 }
