@@ -43,10 +43,12 @@ import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
+import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
 import com.mapbox.geojson.Point;
 import com.mapbox.maps.CameraOptions;
+import com.mapbox.search.MapboxSearchSdk;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
@@ -72,6 +74,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        MapboxSearchSdk.initialize(this.getApplication(), getString(R.string.mapbox_access_token), LocationEngineProvider.getBestLocationEngine(this));
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
         navigationView = findViewById(R.id.bottom_nav_view);
         initActionBar();
@@ -318,30 +322,5 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onLocationChanged(@NonNull Location location) {
 
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull List<Location> locations) {
-        LocationListener.super.onLocationChanged(locations);
-    }
-
-    @Override
-    public void onFlushComplete(int requestCode) {
-        LocationListener.super.onFlushComplete(requestCode);
-    }
-
-    @Override
-    public void onProviderEnabled(@NonNull String provider) {
-        LocationListener.super.onProviderEnabled(provider);
-    }
-
-    @Override
-    public void onProviderDisabled(@NonNull String provider) {
-        LocationListener.super.onProviderDisabled(provider);
-    }
-
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-        super.onPointerCaptureChanged(hasCapture);
     }
 }

@@ -25,6 +25,12 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        return (T) new ViewModelUser();
+
+        if (modelClass.isAssignableFrom(ViewModelUser.class)) {
+
+            return (T) new ViewModelUser();
+        }
+
+        throw new IllegalArgumentException("Unknown ViewModel class");
     }
 }

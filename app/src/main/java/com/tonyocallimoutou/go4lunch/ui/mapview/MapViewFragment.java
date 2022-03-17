@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.os.Looper;
 import android.util.Log;
@@ -34,11 +35,23 @@ import com.mapbox.maps.MapView;
 import com.mapbox.maps.MapboxMap;
 import com.mapbox.maps.ResourceOptions;
 import com.mapbox.maps.plugin.Plugin;
+import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
 import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener;
+import com.mapbox.search.ApiType;
+import com.mapbox.search.CategorySearchEngine;
+import com.mapbox.search.CategorySearchOptions;
+import com.mapbox.search.MapboxSearchSdk;
+import com.mapbox.search.ResponseInfo;
+import com.mapbox.search.SearchCallback;
+import com.mapbox.search.SearchRequestTask;
+import com.mapbox.search.result.SearchResult;
 import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.List;
+import java.util.concurrent.Executor;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,6 +68,10 @@ public class MapViewFragment extends Fragment {
     MapView mapView;
 
     CameraOptions cameraOptions;
+    ViewModelUser viewModel;
+
+    SearchRequestTask searchRequestTask;
+    CategorySearchEngine categorySearchEngine;
 
     public MapViewFragment() {
         // Required empty public constructor
@@ -68,6 +85,7 @@ public class MapViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
     }
 
     @Override
@@ -78,6 +96,30 @@ public class MapViewFragment extends Fragment {
         ButterKnife.bind(this,view);
 
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        mapView.onStart();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mapView.onStop();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     @Override
@@ -112,5 +154,37 @@ public class MapViewFragment extends Fragment {
         if (MainActivity.getUserLocation(getContext()) != null) {
             initLocalisation(MainActivity.getUserLocation(getContext()));
         }
+        initDataRestaurant();
     }
+
+    public void initDataRestaurant() {
+        categorySearchEngine = MapboxSearchSdk.getCategorySearchEngine();
+
+        CategorySearchOptions categorySearchOptions = new CategorySearchOptions.Builder()
+                .limit(5)
+                .build();
+
+        searchRequestTask = categorySearchEngine.search("restaurant", categorySearchOptions, searchCallback);
+
+    }
+
+    private final SearchCallback searchCallback = new SearchCallback() {
+        @Override
+        public void onResults(@NonNull List<? extends SearchResult> list, @NonNull ResponseInfo responseInfo) {
+            if (list.isEmpty()) {
+                Log.i("SearchApiExample", "No category search results");
+            } else {
+                for (int i=0; i<list.size() ; i++) {
+                    viewModel.createRestaurant( list.get(i).getId(), list.get(i).getName());
+                }
+                Log.i("SearchApiExample", "Category search results: " + list);
+            }
+        }
+
+        @Override
+        public void onError(@NonNull Exception e) {
+            Log.i("SearchApiExample", "Search error", e);
+        }
+    };
+
 }
