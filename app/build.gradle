@@ -61,4 +61,5 @@ dependencies {
     implementation 'com.mapbox.mapboxsdk:mapbox-sdk-services:6.2.0'
     implementation 'com.google.android.gms:play-services-location:19.0.1'
     implementation "com.mapbox.search:mapbox-search-android:1.0.0-beta.27"
+    implementation 'com.mapbox.mapboxsdk:mapbox-android-plugin-annotation-v9:0.9.0'
 }

@@ -1,43 +1,31 @@
 package com.tonyocallimoutou.go4lunch.ui.mapview;
 
-import android.Manifest;
-import android.content.Context;
-import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.os.Looper;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.mapbox.android.core.location.LocationEngine;
-import com.mapbox.android.core.location.LocationEngineCallback;
-import com.mapbox.android.core.location.LocationEngineProvider;
-import com.mapbox.android.core.location.LocationEngineRequest;
-import com.mapbox.android.core.location.LocationEngineResult;
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
+
 import com.mapbox.geojson.Point;
+import com.mapbox.mapboxsdk.Mapbox;
+import com.mapbox.mapboxsdk.camera.CameraPosition;
+import com.mapbox.mapboxsdk.geometry.LatLng;
+import com.mapbox.mapboxsdk.location.LocationComponent;
+import com.mapbox.mapboxsdk.location.LocationComponentActivationOptions;
+import com.mapbox.mapboxsdk.location.modes.CameraMode;
+import com.mapbox.mapboxsdk.location.modes.RenderMode;
+import com.mapbox.mapboxsdk.maps.MapView;
+import com.mapbox.mapboxsdk.maps.MapboxMap;
+import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.mapbox.mapboxsdk.maps.Style;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolManager;
+import com.mapbox.mapboxsdk.plugins.annotation.SymbolOptions;
 import com.mapbox.maps.CameraOptions;
-import com.mapbox.maps.MapInitOptions;
-import com.mapbox.maps.MapOptions;
-import com.mapbox.maps.MapView;
-import com.mapbox.maps.MapboxMap;
-import com.mapbox.maps.ResourceOptions;
-import com.mapbox.maps.plugin.Plugin;
-import com.mapbox.maps.plugin.annotation.generated.PointAnnotationManager;
-import com.mapbox.maps.plugin.locationcomponent.OnIndicatorBearingChangedListener;
-import com.mapbox.search.ApiType;
 import com.mapbox.search.CategorySearchEngine;
 import com.mapbox.search.CategorySearchOptions;
 import com.mapbox.search.MapboxSearchSdk;
@@ -52,7 +40,6 @@ import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.List;
-import java.util.concurrent.Executor;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -63,10 +50,13 @@ import butterknife.OnClick;
  * Use the {@link MapViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MapViewFragment extends Fragment {
+public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     @BindView(R.id.mapView)
     MapView mapView;
+
+    MapboxMap mMapboxMap;
+    com.mapbox.mapboxsdk.maps.Style mStyle;
 
     CameraOptions cameraOptions;
     ViewModelUser viewModel;
@@ -86,6 +76,7 @@ public class MapViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Mapbox.getInstance(getContext(),getString(R.string.mapbox_access_token));
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
     }
 
@@ -94,7 +85,11 @@ public class MapViewFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
+
         ButterKnife.bind(this,view);
+
+        mapView.onCreate(savedInstanceState);
+        mapView.getMapAsync(this);
 
         return view;
     }
@@ -103,6 +98,12 @@ public class MapViewFragment extends Fragment {
     public void onStart() {
         super.onStart();
         mapView.onStart();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
     }
 
     @Override
@@ -126,6 +127,8 @@ public class MapViewFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        mapView.onResume();
+
         if (cameraOptions != null) {
             initCamera();
         }
@@ -136,27 +139,45 @@ public class MapViewFragment extends Fragment {
         super.onSaveInstanceState(outState);
     }
 
-    public void initLocalisation(Location location) {
+    public void initLocalisationCamera() {
 
-        double positionLat = location.getLatitude();
-        double positionLong = location.getLongitude();
+        Location location = MainActivity.getUserLocation(getContext());
 
-        cameraOptions = new CameraOptions.Builder()
-                .center(Point.fromLngLat(positionLong, positionLat))
+        LatLng userLocation = new LatLng();
+
+        userLocation.setLongitude(location.getLongitude());
+        userLocation.setLatitude(location.getLatitude());
+
+        CameraPosition cameraPosition = new CameraPosition.Builder()
+                .target(userLocation)
                 .zoom(15.0)
                 .build();
 
-        mapView.getMapboxMap().setCamera(cameraOptions);
+        mMapboxMap.setCameraPosition(cameraPosition);
+
+        initSymbol(mStyle);
     }
 
 
     @OnClick (R.id.fab_map_view)
     public void initCamera() {
-        if (MainActivity.getUserLocation(getContext()) != null) {
-            initLocalisation(MainActivity.getUserLocation(getContext()));
-        }
-        initDataRestaurant();
+        initLocalisationCamera();
     }
+
+    @Override
+    public void onMapReady(@NonNull MapboxMap mapboxMap) {
+
+        mMapboxMap = mapboxMap;
+
+        mapboxMap.setStyle(Style.MAPBOX_STREETS, new com.mapbox.mapboxsdk.maps.Style.OnStyleLoaded() {
+            @Override
+            public void onStyleLoaded(@NonNull com.mapbox.mapboxsdk.maps.Style style) {
+
+                mStyle = style;
+            }
+        });
+    }
+
 
     public void initDataRestaurant() {
         categorySearchEngine = MapboxSearchSdk.getCategorySearchEngine();
@@ -199,4 +220,22 @@ public class MapViewFragment extends Fragment {
         }
     };
 
+    public void initSymbol(@NonNull com.mapbox.mapboxsdk.maps.Style style ) {
+
+        SymbolManager symbolManager = new SymbolManager(mapView, mMapboxMap, style);
+        symbolManager.addClickListener(symbol -> {
+            return true;
+        });
+
+        symbolManager.setIconAllowOverlap(true);
+        symbolManager.setTextAllowOverlap(true);
+
+        Location location = MainActivity.getUserLocation(getContext());
+
+        SymbolOptions symbolOptions = new SymbolOptions()
+                .withLatLng(new LatLng(location.getLatitude(), location.getLongitude()))
+                .withIconSize(1.3f);
+
+        symbolManager.create(symbolOptions);
+    }
 }
