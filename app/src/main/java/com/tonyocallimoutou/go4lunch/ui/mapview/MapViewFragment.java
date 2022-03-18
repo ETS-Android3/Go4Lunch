@@ -44,6 +44,7 @@ import com.mapbox.search.MapboxSearchSdk;
 import com.mapbox.search.ResponseInfo;
 import com.mapbox.search.SearchCallback;
 import com.mapbox.search.SearchRequestTask;
+import com.mapbox.search.result.SearchAddress;
 import com.mapbox.search.result.SearchResult;
 import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
@@ -175,9 +176,20 @@ public class MapViewFragment extends Fragment {
                 Log.i("SearchApiExample", "No category search results");
             } else {
                 for (int i=0; i<list.size() ; i++) {
-                    viewModel.createRestaurant( list.get(i).getId(), list.get(i).getName());
+                    String id = list.get(i).getId();
+                    String name = list.get(i).getName();
+                    double distance;
+                    if (list.get(i).getDistanceMeters() != null) {
+                        distance = list.get(i).getDistanceMeters();
+                    }
+                    else {
+                        distance = 0;
+                    }
+
+                    List<String> categories = list.get(i).getCategories();
+                    SearchAddress address = list.get(i).getAddress();
+                    viewModel.createRestaurant(id,name,distance,categories,address );
                 }
-                Log.i("SearchApiExample", "Category search results: " + list);
             }
         }
 

@@ -17,6 +17,7 @@ import com.mapbox.search.MapboxSearchSdk;
 import com.mapbox.search.ResponseInfo;
 import com.mapbox.search.SearchCallback;
 import com.mapbox.search.SearchRequestTask;
+import com.mapbox.search.result.SearchAddress;
 import com.mapbox.search.result.SearchResult;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
@@ -60,8 +61,8 @@ public class ViewModelUser extends ViewModel {
 
     // Restaurant
 
-    public void createRestaurant(String id, String name) {
-        restaurantRepository.createRestaurant(id,name);
+    public void createRestaurant(String id, String name, double distance, List<String> categories, SearchAddress address) {
+        restaurantRepository.createRestaurant(id,name,distance,categories,address);
     }
 
     public CollectionReference getRestaurantsCollection(){

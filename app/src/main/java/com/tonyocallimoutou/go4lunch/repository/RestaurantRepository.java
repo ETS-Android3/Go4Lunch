@@ -15,6 +15,7 @@ import com.mapbox.search.MapboxSearchSdk;
 import com.mapbox.search.ResponseInfo;
 import com.mapbox.search.SearchCallback;
 import com.mapbox.search.SearchRequestTask;
+import com.mapbox.search.result.SearchAddress;
 import com.mapbox.search.result.SearchResult;
 import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
@@ -48,8 +49,8 @@ public class RestaurantRepository {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
-    public void createRestaurant (String id, String name) {
-        Restaurant restaurantToCreate = new Restaurant(id,name);
+    public void createRestaurant (String id, String name, double distance, List<String> categories, SearchAddress address) {
+        Restaurant restaurantToCreate = new Restaurant(id,name,distance,categories,address);
         getRestaurantsCollection().document(id).set(restaurantToCreate);
     }
 

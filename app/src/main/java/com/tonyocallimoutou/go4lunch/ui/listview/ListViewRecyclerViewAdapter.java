@@ -41,6 +41,8 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         Restaurant restaurant = mRestaurants.get(position);
 
         holder.restaurantName.setText(restaurant.getName());
+        holder.restaurantDistance.setText(restaurant.getStringDistance());
+        holder.restaurantTypeAndAddress.setText(restaurant.getStringAddress());
     }
 
     @Override
@@ -60,6 +62,14 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         TextView restaurantHours;
         @BindView(R.id.list_view_restaurant_type_and_address)
         TextView restaurantTypeAndAddress;
+        @BindView(R.id.list_view_nbr_workmate)
+        TextView nbrWorkmates;
+        @BindView(R.id.rate1)
+        ImageView rateOne;
+        @BindView(R.id.rate2)
+        ImageView rateTwo;
+        @BindView(R.id.rate3)
+        ImageView rateThree;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
