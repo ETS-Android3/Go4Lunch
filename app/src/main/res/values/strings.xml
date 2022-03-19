@@ -18,7 +18,7 @@
 
     <string name="workmate_is_eating"> is eating </string>
     <string name="workmate_has_not_decided_yet"> hasn\'t decided yet </string>
-    
+
     <string name="title_alertDialog_permission"> Warning !! </string>
     <string name="message_alertDialog_permission"> We need to acces to your location.\nPlease, turn on the location in your settings device.</string>
     <string name="positive_button_alertDialog_permission"> Go to Setting</string>

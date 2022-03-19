@@ -58,7 +58,7 @@ import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 import java.util.Arrays;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, PermissionsListener, LocationListener {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     private DrawerLayout mDrawer;
     private BottomNavigationView navigationView;
@@ -66,41 +66,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View sideView;
     private ActionBar actionBar;
 
-    private static PermissionsManager permissionsManager;
-    private static LocationManager locationManager;
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        MapboxSearchSdk.initialize(this.getApplication(), getString(R.string.mapbox_access_token), LocationEngineProvider.getBestLocationEngine(this));
+
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
         navigationView = findViewById(R.id.bottom_nav_view);
         initActionBar();
         initBottomNavigationView();
-        initStartActivity();
+        initSideView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (viewModel.isCurrentLogged()) {
-            viewModel.createUser();
-            initSideView();
-        }
-    }
-
-    // INIT
-    private void initStartActivity() {
-
-        if (viewModel.isCurrentLogged()) {
-            initSideView();
-            initLocalisationPermission();
-        } else {
-            startSignInActivity();
-        }
     }
 
 
@@ -147,27 +128,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment);
         //NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
-    }
-
-
-    // INIT SIGN IN
-
-    private void startSignInActivity() {
-        List<AuthUI.IdpConfig> provider = Arrays.asList(
-                new AuthUI.IdpConfig.FacebookBuilder().build(),
-                new AuthUI.IdpConfig.GoogleBuilder().build());
-
-        startActivity(
-                AuthUI.getInstance()
-                        .createSignInIntentBuilder()
-                        .setTheme(R.style.LoginTheme)
-                        .setAvailableProviders(provider)
-                        .setIsSmartLockEnabled(false, true)
-                        .setLogo(R.drawable.logo)
-                        .build()
-        );
-
-        initLocalisationPermission();
     }
 
     //INIT SIDE VIEW
@@ -218,109 +178,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mDrawer.close();
                 viewModel.signOut(this);
                 navigationView.setSelectedItemId(R.id.navigation_map);
-                startSignInActivity();
                 break;
             default:
                 break;
         }
         return true;
-    }
-
-
-    // Localisation Permission
-
-    public void initLocalisationPermission() {
-        if (PermissionsManager.areLocationPermissionsGranted(this)) {
-            // Permission sensitive logic called here
-            Log.d("TAG", "initLocalisationPermission: OK");
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                showAlertDialog(this);
-            }
-            else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            }
-
-        } else {
-            Log.d("TAG", "initLocalisationPermission: Demande");
-
-            permissionsManager = new PermissionsManager(this);
-            permissionsManager.requestLocationPermissions(this);
-        }
-    }
-
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0] < 0) {
-            Log.d("TAG", "onRequestPermissionsResult: SnackBar");
-        }
-    }
-
-    @Override
-    public void onExplanationNeeded(List<String> list) {
-        Log.d("TAG", "onExplanationNeeded: MapFrag" + list);
-    }
-
-    @Override
-    public void onPermissionResult(boolean granted) {
-        if (granted) {
-            // Permission sensitive logic called here
-            Log.d("TAG", "onPermissionResult: MapFrag1");
-            locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                showAlertDialog(this);
-            }
-            else {
-                locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
-            }
-        } else {
-            // User denied the permission
-            Log.d("TAG", "onPermissionResult: MapFrag2");
-            showAlertDialog(this);
-
-        }
-    }
-
-    public static void showAlertDialog(Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-
-        builder.setTitle(R.string.title_alertDialog_permission);
-        builder.setMessage(R.string.message_alertDialog_permission);
-        builder.setCancelable(false);
-
-        builder.setPositiveButton(context.getResources().getString(R.string.positive_button_alertDialog_permission), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                Intent intent = new Intent();
-                intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", context.getPackageName(), null);
-                intent.setData(uri);
-                context.startActivity(intent);
-            }
-        });
-
-        AlertDialog alert = builder.create();
-        alert.show();
-    }
-
-    // INIT LOCALISATION
-
-    public static Location getUserLocation(Context context) {
-        if (ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(context, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            showAlertDialog(context);
-            return null;
-        }
-        else {
-            Location userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-            return userLocation;
-        }
-    }
-
-    @Override
-    public void onLocationChanged(@NonNull Location location) {
-
     }
 }

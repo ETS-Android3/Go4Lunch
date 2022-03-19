@@ -34,6 +34,7 @@ import com.mapbox.search.SearchCallback;
 import com.mapbox.search.SearchRequestTask;
 import com.mapbox.search.result.SearchAddress;
 import com.mapbox.search.result.SearchResult;
+import com.tonyocallimoutou.go4lunch.LocationPermissionActivity;
 import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
@@ -141,7 +142,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
 
     public void initLocalisationCamera() {
 
-        Location location = MainActivity.getUserLocation(getContext());
+        Location location = LocationPermissionActivity.getUserLocation(getContext());
 
         LatLng userLocation = new LatLng();
 
@@ -174,6 +175,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
             public void onStyleLoaded(@NonNull com.mapbox.mapboxsdk.maps.Style style) {
 
                 mStyle = style;
+
+                initLocalisationCamera();
             }
         });
     }
@@ -230,7 +233,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
         symbolManager.setIconAllowOverlap(true);
         symbolManager.setTextAllowOverlap(true);
 
-        Location location = MainActivity.getUserLocation(getContext());
+        Location location = LocationPermissionActivity.getUserLocation(getContext());
 
         SymbolOptions symbolOptions = new SymbolOptions()
                 .withLatLng(new LatLng(location.getLatitude(), location.getLongitude()))
