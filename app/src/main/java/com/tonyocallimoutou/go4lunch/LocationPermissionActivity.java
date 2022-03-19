@@ -24,7 +24,6 @@ import com.mapbox.android.core.location.LocationEngine;
 import com.mapbox.android.core.location.LocationEngineProvider;
 import com.mapbox.android.core.permissions.PermissionsListener;
 import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.search.MapboxSearchSdk;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -37,13 +36,12 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
     private static PermissionsManager permissionsManager;
     private static LocationManager locationManager;
 
+    private boolean isFromSetting = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_location_permission);
-
-        MapboxSearchSdk.initialize(this.getApplication(), getString(R.string.mapbox_access_token), LocationEngineProvider.getBestLocationEngine(this));
-
 
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
 
@@ -53,7 +51,16 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
     @Override
     protected void onResume() {
         super.onResume();
-        viewModel.createUser();
+
+        if (isFromSetting) {
+            if ( ! PermissionsManager.areLocationPermissionsGranted(this)) {
+                showAlertDialog();
+            }
+        }
+
+        if (viewModel.isCurrentLogged() && PermissionsManager.areLocationPermissionsGranted(this)) {
+            startMainActivity();
+        }
 
     }
 
@@ -61,21 +68,19 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
     private void initStartActivity() {
 
         if (!viewModel.isCurrentLogged()) {
-            startSignInActivity();
+            startSignInActivity(this);
         }
-        else {
-            initLocationPermission();
-        }
+        initLocationPermission();
     }
 
     // INIT SIGN IN
 
-    private void startSignInActivity() {
+    public static void startSignInActivity(Context context) {
         List<AuthUI.IdpConfig> provider = Arrays.asList(
                 new AuthUI.IdpConfig.FacebookBuilder().build(),
                 new AuthUI.IdpConfig.GoogleBuilder().build());
 
-        startActivity(
+        context.startActivity(
                 AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setTheme(R.style.LoginTheme)
@@ -85,7 +90,6 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
                         .build()
         );
 
-        initLocationPermission();
     }
 
     // Localisation Permission
@@ -96,11 +100,10 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
             Log.d("TAG", "initLocalisationPermission: OK");
 
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                showAlertDialog(this);
+                showAlertDialog();
             }
             else {
                 initLocation();
-                startMainActivity();
             }
 
         } else {
@@ -116,51 +119,48 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         permissionsManager.onRequestPermissionsResult(requestCode, permissions, grantResults);
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        if (grantResults[0] < 0) {
-            Log.d("TAG", "onRequestPermissionsResult: SnackBar");
-        }
     }
 
     @Override
     public void onExplanationNeeded(List<String> list) {
-        Log.d("TAG", "onExplanationNeeded: MapFrag" + list);
+        Log.d("TAG", "onExplanationNeeded: " + list);
     }
 
     @Override
     public void onPermissionResult(boolean granted) {
         if (granted) {
             // Permission sensitive logic called here
-            Log.d("TAG", "onPermissionResult: MapFrag1");
+            Log.d("TAG", "onPermissionResult: OK ");
             if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-                showAlertDialog(this);
+                showAlertDialog();
             }
             else {
                 initLocation();
-                startMainActivity();
             }
         } else {
             // User denied the permission
-            Log.d("TAG", "onPermissionResult: MapFrag2");
-            showAlertDialog(this);
+            Log.d("TAG", "onPermissionResult: NO ");
+            showAlertDialog();
 
         }
     }
 
-    public static void showAlertDialog(Context context) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
+    public void showAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
         builder.setTitle(R.string.title_alertDialog_permission);
         builder.setMessage(R.string.message_alertDialog_permission);
         builder.setCancelable(false);
 
-        builder.setPositiveButton(context.getResources().getString(R.string.positive_button_alertDialog_permission), new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.positive_button_alertDialog_permission), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                isFromSetting = true;
                 Intent intent = new Intent();
                 intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                Uri uri = Uri.fromParts("package", context.getPackageName(), null);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
                 intent.setData(uri);
-                context.startActivity(intent);
+                startActivity(intent);
             }
         });
 
@@ -172,6 +172,8 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
 
     public void startMainActivity() {
 
+        Log.d("TAG", "startMainActivity: ");
+
         Intent intent = new Intent(this, MainActivity.class);
         startActivity(intent);
     }
@@ -180,7 +182,12 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
 
     public void initLocation() {
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            showAlertDialog();
+        }
+        else {
+            locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0, this);
+        }
     }
 
     public static Location getUserLocation(Context context) {
@@ -190,10 +197,6 @@ public class LocationPermissionActivity extends AppCompatActivity implements Per
         }
         else {
             Location userLocation = locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER);
-
-            if (userLocation == null) {
-                LocationEngine locationEngine = LocationEngineProvider.getBestLocationEngine(context);
-            }
             return userLocation;
         }
     }

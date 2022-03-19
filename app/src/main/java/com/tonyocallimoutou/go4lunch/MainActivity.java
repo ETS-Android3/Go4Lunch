@@ -76,12 +76,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView = findViewById(R.id.bottom_nav_view);
         initActionBar();
         initBottomNavigationView();
-        initSideView();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+        viewModel.createUser();
+        initSideView();
     }
 
 
@@ -178,6 +179,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 mDrawer.close();
                 viewModel.signOut(this);
                 navigationView.setSelectedItemId(R.id.navigation_map);
+
+                LocationPermissionActivity.startSignInActivity(this);
+
                 break;
             default:
                 break;
