@@ -78,6 +78,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Mapbox.getInstance(getContext(),getString(R.string.mapbox_access_token));
+
+        MapboxSearchSdk.initialize(getActivity().getApplication(),getString(R.string.mapbox_access_token));
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
     }
 
@@ -129,10 +131,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void onResume() {
         super.onResume();
         mapView.onResume();
-
-        if (cameraOptions != null) {
-            initCamera();
-        }
     }
 
     @Override
@@ -177,6 +175,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
                 mStyle = style;
 
                 initLocalisationCamera();
+                initDataRestaurant();
             }
         });
     }
@@ -185,8 +184,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void initDataRestaurant() {
         categorySearchEngine = MapboxSearchSdk.getCategorySearchEngine();
 
+        Location location = LocationPermissionActivity.getUserLocation(getContext());
+
         CategorySearchOptions categorySearchOptions = new CategorySearchOptions.Builder()
-                .limit(5)
+                .proximity(Point.fromLngLat(location.getLongitude(), location.getLatitude()))
                 .build();
 
         searchRequestTask = categorySearchEngine.search("restaurant", categorySearchOptions, searchCallback);
@@ -226,9 +227,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback {
     public void initSymbol(@NonNull com.mapbox.mapboxsdk.maps.Style style ) {
 
         SymbolManager symbolManager = new SymbolManager(mapView, mMapboxMap, style);
-        symbolManager.addClickListener(symbol -> {
-            return true;
-        });
+
+        Log.d("TAG", "initSymbol: ");
 
         symbolManager.setIconAllowOverlap(true);
         symbolManager.setTextAllowOverlap(true);
