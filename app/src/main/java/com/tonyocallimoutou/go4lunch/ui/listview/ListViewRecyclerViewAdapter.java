@@ -41,8 +41,6 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         Restaurant restaurant = mRestaurants.get(position);
 
         holder.restaurantName.setText(restaurant.getName());
-        holder.restaurantDistance.setText(restaurant.getStringDistance());
-        holder.restaurantTypeAndAddress.setText(restaurant.getStringAddress());
     }
 
     @Override

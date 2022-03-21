@@ -2,56 +2,29 @@ package com.tonyocallimoutou.go4lunch;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
-import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.Manifest;
-import android.app.Activity;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.pm.PackageManager;
-import android.location.Location;
-import android.location.LocationListener;
-import android.location.LocationManager;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.navigation.NavigationBarView;
 import com.google.android.material.navigation.NavigationView;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
-import com.mapbox.android.core.location.LocationEngineProvider;
-import com.mapbox.android.core.permissions.PermissionsListener;
-import com.mapbox.android.core.permissions.PermissionsManager;
-import com.mapbox.geojson.Point;
-import com.mapbox.maps.CameraOptions;
-import com.mapbox.search.MapboxSearchSdk;
-import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
-import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
-import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -81,8 +54,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        viewModel.createUser();
-        initSideView();
+        if (viewModel.isCurrentLogged()) {
+            viewModel.createUser();
+            initSideView();
+        }
+        else {
+            startSignInActivity();
+        }
+    }
+
+    // MAPVIEW
+
+
+
+    // SIGN IN ACTIVITY
+
+    public void startSignInActivity() {
+        List<AuthUI.IdpConfig> provider = Arrays.asList(
+                new AuthUI.IdpConfig.FacebookBuilder().build(),
+                new AuthUI.IdpConfig.GoogleBuilder().build());
+
+        startActivity(
+                AuthUI.getInstance()
+                        .createSignInIntentBuilder()
+                        .setTheme(R.style.LoginTheme)
+                        .setAvailableProviders(provider)
+                        .setIsSmartLockEnabled(false,true)
+                        .setLogo(R.drawable.logo)
+                        .build()
+        );
     }
 
 
@@ -180,7 +180,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 viewModel.signOut(this);
                 navigationView.setSelectedItemId(R.id.navigation_map);
 
-                LocationPermissionActivity.startSignInActivity(this);
+                startSignInActivity();
 
                 break;
             default:

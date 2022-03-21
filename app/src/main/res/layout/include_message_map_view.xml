@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:id="@+id/message_map_view"
+    android:layout_gravity="center"
+    android:orientation="vertical">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_message_title_map_view"
+        android:layout_gravity="center"
+        android:text="@string/title_message_map_view" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_message_map_view"
+        android:layout_gravity="center"
+        android:text="@string/message_map_view" />
+
+    <Button
+        android:id="@+id/button_message_map_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/margin_message_button_map_view"
+        android:text="@string/button_message_map_view"
+        />
+
+
+</LinearLayout>

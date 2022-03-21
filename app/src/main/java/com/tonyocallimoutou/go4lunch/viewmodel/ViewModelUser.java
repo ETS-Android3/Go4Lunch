@@ -10,15 +10,6 @@ import androidx.lifecycle.ViewModel;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.mapbox.android.core.location.LocationEngineProvider;
-import com.mapbox.search.CategorySearchEngine;
-import com.mapbox.search.CategorySearchOptions;
-import com.mapbox.search.MapboxSearchSdk;
-import com.mapbox.search.ResponseInfo;
-import com.mapbox.search.SearchCallback;
-import com.mapbox.search.SearchRequestTask;
-import com.mapbox.search.result.SearchAddress;
-import com.mapbox.search.result.SearchResult;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
@@ -61,8 +52,8 @@ public class ViewModelUser extends ViewModel {
 
     // Restaurant
 
-    public void createRestaurant(String id, String name, double distance, List<String> categories, SearchAddress address) {
-        restaurantRepository.createRestaurant(id,name,distance,categories,address);
+    public void createRestaurant(String id, String name) {
+        restaurantRepository.createRestaurant(id,name);
     }
 
     public CollectionReference getRestaurantsCollection(){
