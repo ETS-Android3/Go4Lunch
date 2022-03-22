@@ -83,20 +83,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback{
     }
 
 
-    // ON MAP READY
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        MapsInitializer.initialize(getActivity());
-
-        Log.d("TAG", "onMapReady: ");
-
-        //clear old markers
-        googleMap.clear();
-
-        this.mGoogleMap = googleMap;
-    }
-
     // INIT PERMISSION
 
     @OnClick(R.id.button_message_map_view)
@@ -140,13 +126,25 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback{
                 }
             });
 
+    // ON MAP READY
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        MapsInitializer.initialize(getActivity());
+
+        Log.d("TAG", "onMapReady: ");
+
+        //clear old markers
+        googleMap.clear();
+
+        this.mGoogleMap = googleMap;
+    }
+
 
     // GET USER LOCATION
 
     @OnClick(R.id.fab_map_view)
     public void cameraOnLocation() {
-
-        mGoogleMap.getMyLocation()
 
         LatLng userLocation = new LatLng(0, 0);
         mGoogleMap.addMarker(new MarkerOptions().position(userLocation).title("user's marker"));
