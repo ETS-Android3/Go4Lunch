@@ -26,5 +26,9 @@
     <string name="title_alertDialog_permission"> We are Sorry </string>
     <string name="message_alertDialog_permission"> We need to acces to your location to show you the map.\nDo you want to grant us this permission.</string>
     <string name="positive_button_alertDialog_permission"> OK</string>
+    
+    // GOOGLE MAP
+    <string name="map_api_key" >AIzaSyCapAh2B5NwN-tmrEgNBoGYyh1hc1mPdqo</string>
+    <string name="map_id">ab29bdb60f370498</string>
 
 </resources>

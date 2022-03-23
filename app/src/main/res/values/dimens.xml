@@ -24,7 +24,7 @@
     <dimen name="margin_bottom_fab_map"> 84dp </dimen>
 
     <dimen name="margin_message_title_map_view"> 16dp </dimen>
-    <dimen name="margin_message_map_view"> 16dp </dimen>
+    <dimen name="margin_message_text_map_view"> 16dp </dimen>
     <dimen name="margin_message_button_map_view"> 16dp </dimen>
 
 

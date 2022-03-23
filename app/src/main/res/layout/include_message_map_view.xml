@@ -13,12 +13,13 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_message_title_map_view"
         android:layout_gravity="center"
+        style="@style/MapViewMessageTitle"
         android:text="@string/title_message_map_view" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_margin="@dimen/margin_message_map_view"
+        android:layout_margin="@dimen/margin_message_text_map_view"
         android:layout_gravity="center"
         android:text="@string/message_map_view" />
 

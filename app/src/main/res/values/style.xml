@@ -14,7 +14,8 @@
 
         <item name="android:windowBackground"> @drawable/background_sign_in </item>
     </style>
-    
+
+    <!-- List View -->
     <style name="ListViewRestaurantName" >
         <item name="android:textColor"> @color/black </item>
         <item name="android:textStyle"> bold </item>
@@ -28,4 +29,12 @@
         <item name="android:textColor"> @color/red_warning </item>
         <item name="android:textStyle"> bold </item>
     </style>
+
+
+    <!-- Map View -->
+    <style name="MapViewMessageTitle" >
+        <item name="android:textColor"> @color/black </item>
+        <item name="android:textStyle"> bold </item>
+    </style>
+
 </resources>
