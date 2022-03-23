@@ -1,25 +1,21 @@
 package com.tonyocallimoutou.go4lunch.ui.mapview;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.location.Location;
-import android.location.LocationListener;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -42,20 +38,34 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PointOfInterest;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.maps.model.PlacesSearchResult;
 import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.Retrofit.PlaceDetail;
+import com.tonyocallimoutou.go4lunch.model.Restaurant;
+import com.tonyocallimoutou.go4lunch.utils.GetListFromFirestore;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
-import java.util.concurrent.Executor;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, OnCompleteListener<Location>, GoogleMap.OnPoiClickListener {
+public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, OnCompleteListener<Location> {
 
     @BindView(R.id.message_map_view)
     LinearLayout message_map_view;
@@ -67,9 +77,14 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     CameraPosition cameraPosition;
     View locationButton;
 
+    ViewModelUser viewModel;
+
     PlacesClient placesClient;
     FusedLocationProviderClient fusedLocationProviderClient;
     Location userLocation;
+
+    PlaceDetail listPlace;
+
 
     // Bundle
     private final String KEY_LOCATION = "KEY_LOCATION";
@@ -84,6 +99,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         ButterKnife.bind(this, view);
+
+        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
 
         fabMap.setVisibility(View.INVISIBLE);
 
@@ -118,7 +135,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
             outState.putParcelable(KEY_CAMERA_POSITION, mGoogleMap.getCameraPosition());
             outState.putParcelable(KEY_LOCATION, userLocation);
         }
-        Log.d("TAG", "onSaveInstanceState: " + mGoogleMap.getCameraPosition());
         super.onSaveInstanceState(outState);
     }
 
@@ -127,8 +143,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     public void initFragment() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             message_map_view.setVisibility(View.GONE);
-            mapFragment.getMapAsync(this);
             fabMap.setVisibility(View.VISIBLE);
+            mapFragment.getMapAsync(this);
         }
     }
 
@@ -183,8 +199,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         // Camera
         if (mGoogleMap == null) {
             getDeviceLocation();
-        }
-        else {
+        } else {
             if (cameraPosition != null) {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition.target, cameraPosition.zoom));
             }
@@ -192,16 +207,15 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         mGoogleMap = googleMap;
 
+        mGoogleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.style_json));
+
 
         // Click on Marker = Restaurant
-        initMarkerRestaurant();
+        addMarkerOnPlace(listPlace);
         mGoogleMap.setOnMarkerClickListener(this);
 
         // User
         initUserLocationGoogleMap();
-
-
-        mGoogleMap.setOnPoiClickListener(this);
 
     }
 
@@ -222,6 +236,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                         new LatLng(userLocation.getLatitude(),
                                 userLocation.getLongitude()), 15));
+
+                initMarkerRestaurant();
             }
         }
     }
@@ -239,14 +255,47 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     @OnClick(R.id.fab_map_view)
     public void cameraOnLocation() {
-        Log.d("TAG", "cameraOnLocation: ");
         locationButton.callOnClick();
     }
+
 
     // Restaurant
 
     public void initMarkerRestaurant() {
+        Log.d("TAG", "initMarkerRestaurant: ");
+        String userPosition = userLocation.getLatitude() + "," + userLocation.getLongitude();
+        viewModel.getNearbyPlace(userPosition);
 
+        final Observer<PlaceDetail> observerPlaceDetail = new Observer<PlaceDetail>() {
+            @Override
+            public void onChanged(PlaceDetail placeDetail) {
+                listPlace = placeDetail;
+            }
+        };
+
+        viewModel.getPlacesLiveData().observe(this, observerPlaceDetail);
+
+    }
+
+    public void addMarkerOnPlace(PlaceDetail placeDetail) {
+        if (placeDetail != null) {
+            for (int i=0; i<placeDetail.getResults().size(); i++) {
+                Double lat = placeDetail.getResults().get(i).getGeometry().getLocation().getLat();
+                Double lng = placeDetail.getResults().get(i).getGeometry().getLocation().getLng();
+                String placeName = placeDetail.getResults().get(i).getName();
+                String vicinity = placeDetail.getResults().get(i).getVicinity();
+                String id = placeDetail.getResults().get(i).getPlaceId();
+                LatLng latLng = new LatLng(lat, lng);
+
+
+                mGoogleMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .title(placeName + " : " + vicinity))
+                        .setTag(id);
+
+                Log.d("TAG", "addMarkerOnPlace: ");
+            }
+        }
     }
 
     @Override
@@ -256,13 +305,5 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 Toast.LENGTH_SHORT).show();
 
         return true;
-    }
-
-    @Override
-    public void onPoiClick(@NonNull PointOfInterest poi) {
-        Toast.makeText(getContext(), "Clicked: " +
-                        poi.name + "\nPlace ID:" + poi.placeId,
-                Toast.LENGTH_SHORT).show();
-        Log.d("TAG", "onPoiClick: " + poi);
     }
 }
