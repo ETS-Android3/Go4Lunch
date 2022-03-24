@@ -1,16 +1,12 @@
 package com.tonyocallimoutou.go4lunch.repository;
 
-import androidx.annotation.NonNull;
-
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.tonyocallimoutou.go4lunch.model.Restaurant;
-import com.tonyocallimoutou.go4lunch.Retrofit.PlaceDetail;
+import com.tonyocallimoutou.go4lunch.Retrofit.NearByPlace;
 import com.tonyocallimoutou.go4lunch.Retrofit.RetrofitMap;
 
 import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class RestaurantRepository {
 
@@ -45,29 +41,8 @@ public class RestaurantRepository {
         getRestaurantsCollection().document(id).set(restaurantToCreate);
     }
 
-    public void getNearbyPlace(String location, PlaceCallback callback) {
-        retrofitMap.getNearbyPlaces(location).enqueue(new Callback<PlaceDetail>() {
-            @Override
-            public void onResponse(@NonNull Call<PlaceDetail> call, @NonNull Response<PlaceDetail> response) {
-                if (response.isSuccessful()) {
-                    PlaceDetail body = response.body();
-                    callback.onSuccess(body);
-                } else {
-                    callback.onError();
-                }
-            }
-
-            @Override
-            public void onFailure(@NonNull Call<PlaceDetail> call, @NonNull Throwable t) {
-                callback.onError();
-            }
-        });
-
-    }
-
-    public interface PlaceCallback {
-        void onSuccess(PlaceDetail placesDetail);
-        void onError();
+    public Call<NearByPlace> getNearByPlace(String location) {
+        return retrofitMap.getNearByPlaces(location);
     }
 
 }

@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlaceDetail {
+public class NearByPlace {
 
     @SerializedName("html_attributions")
     @Expose
@@ -16,7 +16,7 @@ public class PlaceDetail {
     private String nextPageToken;
     @SerializedName("results")
     @Expose
-    private List<PlaceResult> placeResults = new ArrayList<PlaceResult>();
+    private List<PlacesResult> placeResults = new ArrayList<PlacesResult>();
     @SerializedName("status")
     @Expose
     private String status;
@@ -62,7 +62,7 @@ public class PlaceDetail {
      * @return
      * The results
      */
-    public List<PlaceResult> getResults() {
+    public List<PlacesResult> getResults() {
         return placeResults;
     }
 
@@ -71,7 +71,7 @@ public class PlaceDetail {
      * @param placeResults
      * The results
      */
-    public void setResults(List<PlaceResult> placeResults) {
+    public void setResults(List<PlacesResult> placeResults) {
         this.placeResults = placeResults;
     }
 

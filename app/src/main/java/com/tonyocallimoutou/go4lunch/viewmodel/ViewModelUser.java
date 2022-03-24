@@ -12,23 +12,22 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
-import com.tonyocallimoutou.go4lunch.Retrofit.PlaceDetail;
+import com.tonyocallimoutou.go4lunch.Retrofit.NearByPlace;
 import com.tonyocallimoutou.go4lunch.Retrofit.RetrofitMap;
-import com.tonyocallimoutou.go4lunch.Retrofit.RetrofitMapCall;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ViewModelUser extends ViewModel {
 
     public UserRepository userRepository;
 
-    public RestaurantRepository restaurantRepository;
-
-    private MutableLiveData<PlaceDetail> placesDetailLiveData = new MutableLiveData<>();
-
-
 
     public ViewModelUser () {
         userRepository = UserRepository.getInstance();
-        restaurantRepository = RestaurantRepository.getInstance(RetrofitMapCall.retrofit.create(RetrofitMap.class));
     }
 
     // User
@@ -51,37 +50,6 @@ public class ViewModelUser extends ViewModel {
 
     public CollectionReference getUsersCollection(){
         return userRepository.getUsersCollection();
-    }
-
-
-    // Restaurant
-
-    public void createRestaurant(String id, String name) {
-        restaurantRepository.createRestaurant(id,name);
-    }
-
-    public CollectionReference getRestaurantsCollection(){
-        return restaurantRepository.getRestaurantsCollection();
-    }
-
-    public LiveData<PlaceDetail> getPlacesLiveData() {
-        return placesDetailLiveData;
-    }
-
-    public void getNearbyPlace(String location) {
-        Log.d("TAG", "getNearbyPlace: ");
-        restaurantRepository.getNearbyPlace(location, new RestaurantRepository.PlaceCallback() {
-            @Override
-            public void onSuccess(PlaceDetail placesDetail) {
-                Log.d("TAG", "onSuccess: ");
-                placesDetailLiveData.setValue(placesDetail);
-            }
-
-            @Override
-            public void onError() {
-
-            }
-        });
     }
 
 }

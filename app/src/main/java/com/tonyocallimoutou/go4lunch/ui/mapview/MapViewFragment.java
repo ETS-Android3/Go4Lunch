@@ -23,49 +23,35 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.GoogleApi;
+import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.PointOfInterest;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.maps.model.PlacesSearchResult;
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.Retrofit.PlaceDetail;
-import com.tonyocallimoutou.go4lunch.model.Restaurant;
-import com.tonyocallimoutou.go4lunch.utils.GetListFromFirestore;
+import com.tonyocallimoutou.go4lunch.Retrofit.NearByPlace;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, OnCompleteListener<Location> {
+public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     @BindView(R.id.message_map_view)
     LinearLayout message_map_view;
@@ -77,13 +63,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     CameraPosition cameraPosition;
     View locationButton;
 
-    ViewModelUser viewModel;
+    ViewModelRestaurant viewModel;
 
     PlacesClient placesClient;
     FusedLocationProviderClient fusedLocationProviderClient;
     Location userLocation;
-
-    PlaceDetail listPlace;
 
 
     // Bundle
@@ -100,12 +84,12 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         ButterKnife.bind(this, view);
 
-        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
 
         fabMap.setVisibility(View.INVISIBLE);
 
         // INIT PLACE
-        Places.initialize(getActivity().getApplicationContext(), getString(R.string.map_api_key));
+        Places.initialize(getActivity().getApplicationContext(), getString(R.string.place_api_key));
         placesClient = Places.createClient(getContext());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
@@ -142,9 +126,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     public void initFragment() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            getDeviceLocation();
             message_map_view.setVisibility(View.GONE);
             fabMap.setVisibility(View.VISIBLE);
-            mapFragment.getMapAsync(this);
         }
     }
 
@@ -190,6 +174,30 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
             });
 
 
+    // GET DEVICE LOCATION
+    @SuppressLint("MissingPermission")
+    public void getDeviceLocation() {
+        Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
+
+        locationResult.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @Override
+            public void onSuccess(Location location) {
+                Log.d("TAG", "onStart: NearbyPlace ");
+
+                userLocation = location;
+
+                String userPosition = userLocation.getLatitude() + "," + userLocation.getLongitude();
+                viewModel.getNearByPlace(userPosition);
+
+                initMarkerRestaurant();
+
+                mapFragment.getMapAsync(MapViewFragment.this);
+            }
+        });
+    }
+
+
+
     // ON MAP READY
 
     @Override
@@ -198,7 +206,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         // Camera
         if (mGoogleMap == null) {
-            getDeviceLocation();
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
+                    new LatLng(userLocation.getLatitude(),
+                            userLocation.getLongitude()), 15));
         } else {
             if (cameraPosition != null) {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition.target, cameraPosition.zoom));
@@ -207,45 +217,21 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         mGoogleMap = googleMap;
 
-        mGoogleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.style_json));
+        //mGoogleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.style_json));
 
+
+        SetupForUserLocation();
 
         // Click on Marker = Restaurant
-        addMarkerOnPlace(listPlace);
         mGoogleMap.setOnMarkerClickListener(this);
 
-        // User
-        initUserLocationGoogleMap();
-
     }
 
-    // GET DEVICE LOCATION
-    @SuppressLint("MissingPermission")
-    public void getDeviceLocation() {
-        Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
 
-        locationResult.addOnCompleteListener(this);
-    }
-
-    @Override
-    public void onComplete(@NonNull Task<Location> task) {
-        if (task.isSuccessful()) {
-            // Set the map's camera position to the current location of the device.
-            userLocation = task.getResult();
-            if (userLocation != null) {
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                        new LatLng(userLocation.getLatitude(),
-                                userLocation.getLongitude()), 15));
-
-                initMarkerRestaurant();
-            }
-        }
-    }
-
-    // GET USER LOCATION
+    // SETUP USER LOCATION
 
     @SuppressLint({"MissingPermission", "ResourceType"})
-    public void initUserLocationGoogleMap() {
+    public void SetupForUserLocation() {
         mGoogleMap.setMyLocationEnabled(true);
         locationButton = mapFragment.getView().findViewById(0x2);
         if (locationButton != null) {
@@ -263,22 +249,22 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     public void initMarkerRestaurant() {
         Log.d("TAG", "initMarkerRestaurant: ");
-        String userPosition = userLocation.getLatitude() + "," + userLocation.getLongitude();
-        viewModel.getNearbyPlace(userPosition);
 
-        final Observer<PlaceDetail> observerPlaceDetail = new Observer<PlaceDetail>() {
+        final Observer<NearByPlace> observerPlaceDetail = new Observer<NearByPlace>() {
             @Override
-            public void onChanged(PlaceDetail placeDetail) {
-                listPlace = placeDetail;
+            public void onChanged(NearByPlace placeDetail) {
+                Log.d("TAG", "onChanged: ");
+                addMarkerOnPlace(placeDetail);
             }
         };
 
         viewModel.getPlacesLiveData().observe(this, observerPlaceDetail);
-
     }
 
-    public void addMarkerOnPlace(PlaceDetail placeDetail) {
+    public void addMarkerOnPlace(NearByPlace placeDetail) {
+
         if (placeDetail != null) {
+            Log.d("TAG", "addMarkerOnPlace: "+ placeDetail.getResults());
             for (int i=0; i<placeDetail.getResults().size(); i++) {
                 Double lat = placeDetail.getResults().get(i).getGeometry().getLocation().getLat();
                 Double lng = placeDetail.getResults().get(i).getGeometry().getLocation().getLng();
@@ -292,8 +278,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                         .position(latLng)
                         .title(placeName + " : " + vicinity))
                         .setTag(id);
-
-                Log.d("TAG", "addMarkerOnPlace: ");
             }
         }
     }

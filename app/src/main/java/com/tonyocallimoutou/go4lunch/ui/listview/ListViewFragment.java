@@ -20,6 +20,7 @@ import com.tonyocallimoutou.go4lunch.model.Restaurant;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesRecyclerViewAdapter;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.ArrayList;
@@ -33,7 +34,7 @@ import java.util.List;
 public class ListViewFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-    private ViewModelUser viewModel;
+    private ViewModelRestaurant viewModel;
     private List<Restaurant> mRestaurants = new ArrayList<>();
 
     public ListViewFragment() {
@@ -48,7 +49,7 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
 
         initRestaurantList();
     }

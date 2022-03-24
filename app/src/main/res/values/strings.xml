@@ -30,7 +30,6 @@
     // GOOGLE MAP
     <string name="map_api_key" >AIzaSyCapAh2B5NwN-tmrEgNBoGYyh1hc1mPdqo</string>
     <string name="map_id">ab29bdb60f370498</string>
-    <string name="geo_api_key" >AIzaSyBdz4OIDg4uoh4YUJv-2fYtrVrkmiL1CgQ</string>
     // GOOGLE PLACE
     <string name="place_api_key" >AIzaSyAKkjPKbFP8xqMS9wYApkgsdIJW28c3TNQ</string>
 
