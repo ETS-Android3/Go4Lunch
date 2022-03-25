@@ -1,4 +1,4 @@
-package com.tonyocallimoutou.go4lunch.Retrofit;
+package com.tonyocallimoutou.go4lunch.model.Places;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class NearByPlace {
+public class NearbyPlace {
 
     @SerializedName("html_attributions")
     @Expose
@@ -16,7 +16,7 @@ public class NearByPlace {
     private String nextPageToken;
     @SerializedName("results")
     @Expose
-    private List<PlacesResult> placeResults = new ArrayList<PlacesResult>();
+    private List<RestaurantsResult> placeResults = new ArrayList<RestaurantsResult>();
     @SerializedName("status")
     @Expose
     private String status;
@@ -62,7 +62,7 @@ public class NearByPlace {
      * @return
      * The results
      */
-    public List<PlacesResult> getResults() {
+    public List<RestaurantsResult> getResults() {
         return placeResults;
     }
 
@@ -71,7 +71,7 @@ public class NearByPlace {
      * @param placeResults
      * The results
      */
-    public void setResults(List<PlacesResult> placeResults) {
+    public void setResults(List<RestaurantsResult> placeResults) {
         this.placeResults = placeResults;
     }
 

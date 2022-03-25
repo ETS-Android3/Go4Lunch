@@ -17,8 +17,7 @@ android {
 
         Properties properties = new Properties()
         properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-        buildConfigField "String", "MAP_API_KEY", "${properties.getProperty('MAP_API_KEY')}"
+        buildConfigField "String", "PLACES_API_KEY", "${properties.getProperty('PLACES_API_KEY')}"
     }
 
     buildTypes {
@@ -70,6 +69,10 @@ dependencies {
     // Retrofit
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.google.code.gson:gson:2.8.8'
+    implementation 'com.squareup.okhttp3:logging-interceptor:4.9.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.0'
+    implementation 'com.squareup.okhttp:okhttp:2.7.5'
 
 
 }

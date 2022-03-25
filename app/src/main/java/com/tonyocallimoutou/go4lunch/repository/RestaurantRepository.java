@@ -2,15 +2,16 @@ package com.tonyocallimoutou.go4lunch.repository;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.tonyocallimoutou.go4lunch.model.Restaurant;
-import com.tonyocallimoutou.go4lunch.Retrofit.NearByPlace;
-import com.tonyocallimoutou.go4lunch.Retrofit.RetrofitMap;
+import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
+import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
 
 import retrofit2.Call;
 
 public class RestaurantRepository {
 
-    private static final String COLLECTION_NAME = "restaurants";
+    private static final String COLLECTION_NAME_NEARBY_RESTAURANT = "nearby_restaurant";
+    private static final String COLLECTION_NAME_BOOKED_RESTAURANT = "booked_restaurant";
 
     private static volatile RestaurantRepository instance;
     private RetrofitMap retrofitMap;
@@ -32,17 +33,28 @@ public class RestaurantRepository {
         }
     }
 
-    public CollectionReference getRestaurantsCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    public CollectionReference getNearbyRestaurantsCollection() {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME_NEARBY_RESTAURANT);
     }
 
-    public void createRestaurant (String id, String name) {
-        Restaurant restaurantToCreate = new Restaurant(id,name);
-        getRestaurantsCollection().document(id).set(restaurantToCreate);
+    public CollectionReference getBookedRestaurantsCollection() {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME_BOOKED_RESTAURANT);
     }
 
-    public Call<NearByPlace> getNearByPlace(String location) {
-        return retrofitMap.getNearByPlaces(location);
+    public void createNearbyRestaurantInFirebase (RestaurantsResult restaurant) {
+        getNearbyRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
+    }
+
+    public void createBookedRestaurantInFirebase (RestaurantsResult restaurant) {
+        getBookedRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
+    }
+
+    public void removeNearbyRestaurantInFirebase() {
+        getNearbyRestaurantsCollection().document().delete();
+    }
+
+    public Call<NearbyPlace> getNearbyPlace(String location) {
+        return retrofitMap.getNearbyPlaces(location);
     }
 
 }

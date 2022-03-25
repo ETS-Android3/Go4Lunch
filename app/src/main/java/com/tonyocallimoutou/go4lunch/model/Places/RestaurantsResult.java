@@ -1,4 +1,4 @@
-package com.tonyocallimoutou.go4lunch.Retrofit;
+package com.tonyocallimoutou.go4lunch.model.Places;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
@@ -6,7 +6,7 @@ import com.google.gson.annotations.SerializedName;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlacesResult {
+public class RestaurantsResult {
 
     @SerializedName("geometry")
     @Expose

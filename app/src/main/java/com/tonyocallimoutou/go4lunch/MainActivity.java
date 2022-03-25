@@ -63,9 +63,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    // MAPVIEW
-
-
 
     // SIGN IN ACTIVITY
 

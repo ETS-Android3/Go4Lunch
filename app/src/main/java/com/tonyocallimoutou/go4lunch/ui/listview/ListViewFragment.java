@@ -16,12 +16,9 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.model.Restaurant;
-import com.tonyocallimoutou.go4lunch.model.User;
-import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesRecyclerViewAdapter;
+import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,7 +32,7 @@ public class ListViewFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
     private ViewModelRestaurant viewModel;
-    private List<Restaurant> mRestaurants = new ArrayList<>();
+    private List<RestaurantsResult> mRestaurants = new ArrayList<>();
 
     public ListViewFragment() {
         // Required empty public constructor
@@ -66,14 +63,14 @@ public class ListViewFragment extends Fragment {
     }
 
     public void initRestaurantList() {
-        viewModel.getRestaurantsCollection().get()
+        viewModel.getNearbyRestaurantsCollection().get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                             for (DocumentSnapshot document : list) {
-                                Restaurant restaurant = document.toObject(Restaurant.class);
+                                RestaurantsResult restaurant = document.toObject(RestaurantsResult.class);
                                 mRestaurants.add(restaurant);
                             }
 

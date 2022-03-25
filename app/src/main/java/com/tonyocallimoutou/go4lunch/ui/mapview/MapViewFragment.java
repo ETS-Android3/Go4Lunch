@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
@@ -21,10 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import com.google.android.gms.common.api.GoogleApi;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -34,24 +30,22 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.Retrofit.NearByPlace;
+import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
     @BindView(R.id.message_map_view)
     LinearLayout message_map_view;
@@ -61,11 +55,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     SupportMapFragment mapFragment;
     GoogleMap mGoogleMap;
     CameraPosition cameraPosition;
+    float cameraZoomDefault = 15;
     View locationButton;
 
     ViewModelRestaurant viewModel;
 
-    PlacesClient placesClient;
     FusedLocationProviderClient fusedLocationProviderClient;
     Location userLocation;
 
@@ -88,9 +82,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         fabMap.setVisibility(View.INVISIBLE);
 
-        // INIT PLACE
-        Places.initialize(getActivity().getApplicationContext(), getString(R.string.place_api_key));
-        placesClient = Places.createClient(getContext());
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         return view;
@@ -126,7 +117,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     public void initFragment() {
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            getDeviceLocation();
+            getDeviceLocationAndInitMap();
             message_map_view.setVisibility(View.GONE);
             fabMap.setVisibility(View.VISIBLE);
         }
@@ -176,22 +167,23 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     // GET DEVICE LOCATION
     @SuppressLint("MissingPermission")
-    public void getDeviceLocation() {
+    public void getDeviceLocationAndInitMap() {
         Task<Location> locationResult = fusedLocationProviderClient.getLastLocation();
 
         locationResult.addOnSuccessListener(new OnSuccessListener<Location>() {
+            @SuppressLint("FragmentLiveDataObserve")
             @Override
             public void onSuccess(Location location) {
-                Log.d("TAG", "onStart: NearbyPlace ");
 
                 userLocation = location;
-
                 String userPosition = userLocation.getLatitude() + "," + userLocation.getLongitude();
-                viewModel.getNearByPlace(userPosition);
 
-                initMarkerRestaurant();
+                Log.d("TAG", "user Location: " + userPosition);
+                viewModel.setNearbyPlaceInFirebase(userPosition);
 
-                mapFragment.getMapAsync(MapViewFragment.this);
+                if (mGoogleMap == null) {
+                    mapFragment.getMapAsync(MapViewFragment.this);
+                }
             }
         });
     }
@@ -208,7 +200,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         if (mGoogleMap == null) {
             googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
                     new LatLng(userLocation.getLatitude(),
-                            userLocation.getLongitude()), 15));
+                            userLocation.getLongitude()), cameraZoomDefault));
         } else {
             if (cameraPosition != null) {
                 googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition.target, cameraPosition.zoom));
@@ -217,13 +209,17 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         mGoogleMap = googleMap;
 
-        //mGoogleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.style_json));
-
+        mGoogleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.style_json));
 
         SetupForUserLocation();
 
         // Click on Marker = Restaurant
         mGoogleMap.setOnMarkerClickListener(this);
+
+        viewModel.getNearbyPlaceLiveData().observe(this, nearbyPlace -> {
+            addMarkerOnPlace(nearbyPlace);
+        });
+
 
     }
 
@@ -242,35 +238,22 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     @OnClick(R.id.fab_map_view)
     public void cameraOnLocation() {
         locationButton.callOnClick();
+        getDeviceLocationAndInitMap();
     }
 
 
     // Restaurant
 
-    public void initMarkerRestaurant() {
-        Log.d("TAG", "initMarkerRestaurant: ");
-
-        final Observer<NearByPlace> observerPlaceDetail = new Observer<NearByPlace>() {
-            @Override
-            public void onChanged(NearByPlace placeDetail) {
-                Log.d("TAG", "onChanged: ");
-                addMarkerOnPlace(placeDetail);
-            }
-        };
-
-        viewModel.getPlacesLiveData().observe(this, observerPlaceDetail);
-    }
-
-    public void addMarkerOnPlace(NearByPlace placeDetail) {
-
-        if (placeDetail != null) {
-            Log.d("TAG", "addMarkerOnPlace: "+ placeDetail.getResults());
-            for (int i=0; i<placeDetail.getResults().size(); i++) {
-                Double lat = placeDetail.getResults().get(i).getGeometry().getLocation().getLat();
-                Double lng = placeDetail.getResults().get(i).getGeometry().getLocation().getLng();
-                String placeName = placeDetail.getResults().get(i).getName();
-                String vicinity = placeDetail.getResults().get(i).getVicinity();
-                String id = placeDetail.getResults().get(i).getPlaceId();
+    public void addMarkerOnPlace(NearbyPlace listRestaurants) {
+        mGoogleMap.clear();
+        if (listRestaurants != null) {
+            Log.d("TAG", "addMarkerOnPlace: "+ listRestaurants.getResults().size());
+            for (int i=0; i<listRestaurants.getResults().size(); i++) {
+                Double lat = listRestaurants.getResults().get(i).getGeometry().getLocation().getLat();
+                Double lng = listRestaurants.getResults().get(i).getGeometry().getLocation().getLng();
+                String placeName = listRestaurants.getResults().get(i).getName();
+                String vicinity = listRestaurants.getResults().get(i).getVicinity();
+                String id = listRestaurants.getResults().get(i).getPlaceId();
                 LatLng latLng = new LatLng(lat, lng);
 
 
@@ -284,10 +267,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
-        Toast.makeText(getContext(), "Clicked: " +
-                        marker.getTitle() + "\nPlace ID:" + marker.getId(),
-                Toast.LENGTH_SHORT).show();
 
+        // CAMERA
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),cameraZoomDefault));
+        Log.d("TAG", "onMarkerClick: " + marker.getTitle());
         return true;
     }
 }

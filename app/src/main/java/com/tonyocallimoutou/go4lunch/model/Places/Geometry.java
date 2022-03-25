@@ -1,4 +1,4 @@
-package com.tonyocallimoutou.go4lunch.Retrofit;
+package com.tonyocallimoutou.go4lunch.model.Places;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

@@ -11,7 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.model.Restaurant;
+import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 
 import java.util.List;
 
@@ -20,10 +20,10 @@ import butterknife.ButterKnife;
 
 public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Restaurant> mRestaurants;
+    private final List<RestaurantsResult> mRestaurants;
     private final Context mContext;
 
-    public ListViewRecyclerViewAdapter(Context context, List<Restaurant> restaurants) {
+    public ListViewRecyclerViewAdapter(Context context, List<RestaurantsResult> restaurants) {
         mRestaurants = restaurants;
         mContext = context;
     }
@@ -38,7 +38,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
 
     @Override
     public void onBindViewHolder(@NonNull ListViewRecyclerViewAdapter.ViewHolder holder, int position) {
-        Restaurant restaurant = mRestaurants.get(position);
+        RestaurantsResult restaurant = mRestaurants.get(position);
 
         holder.restaurantName.setText(restaurant.getName());
     }
