@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 
 import java.util.List;
 
@@ -40,7 +41,12 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
     public void onBindViewHolder(@NonNull ListViewRecyclerViewAdapter.ViewHolder holder, int position) {
         RestaurantsResult restaurant = mRestaurants.get(position);
 
-        holder.restaurantName.setText(restaurant.getName());
+        RestaurantData.newInstance(restaurant);
+
+        holder.restaurantName.setText(RestaurantData.getRestaurantName());
+        holder.restaurantTypeAndAddress.setText(RestaurantData.getTypeAndAddress());
+        holder.restaurantDistance.setText(RestaurantData.getDistance());
+        holder.restaurantHours.setText(RestaurantData.getOpeningHour());
     }
 
     @Override

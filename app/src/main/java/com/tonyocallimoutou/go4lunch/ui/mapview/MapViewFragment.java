@@ -36,10 +36,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
+import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
+import com.tonyocallimoutou.go4lunch.ui.listview.ListViewRecyclerViewAdapter;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -62,6 +70,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     FusedLocationProviderClient fusedLocationProviderClient;
     Location userLocation;
+
+
+    List<RestaurantsResult> nearbyRestaurant = new ArrayList<>();
+    List<RestaurantsResult> bookedRestaurant = new ArrayList<>();
 
 
     // Bundle
@@ -179,7 +191,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 String userPosition = userLocation.getLatitude() + "," + userLocation.getLongitude();
 
                 Log.d("TAG", "user Location: " + userPosition);
-                viewModel.setNearbyPlaceInFirebase(userPosition);
+                viewModel.setNearbyPlace(userPosition);
 
                 if (mGoogleMap == null) {
                     mapFragment.getMapAsync(MapViewFragment.this);
@@ -214,11 +226,11 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         SetupForUserLocation();
 
         // Click on Marker = Restaurant
-        mGoogleMap.setOnMarkerClickListener(this);
-
-        viewModel.getNearbyPlaceLiveData().observe(this, nearbyPlace -> {
-            addMarkerOnPlace(nearbyPlace);
+        viewModel.getNearbyPlaceLiveData().observe(MapViewFragment.this, nearbyPlace -> {
+            Log.d("TAG", "OBSERVER : " + nearbyPlace.getResults().size());
+            initListForMarker(nearbyPlace);
         });
+        mGoogleMap.setOnMarkerClickListener(this);
 
 
     }
@@ -244,16 +256,60 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     // Restaurant
 
-    public void addMarkerOnPlace(NearbyPlace listRestaurants) {
+    public void initListForMarker(NearbyPlace restaurants) {
         mGoogleMap.clear();
-        if (listRestaurants != null) {
-            Log.d("TAG", "addMarkerOnPlace: "+ listRestaurants.getResults().size());
-            for (int i=0; i<listRestaurants.getResults().size(); i++) {
-                Double lat = listRestaurants.getResults().get(i).getGeometry().getLocation().getLat();
-                Double lng = listRestaurants.getResults().get(i).getGeometry().getLocation().getLng();
-                String placeName = listRestaurants.getResults().get(i).getName();
-                String vicinity = listRestaurants.getResults().get(i).getVicinity();
-                String id = listRestaurants.getResults().get(i).getPlaceId();
+        nearbyRestaurant.clear();
+        bookedRestaurant.clear();
+
+        nearbyRestaurant = restaurants.getResults();
+
+        viewModel.getBookedRestaurantsCollection().get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                            for (DocumentSnapshot document : list) {
+                                RestaurantsResult restaurant = document.toObject(RestaurantsResult.class);
+                                bookedRestaurant.add(restaurant);
+                            }
+                        }
+
+                        addMarkerOnMap(nearbyRestaurant, bookedRestaurant);
+                    }
+                });
+    }
+
+    public void addMarkerOnMap(List<RestaurantsResult> nearbyRestaurant, List<RestaurantsResult> bookedRestaurant) {
+        if (nearbyRestaurant != null) {
+            Log.d("TAG", "addMarkerOnPlace: Nearby =  "+ nearbyRestaurant.size());
+            for (int i=0; i<nearbyRestaurant.size(); i++) {
+                if (! bookedRestaurant.contains(nearbyRestaurant.get(i))) {
+
+                    Double lat = nearbyRestaurant.get(i).getGeometry().getLocation().getLat();
+                    Double lng = nearbyRestaurant.get(i).getGeometry().getLocation().getLng();
+                    String placeName = nearbyRestaurant.get(i).getName();
+                    String vicinity = nearbyRestaurant.get(i).getVicinity();
+                    String id = nearbyRestaurant.get(i).getPlaceId();
+                    LatLng latLng = new LatLng(lat, lng);
+
+
+                    mGoogleMap.addMarker(new MarkerOptions()
+                            .position(latLng)
+                            .title(placeName + " : " + vicinity))
+                            .setTag(id);
+                }
+            }
+        }
+
+        if (bookedRestaurant != null) {
+            Log.d("TAG", "addMarkerOnPlace: Booked =  "+ bookedRestaurant.size());
+            for (int i=0; i<bookedRestaurant.size(); i++) {
+                Double lat = bookedRestaurant.get(i).getGeometry().getLocation().getLat();
+                Double lng = bookedRestaurant.get(i).getGeometry().getLocation().getLng();
+                String placeName = bookedRestaurant.get(i).getName();
+                String vicinity = bookedRestaurant.get(i).getVicinity();
+                String id = bookedRestaurant.get(i).getPlaceId();
                 LatLng latLng = new LatLng(lat, lng);
 
 
@@ -262,6 +318,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                         .title(placeName + " : " + vicinity))
                         .setTag(id);
             }
+
         }
     }
 

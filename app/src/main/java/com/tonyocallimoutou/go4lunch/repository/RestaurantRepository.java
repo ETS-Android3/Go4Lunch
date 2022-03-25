@@ -1,6 +1,12 @@
 package com.tonyocallimoutou.go4lunch.repository;
 
+import android.os.Build;
+
+import androidx.annotation.RequiresApi;
+
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
@@ -33,24 +39,13 @@ public class RestaurantRepository {
         }
     }
 
-    public CollectionReference getNearbyRestaurantsCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME_NEARBY_RESTAURANT);
-    }
 
     public CollectionReference getBookedRestaurantsCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME_BOOKED_RESTAURANT);
     }
 
-    public void createNearbyRestaurantInFirebase (RestaurantsResult restaurant) {
-        getNearbyRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
-    }
-
     public void createBookedRestaurantInFirebase (RestaurantsResult restaurant) {
         getBookedRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
-    }
-
-    public void removeNearbyRestaurantInFirebase() {
-        getNearbyRestaurantsCollection().document().delete();
     }
 
     public Call<NearbyPlace> getNearbyPlace(String location) {

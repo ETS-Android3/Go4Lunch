@@ -16,7 +16,6 @@ public class ViewModelUser extends ViewModel {
 
     public ViewModelUser (UserRepository userRepository) {
         this.userRepository = userRepository;
-        userRepository = UserRepository.getInstance();
     }
 
     // User

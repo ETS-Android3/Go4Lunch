@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
@@ -33,6 +35,10 @@ public class ListViewFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ViewModelRestaurant viewModel;
     private List<RestaurantsResult> mRestaurants = new ArrayList<>();
+
+    ListViewRecyclerViewAdapter adapter;
+
+    private int sizeOfListRestaurantNearbyPlace = 10;
 
     public ListViewFragment() {
         // Required empty public constructor
@@ -59,11 +65,32 @@ public class ListViewFragment extends Fragment {
         mRecyclerView = (RecyclerView) view;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        adapter = new ListViewRecyclerViewAdapter(getContext(),mRestaurants);
+        mRecyclerView.setAdapter(adapter);
         return view;
     }
 
     public void initRestaurantList() {
-        viewModel.getNearbyRestaurantsCollection().get()
+
+        Log.d("TAG", "initRestaurantList: ");
+        if (mRestaurants != null) {
+            mRestaurants.clear();
+        }
+
+        viewModel.getNearbyPlaceLiveData().observe(this, nearbyPlace -> {
+            if (nearbyPlace != null) {
+                Log.d("TAG", "initRestaurantList: " + nearbyPlace.getResults().size());
+                for (int i=0; i< nearbyPlace.getResults().size(); i++) {
+                    if (i < sizeOfListRestaurantNearbyPlace) {
+                        mRestaurants.add(nearbyPlace.getResults().get(i));
+                        Log.d("TAG", "New List: ");
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            }
+        });
+
+        viewModel.getBookedRestaurantsCollection().get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
@@ -72,11 +99,11 @@ public class ListViewFragment extends Fragment {
                             for (DocumentSnapshot document : list) {
                                 RestaurantsResult restaurant = document.toObject(RestaurantsResult.class);
                                 mRestaurants.add(restaurant);
-                            }
+                                adapter.notifyDataSetChanged();
 
-                            ListViewRecyclerViewAdapter adapter = new ListViewRecyclerViewAdapter(getContext(),mRestaurants);
-                            mRecyclerView.setAdapter(adapter);
+                            }
                         }
+
                     }
                 });
     }
