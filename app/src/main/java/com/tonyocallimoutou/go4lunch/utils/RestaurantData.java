@@ -23,12 +23,17 @@ public class RestaurantData {
     }
 
     public static String getDistance() {
-        return "Pas de distance pour le moment";
+        return "0 m";
     }
 
     public static String getOpeningHour() {
-        if (result.getOpeningHours().getOpenNow()) {
-            Log.d("TAG", "hour: " + result.getOpeningHours().getWeekdayText());
+        try {
+            if (result.getOpeningHours().getOpenNow()) {
+                Log.d("TAG", "hour: " + result.getOpeningHours().getWeekdayText());
+            }
+        }
+        catch (Exception e) {
+            Log.e("TAG", "getOpeningHour: " + e );
         }
         return "Ferme";
     }

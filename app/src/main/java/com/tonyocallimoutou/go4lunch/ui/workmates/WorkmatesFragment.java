@@ -19,6 +19,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
+import com.tonyocallimoutou.go4lunch.ui.listview.ListViewRecyclerViewAdapter;
+import com.tonyocallimoutou.go4lunch.utils.Data;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -33,6 +35,8 @@ public class WorkmatesFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ViewModelUser viewModel;
     private List<User> mUsers = new ArrayList<>();
+
+    WorkmatesRecyclerViewAdapter adapter;
 
 
     public WorkmatesFragment() {
@@ -50,8 +54,6 @@ public class WorkmatesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
 
-        initUserList();
-
     }
 
     @Override
@@ -62,29 +64,23 @@ public class WorkmatesFragment extends Fragment {
         mRecyclerView = (RecyclerView) view;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        adapter = new WorkmatesRecyclerViewAdapter(getContext(),mUsers);
+        initUserList();
+        mRecyclerView.setAdapter(adapter);
         return view;
 
     }
 
     public void initUserList() {
-        viewModel.getUsersCollection().get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot document : list) {
-                                User user = document.toObject(User.class);
 
-                                if (!user.getUid().equals(viewModel.getCurrentUser().getUid())) {
-                                    mUsers.add(user);
-                                }
-                            }
+        if (mUsers != null) {
+            mUsers.clear();
+        }
 
-                            WorkmatesRecyclerViewAdapter adapter = new WorkmatesRecyclerViewAdapter(getContext(),mUsers);
-                            mRecyclerView.setAdapter(adapter);
-                        }
-                    }
-                });
+        List<User> workmates = Data.getWorkmates();
+
+        mUsers.addAll(workmates);
+
+        adapter.notifyDataSetChanged();
     }
 }

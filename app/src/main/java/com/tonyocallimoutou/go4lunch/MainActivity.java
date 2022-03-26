@@ -22,12 +22,21 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.User;
+import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesRecyclerViewAdapter;
+import com.tonyocallimoutou.go4lunch.utils.Data;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -35,7 +44,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private DrawerLayout mDrawer;
     private BottomNavigationView navigationView;
-    private ViewModelUser viewModel;
+    private ViewModelUser viewModelUser;
+    private ViewModelRestaurant viewModelRestaurant;
     private View sideView;
     private ActionBar actionBar;
 
@@ -45,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
 
-        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
         navigationView = findViewById(R.id.bottom_nav_view);
         initActionBar();
         initBottomNavigationView();
@@ -54,9 +65,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        if (viewModel.isCurrentLogged()) {
-            viewModel.createUser();
+        if (viewModelUser.isCurrentLogged()) {
+            viewModelUser.createUser();
             initSideView();
+            initData();
         }
         else {
             startSignInActivity();
@@ -136,7 +148,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nav.setNavigationItemSelectedListener(this);
         sideView = nav.getHeaderView(0);
 
-        FirebaseUser user = viewModel.getCurrentUser();
+        FirebaseUser user = viewModelUser.getCurrentUser();
 
         if (user.getPhotoUrl() != null) {
             setProfilePicture(user.getPhotoUrl());
@@ -174,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             case R.id.navigation_logout:
                 mDrawer.close();
-                viewModel.signOut(this);
+                viewModelUser.signOut(this);
                 navigationView.setSelectedItemId(R.id.navigation_map);
 
                 startSignInActivity();
@@ -184,5 +196,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
         }
         return true;
+    }
+
+    // InitData
+
+    public void initData() {
+
+        List<User> workmatesList = new ArrayList<>();
+        List<RestaurantsResult> restaurantsResults = new ArrayList<>();
+
+        viewModelUser.getUsersCollection().get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                            for (DocumentSnapshot document : list) {
+                                User user = document.toObject(User.class);
+
+                                if (!user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
+                                    workmatesList.add(user);
+                                }
+                            }
+
+                        }
+
+                        Data.newInstanceOfWorkmates(workmatesList);
+                    }
+                });
+
+        viewModelRestaurant.getBookedRestaurantsCollection().get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                            for (DocumentSnapshot document : list) {
+                                RestaurantsResult restaurant = document.toObject(RestaurantsResult.class);
+                                restaurantsResults.add(restaurant);
+
+                            }
+                        }
+
+                        Data.newInstanceOfBookedRestaurant(restaurantsResults);
+
+                    }
+                });
     }
 }

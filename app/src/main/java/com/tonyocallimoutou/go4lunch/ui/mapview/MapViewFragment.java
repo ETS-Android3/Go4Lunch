@@ -43,6 +43,7 @@ import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewRecyclerViewAdapter;
+import com.tonyocallimoutou.go4lunch.utils.Data;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
@@ -228,6 +229,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         // Click on Marker = Restaurant
         viewModel.getNearbyPlaceLiveData().observe(MapViewFragment.this, nearbyPlace -> {
             Log.d("TAG", "OBSERVER : " + nearbyPlace.getResults().size());
+            Data.newInstanceOfNearbyPlace(nearbyPlace);
             initListForMarker(nearbyPlace);
         });
         mGoogleMap.setOnMarkerClickListener(this);

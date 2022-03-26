@@ -17,8 +17,10 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
+import com.tonyocallimoutou.go4lunch.utils.Data;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
@@ -53,8 +55,6 @@ public class ListViewFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
-
-        initRestaurantList();
     }
 
     @Override
@@ -66,45 +66,34 @@ public class ListViewFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         adapter = new ListViewRecyclerViewAdapter(getContext(),mRestaurants);
+        initRestaurantList();
         mRecyclerView.setAdapter(adapter);
         return view;
     }
 
     public void initRestaurantList() {
 
-        Log.d("TAG", "initRestaurantList: ");
+
         if (mRestaurants != null) {
             mRestaurants.clear();
         }
 
-        viewModel.getNearbyPlaceLiveData().observe(this, nearbyPlace -> {
-            if (nearbyPlace != null) {
-                Log.d("TAG", "initRestaurantList: " + nearbyPlace.getResults().size());
-                for (int i=0; i< nearbyPlace.getResults().size(); i++) {
-                    if (i < sizeOfListRestaurantNearbyPlace) {
-                        mRestaurants.add(nearbyPlace.getResults().get(i));
-                        Log.d("TAG", "New List: ");
-                        adapter.notifyDataSetChanged();
-                    }
+        NearbyPlace nearbyPlace = Data.getNearbyPlace();
+        List<RestaurantsResult> bookedRestaurants = Data.getBookedRestaurant();
+
+        mRestaurants.addAll(bookedRestaurants);
+
+        if (nearbyPlace != null) {
+            for (int i=0; i< nearbyPlace.getResults().size(); i++) {
+                if ( ! mRestaurants.contains(nearbyPlace.getResults().get(i))) {
+                    mRestaurants.add(nearbyPlace.getResults().get(i));
                 }
             }
-        });
+            adapter.notifyDataSetChanged();
+        }
 
-        viewModel.getBookedRestaurantsCollection().get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot document : list) {
-                                RestaurantsResult restaurant = document.toObject(RestaurantsResult.class);
-                                mRestaurants.add(restaurant);
-                                adapter.notifyDataSetChanged();
 
-                            }
-                        }
 
-                    }
-                });
+
     }
 }

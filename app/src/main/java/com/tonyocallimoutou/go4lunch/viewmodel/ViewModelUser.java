@@ -11,7 +11,7 @@ import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 
 public class ViewModelUser extends ViewModel {
 
-    public UserRepository userRepository;
+    private UserRepository userRepository;
 
 
     public ViewModelUser (UserRepository userRepository) {

@@ -14,7 +14,7 @@ import retrofit2.Response;
 
 public class ViewModelRestaurant extends ViewModel {
 
-    public RestaurantRepository restaurantRepository;
+    private RestaurantRepository restaurantRepository;
 
 
     private MutableLiveData<NearbyPlace> nearbyPlaceMutableLiveData = new MutableLiveData<>();
