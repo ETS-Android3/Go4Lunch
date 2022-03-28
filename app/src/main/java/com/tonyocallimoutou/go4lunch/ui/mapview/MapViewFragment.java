@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
@@ -38,12 +39,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
-import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
-import com.tonyocallimoutou.go4lunch.ui.listview.ListViewRecyclerViewAdapter;
-import com.tonyocallimoutou.go4lunch.utils.Data;
+import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
@@ -67,14 +67,14 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     float cameraZoomDefault = 15;
     View locationButton;
 
-    ViewModelRestaurant viewModel;
+    ViewModelRestaurant viewModelRestaurant;
 
     FusedLocationProviderClient fusedLocationProviderClient;
     Location userLocation;
 
 
-    List<RestaurantsResult> nearbyRestaurant = new ArrayList<>();
-    List<RestaurantsResult> bookedRestaurant = new ArrayList<>();
+    private List<RestaurantsResult> nearbyRestaurant = new ArrayList<>();
+    private static List<RestaurantsResult> bookedRestaurant = new ArrayList<>();
 
 
     // Bundle
@@ -91,7 +91,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         ButterKnife.bind(this, view);
 
-        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+        viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
 
         fabMap.setVisibility(View.INVISIBLE);
 
@@ -192,7 +192,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 String userPosition = userLocation.getLatitude() + "," + userLocation.getLongitude();
 
                 Log.d("TAG", "user Location: " + userPosition);
-                viewModel.setNearbyPlace(userPosition);
+                viewModelRestaurant.setNearbyPlace(userPosition);
 
                 if (mGoogleMap == null) {
                     mapFragment.getMapAsync(MapViewFragment.this);
@@ -227,11 +227,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         SetupForUserLocation();
 
         // Click on Marker = Restaurant
-        viewModel.getNearbyPlaceLiveData().observe(MapViewFragment.this, nearbyPlace -> {
-            Log.d("TAG", "OBSERVER : " + nearbyPlace.getResults().size());
-            Data.newInstanceOfNearbyPlace(nearbyPlace);
-            initListForMarker(nearbyPlace);
-        });
+        initListForMarker();
         mGoogleMap.setOnMarkerClickListener(this);
 
 
@@ -258,68 +254,52 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     // Restaurant
 
-    public void initListForMarker(NearbyPlace restaurants) {
+    public void initListForMarker() {
         mGoogleMap.clear();
-        nearbyRestaurant.clear();
-        bookedRestaurant.clear();
 
-        nearbyRestaurant = restaurants.getResults();
 
-        viewModel.getBookedRestaurantsCollection().get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot document : list) {
-                                RestaurantsResult restaurant = document.toObject(RestaurantsResult.class);
-                                bookedRestaurant.add(restaurant);
-                            }
-                        }
+        viewModelRestaurant.getNearbyRestaurantLiveData().observe(this, restaurantsResults -> {
+            nearbyRestaurant = restaurantsResults;
 
-                        addMarkerOnMap(nearbyRestaurant, bookedRestaurant);
-                    }
-                });
+            ListViewFragment.setNearbyRestaurant(nearbyRestaurant);
+            addMarker(nearbyRestaurant,bookedRestaurant);
+        });
+
     }
 
-    public void addMarkerOnMap(List<RestaurantsResult> nearbyRestaurant, List<RestaurantsResult> bookedRestaurant) {
-        if (nearbyRestaurant != null) {
-            Log.d("TAG", "addMarkerOnPlace: Nearby =  "+ nearbyRestaurant.size());
-            for (int i=0; i<nearbyRestaurant.size(); i++) {
-                if (! bookedRestaurant.contains(nearbyRestaurant.get(i))) {
+    public void addMarker(List<RestaurantsResult> nearbyRestaurant, List<RestaurantsResult> bookedRestaurant) {
+        for (RestaurantsResult result : nearbyRestaurant) {
+            if ( ! result.isBooked()) {
 
-                    Double lat = nearbyRestaurant.get(i).getGeometry().getLocation().getLat();
-                    Double lng = nearbyRestaurant.get(i).getGeometry().getLocation().getLng();
-                    String placeName = nearbyRestaurant.get(i).getName();
-                    String vicinity = nearbyRestaurant.get(i).getVicinity();
-                    String id = nearbyRestaurant.get(i).getPlaceId();
-                    LatLng latLng = new LatLng(lat, lng);
-
-
-                    mGoogleMap.addMarker(new MarkerOptions()
-                            .position(latLng)
-                            .title(placeName + " : " + vicinity))
-                            .setTag(id);
-                }
-            }
-        }
-
-        if (bookedRestaurant != null) {
-            Log.d("TAG", "addMarkerOnPlace: Booked =  "+ bookedRestaurant.size());
-            for (int i=0; i<bookedRestaurant.size(); i++) {
-                Double lat = bookedRestaurant.get(i).getGeometry().getLocation().getLat();
-                Double lng = bookedRestaurant.get(i).getGeometry().getLocation().getLng();
-                String placeName = bookedRestaurant.get(i).getName();
-                String vicinity = bookedRestaurant.get(i).getVicinity();
-                String id = bookedRestaurant.get(i).getPlaceId();
+                Double lat = result.getGeometry().getLocation().getLat();
+                Double lng = result.getGeometry().getLocation().getLng();
+                String placeName = result.getName();
+                String vicinity = result.getVicinity();
                 LatLng latLng = new LatLng(lat, lng);
 
 
+                Log.d("TAG", "addMarkerOnMap: ");
                 mGoogleMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title(placeName + " : " + vicinity))
-                        .setTag(id);
+                        .setTag(result);
             }
+        }
+
+        for (RestaurantsResult result : bookedRestaurant) {
+
+            Double lat = result.getGeometry().getLocation().getLat();
+            Double lng = result.getGeometry().getLocation().getLng();
+            String placeName = result.getName();
+            String vicinity = result.getVicinity();
+            LatLng latLng = new LatLng(lat, lng);
+
+
+            Log.d("TAG", "addMarkerOnMap: ");
+            mGoogleMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .title(placeName + " : " + vicinity))
+                    .setTag(result);
 
         }
     }
@@ -327,9 +307,19 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
 
+        RestaurantsResult markRestaurant = (RestaurantsResult) marker.getTag();
+
         // CAMERA
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),cameraZoomDefault));
         Log.d("TAG", "onMarkerClick: " + marker.getTitle());
+
+        viewModelRestaurant.bookedThisRestaurant((RestaurantsResult) marker.getTag());
+        //viewModelRestaurant.cancelRestaurantBooking((RestaurantsResult) marker.getTag());
         return true;
+    }
+
+    // INIT BOOKED LIST
+    public static void setBookedRestaurant(List<RestaurantsResult> results) {
+        bookedRestaurant = results;
     }
 }

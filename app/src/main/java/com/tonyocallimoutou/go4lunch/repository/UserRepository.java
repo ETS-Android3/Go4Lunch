@@ -1,6 +1,7 @@
 package com.tonyocallimoutou.go4lunch.repository;
 
 import android.content.Context;
+import android.net.Uri;
 
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.Task;
@@ -32,8 +33,25 @@ public class UserRepository {
         }
     }
 
-    public FirebaseUser getCurrentUser() {
+    public FirebaseUser getCurrentFirebaseUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
+    }
+
+    public User getCurrentUser() {
+
+        FirebaseUser user = getCurrentFirebaseUser();
+        if (user != null) {
+            String urlPicture = (user.getPhotoUrl() != null) ?
+                    user.getPhotoUrl().toString()
+                    : null;
+            String username = user.getDisplayName();
+            String uid = user.getUid();
+
+            User currentUser = new User(uid, username, urlPicture);
+
+            return currentUser;
+        }
+        return null;
     }
 
     public Task<Void> signOut(Context context) {
@@ -45,7 +63,7 @@ public class UserRepository {
     }
 
     public void createUser() {
-        FirebaseUser user = getCurrentUser();
+        FirebaseUser user = getCurrentFirebaseUser();
         if (user != null) {
             String urlPicture = (user.getPhotoUrl() != null) ?
                     user.getPhotoUrl().toString()

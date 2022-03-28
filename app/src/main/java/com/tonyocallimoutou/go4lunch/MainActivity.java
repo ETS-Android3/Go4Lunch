@@ -22,16 +22,14 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.model.User;
-import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesRecyclerViewAdapter;
-import com.tonyocallimoutou.go4lunch.utils.Data;
+import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
+import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
+import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
@@ -148,7 +146,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nav.setNavigationItemSelectedListener(this);
         sideView = nav.getHeaderView(0);
 
-        FirebaseUser user = viewModelUser.getCurrentUser();
+        FirebaseUser user = viewModelUser.getCurrentFirebaseUser();
 
         if (user.getPhotoUrl() != null) {
             setProfilePicture(user.getPhotoUrl());
@@ -202,45 +200,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void initData() {
 
-        List<User> workmatesList = new ArrayList<>();
-        List<RestaurantsResult> restaurantsResults = new ArrayList<>();
+        Log.d("TAG", "initData: ");
+        viewModelUser.setWorkmatesList();
+        viewModelRestaurant.setBookedRestaurantList();
 
-        viewModelUser.getUsersCollection().get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot document : list) {
-                                User user = document.toObject(User.class);
+        viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
+            ListViewFragment.setBookedRestaurant(restaurantsResults);
+            MapViewFragment.setBookedRestaurant(restaurantsResults);
+        });
 
-                                if (!user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
-                                    workmatesList.add(user);
-                                }
-                            }
+        viewModelUser.getWorkmates().observe(this, workmates -> {
+            WorkmatesFragment.setWorkmates(workmates);
+        });
 
-                        }
-
-                        Data.newInstanceOfWorkmates(workmatesList);
-                    }
-                });
-
-        viewModelRestaurant.getBookedRestaurantsCollection().get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot document : list) {
-                                RestaurantsResult restaurant = document.toObject(RestaurantsResult.class);
-                                restaurantsResults.add(restaurant);
-
-                            }
-                        }
-
-                        Data.newInstanceOfBookedRestaurant(restaurantsResults);
-
-                    }
-                });
     }
 }

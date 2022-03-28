@@ -47,6 +47,13 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         holder.restaurantTypeAndAddress.setText(RestaurantData.getTypeAndAddress());
         holder.restaurantDistance.setText(RestaurantData.getDistance());
         holder.restaurantHours.setText(RestaurantData.getOpeningHour());
+        if (RestaurantData.getNbrWorkmates() != null) {
+            holder.nbrWorkmates.setText(RestaurantData.getNbrWorkmates());
+        }
+        else {
+            holder.imgWorkmates.setVisibility(View.INVISIBLE);
+            holder.nbrWorkmates.setVisibility(View.INVISIBLE);
+        }
     }
 
     @Override
@@ -68,6 +75,8 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         TextView restaurantTypeAndAddress;
         @BindView(R.id.list_view_nbr_workmate)
         TextView nbrWorkmates;
+        @BindView(R.id.list_view_item_workmate)
+        ImageView imgWorkmates;
         @BindView(R.id.rate1)
         ImageView rateOne;
         @BindView(R.id.rate2)

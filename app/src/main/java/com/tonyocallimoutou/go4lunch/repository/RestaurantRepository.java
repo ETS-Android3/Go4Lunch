@@ -16,7 +16,6 @@ import retrofit2.Call;
 
 public class RestaurantRepository {
 
-    private static final String COLLECTION_NAME_NEARBY_RESTAURANT = "nearby_restaurant";
     private static final String COLLECTION_NAME_BOOKED_RESTAURANT = "booked_restaurant";
 
     private static volatile RestaurantRepository instance;

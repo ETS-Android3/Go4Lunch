@@ -8,19 +8,13 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
-import com.tonyocallimoutou.go4lunch.ui.listview.ListViewRecyclerViewAdapter;
-import com.tonyocallimoutou.go4lunch.utils.Data;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -33,8 +27,10 @@ import java.util.List;
 public class WorkmatesFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-    private ViewModelUser viewModel;
+    private ViewModelUser viewModelUser;
     private List<User> mUsers = new ArrayList<>();
+
+    private static List<User> workmates = new ArrayList<>();
 
     WorkmatesRecyclerViewAdapter adapter;
 
@@ -52,7 +48,7 @@ public class WorkmatesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
 
     }
 
@@ -73,14 +69,13 @@ public class WorkmatesFragment extends Fragment {
 
     public void initUserList() {
 
-        if (mUsers != null) {
-            mUsers.clear();
-        }
-
-        List<User> workmates = Data.getWorkmates();
-
         mUsers.addAll(workmates);
 
         adapter.notifyDataSetChanged();
+
+    }
+
+    public static void setWorkmates(List<User> result) {
+        workmates = result;
     }
 }

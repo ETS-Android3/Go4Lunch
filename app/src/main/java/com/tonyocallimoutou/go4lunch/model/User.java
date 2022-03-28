@@ -1,5 +1,7 @@
 package com.tonyocallimoutou.go4lunch.model;
 
+import android.net.Uri;
+
 import androidx.annotation.Nullable;
 
 public class User {

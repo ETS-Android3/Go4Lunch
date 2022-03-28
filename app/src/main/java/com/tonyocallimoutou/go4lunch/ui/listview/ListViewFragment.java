@@ -3,6 +3,7 @@ package com.tonyocallimoutou.go4lunch.ui.listview;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -13,14 +14,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
-import com.tonyocallimoutou.go4lunch.utils.Data;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
@@ -35,8 +32,11 @@ import java.util.List;
 public class ListViewFragment extends Fragment {
 
     private RecyclerView mRecyclerView;
-    private ViewModelRestaurant viewModel;
+    private ViewModelRestaurant viewModelRestaurant;
     private List<RestaurantsResult> mRestaurants = new ArrayList<>();
+
+    private static List<RestaurantsResult> bookedRestaurant = new ArrayList<>();
+    private static List<RestaurantsResult> nearbyRestaurant = new ArrayList<>();
 
     ListViewRecyclerViewAdapter adapter;
 
@@ -54,7 +54,10 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModel = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+        viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+
+        viewModelRestaurant.setBookedRestaurantList();
+        //view setNearbyPlace
     }
 
     @Override
@@ -73,27 +76,18 @@ public class ListViewFragment extends Fragment {
 
     public void initRestaurantList() {
 
+        mRestaurants.addAll(nearbyRestaurant);
 
-        if (mRestaurants != null) {
-            mRestaurants.clear();
-        }
+        mRestaurants.addAll(bookedRestaurant);
 
-        NearbyPlace nearbyPlace = Data.getNearbyPlace();
-        List<RestaurantsResult> bookedRestaurants = Data.getBookedRestaurant();
+        adapter.notifyDataSetChanged();
+    }
 
-        mRestaurants.addAll(bookedRestaurants);
+    public static void setBookedRestaurant(List<RestaurantsResult> result) {
+        bookedRestaurant = result;
+    }
 
-        if (nearbyPlace != null) {
-            for (int i=0; i< nearbyPlace.getResults().size(); i++) {
-                if ( ! mRestaurants.contains(nearbyPlace.getResults().get(i))) {
-                    mRestaurants.add(nearbyPlace.getResults().get(i));
-                }
-            }
-            adapter.notifyDataSetChanged();
-        }
-
-
-
-
+    public static void setNearbyRestaurant(List<RestaurantsResult> result) {
+        nearbyRestaurant = result;
     }
 }
