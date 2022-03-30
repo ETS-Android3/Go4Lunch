@@ -1,5 +1,6 @@
 package com.tonyocallimoutou.go4lunch.viewmodel;
 
+import android.location.Location;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -16,6 +17,7 @@ import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,19 +47,29 @@ public class ViewModelRestaurant extends ViewModel {
 
     // Nearby Restaurant
 
-    public void setNearbyPlace(String location) {
+    public void setNearbyPlace(Location userLocation) {
 
-        restaurantRepository.getNearbyPlace(location).enqueue(new Callback<NearbyPlace>() {
-            @Override
-            public void onResponse(Call<NearbyPlace> call, Response<NearbyPlace> response) {
-                nearbyPlaceMutableLiveData.setValue(response.body().getResults());
-                Log.d("TAG", "onResponse: " + nearbyPlaceMutableLiveData.getValue().size());
-            }
+        if (userLocation != null) {
 
-            @Override
-            public void onFailure(Call<NearbyPlace> call, Throwable t) {
-            }
-        });
+            String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
+
+            restaurantRepository.getNearbyPlace(location).enqueue(new Callback<NearbyPlace>() {
+                @Override
+                public void onResponse(Call<NearbyPlace> call, Response<NearbyPlace> response) {
+                    nearbyPlaceMutableLiveData.setValue(response.body().getResults());
+                    List<RestaurantsResult> nearby = nearbyPlaceMutableLiveData.getValue();
+                    List<RestaurantsResult> booked = bookedRestaurantMutableLiveData.getValue();
+                    RestaurantMethod.getNearbyRestaurantWithoutBooked(nearby, booked);
+
+                    nearbyPlaceMutableLiveData.setValue(nearby);
+                    Log.d("TAG", "onResponse: " + nearbyPlaceMutableLiveData.getValue().size());
+                }
+
+                @Override
+                public void onFailure(Call<NearbyPlace> call, Throwable t) {
+                }
+            });
+        }
     }
 
     public LiveData<List<RestaurantsResult>> getNearbyRestaurantLiveData() {
@@ -107,7 +119,10 @@ public class ViewModelRestaurant extends ViewModel {
         if (!restaurant.isBooked()) {
             Log.d("TAG", "cancelRestaurantBooking: OK");
             getBookedRestaurantsCollection().document(restaurant.getPlaceId()).delete();
+            nearbyPlaceMutableLiveData.getValue().add(restaurant);
         }
+
+        setBookedRestaurantList();
     }
 
     public void setBookedRestaurantList() {

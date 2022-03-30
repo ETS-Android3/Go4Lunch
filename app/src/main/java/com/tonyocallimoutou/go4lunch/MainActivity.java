@@ -30,6 +30,7 @@ import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -53,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         viewModelUser = new ViewModelProvider(this).get(ViewModelUser.class);
         viewModelRestaurant = new ViewModelProvider(this).get(ViewModelRestaurant.class);
-        //viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
-        //viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
         navigationView = findViewById(R.id.bottom_nav_view);
         initActionBar();
         initBottomNavigationView();
@@ -214,6 +213,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("TAG", "initData: ");
         viewModelUser.setWorkmatesList();
         viewModelRestaurant.setBookedRestaurantList();
+        viewModelRestaurant.setNearbyPlace(null);
 
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
             Log.d("TAG", "initData: " + restaurantsResults.size());
@@ -225,5 +225,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             WorkmatesFragment.setWorkmates(workmates);
         });
 
+        viewModelRestaurant.getNearbyRestaurantLiveData().observe(this, restaurantsResults -> {
+            ListViewFragment.setNearbyRestaurant(restaurantsResults);
+            MapViewFragment.setNearbyRestaurant(restaurantsResults);
+        });
     }
 }

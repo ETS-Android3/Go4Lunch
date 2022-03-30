@@ -53,7 +53,6 @@ public class ListViewFragment extends Fragment {
         viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
 
         viewModelRestaurant.setBookedRestaurantList();
-        //view setNearbyPlace
     }
 
     @Override
@@ -72,9 +71,8 @@ public class ListViewFragment extends Fragment {
 
     public void initRestaurantList() {
 
-        mRestaurants.addAll(nearbyRestaurant);
-
         mRestaurants.addAll(bookedRestaurant);
+        mRestaurants.addAll(nearbyRestaurant);
 
         adapter.notifyDataSetChanged();
     }
@@ -85,9 +83,5 @@ public class ListViewFragment extends Fragment {
 
     public static void setNearbyRestaurant(List<RestaurantsResult> result) {
         nearbyRestaurant = result;
-    }
-
-    public static Resources getResourcesForData() {
-        return Resources.getSystem();
     }
 }

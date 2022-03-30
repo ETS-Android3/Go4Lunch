@@ -46,6 +46,7 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
         User user = mUsers.get(position);
 
         initText(holder, user);
+
         Glide.with(mContext)
                 .load(user.getUrlPicture())
                 .apply(RequestOptions.circleCropTransform())
@@ -59,8 +60,17 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
 
 
     public void initText(WorkmatesRecyclerViewAdapter.ViewHolder holder, User user) {
-        String text = user.getUsername()+ " " + mContext.getString(R.string.workmate_has_not_decided_yet);
-        holder.workmateText.setTextColor(ContextCompat.getColor(mContext,R.color.grey));
+        String text = user.getUsername()+ " ";
+        if (user.getBookedRestaurant() == null) {
+            text += mContext.getString(R.string.workmate_has_not_decided_yet);
+            holder.workmateText.setTextColor(ContextCompat.getColor(mContext,R.color.grey));
+        }
+        else {
+            String type = user.getBookedRestaurant().getTypes().get(0);
+            String name = '(' + user.getBookedRestaurant().getName() + ')';
+            text += mContext.getString(R.string.workmate_is_eating) + " "+ type + name;
+            holder.workmateText.setTextColor(ContextCompat.getColor(mContext,R.color.black));
+        }
 
         holder.workmateText.setText(text);
 

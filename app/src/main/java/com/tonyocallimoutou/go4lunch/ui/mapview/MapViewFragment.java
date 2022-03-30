@@ -59,7 +59,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     FloatingActionButton fabMap;
 
     SupportMapFragment mapFragment;
-    GoogleMap mGoogleMap;
+    private static GoogleMap mGoogleMap;
     CameraPosition cameraPosition;
     float cameraZoomDefault = 15;
     View locationButton;
@@ -70,7 +70,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     Location userLocation;
 
 
-    private List<RestaurantsResult> nearbyRestaurant = new ArrayList<>();
+    private static List<RestaurantsResult> nearbyRestaurant = new ArrayList<>();
     private static List<RestaurantsResult> bookedRestaurant = new ArrayList<>();
 
 
@@ -186,12 +186,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
             public void onSuccess(Location location) {
 
                 userLocation = location;
-                String userPosition = userLocation.getLatitude() + "," + userLocation.getLongitude();
 
                 RestaurantData.newInstanceOfPosition(location);
 
-                Log.d("TAG", "user Location: " + userPosition);
-                viewModelRestaurant.setNearbyPlace(userPosition);
+                viewModelRestaurant.setNearbyPlace(userLocation);
 
                 if (mGoogleMap == null) {
                     mapFragment.getMapAsync(MapViewFragment.this);
@@ -253,20 +251,13 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     // Restaurant
 
-    public void initListForMarker() {
+    private static void initListForMarker() {
         mGoogleMap.clear();
-
-
-        viewModelRestaurant.getNearbyRestaurantLiveData().observe(this, restaurantsResults -> {
-            nearbyRestaurant = RestaurantMethod.getNearbyRestaurantWithoutBooked(restaurantsResults,bookedRestaurant);
-
-            ListViewFragment.setNearbyRestaurant(nearbyRestaurant);
-            addMarker(nearbyRestaurant,bookedRestaurant);
-        });
+        addMarker();
 
     }
 
-    public void addMarker(List<RestaurantsResult> nearbyRestaurant, List<RestaurantsResult> bookedRestaurant) {
+    private static void addMarker() {
         for (RestaurantsResult result : nearbyRestaurant) {
             if ( ! result.isBooked()) {
 
@@ -309,15 +300,24 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
         Log.d("TAG", "onMarkerClick: " + marker.getTitle());
 
-        viewModelRestaurant.bookedThisRestaurant((RestaurantsResult) marker.getTag());
-        //viewModelRestaurant.cancelRestaurantBooking((RestaurantsResult) marker.getTag());
+        viewModelRestaurant.bookedThisRestaurant(markRestaurant);
+        //viewModelRestaurant.cancelBookedRestaurant(markRestaurant);
 
-        viewModelRestaurant.setBookedRestaurantList();
         return true;
     }
 
     // INIT BOOKED LIST
     public static void setBookedRestaurant(List<RestaurantsResult> results) {
         bookedRestaurant = results;
+        if (mGoogleMap != null) {
+            initListForMarker();
+        }
+    }
+
+    public static void setNearbyRestaurant(List<RestaurantsResult> results) {
+        nearbyRestaurant = results;
+        if (mGoogleMap != null) {
+            initListForMarker();
+        }
     }
 }
