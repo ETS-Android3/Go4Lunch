@@ -6,7 +6,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import android.Manifest;
@@ -29,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MapStyleOptions;
@@ -37,13 +37,11 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
@@ -191,6 +189,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 userLocation = location;
                 String userPosition = userLocation.getLatitude() + "," + userLocation.getLongitude();
 
+                RestaurantData.newInstanceOfPosition(location);
+
                 Log.d("TAG", "user Location: " + userPosition);
                 viewModelRestaurant.setNearbyPlace(userPosition);
 
@@ -259,7 +259,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
 
         viewModelRestaurant.getNearbyRestaurantLiveData().observe(this, restaurantsResults -> {
-            nearbyRestaurant = restaurantsResults;
+            nearbyRestaurant = RestaurantMethod.getNearbyRestaurantWithoutBooked(restaurantsResults,bookedRestaurant);
 
             ListViewFragment.setNearbyRestaurant(nearbyRestaurant);
             addMarker(nearbyRestaurant,bookedRestaurant);
@@ -277,8 +277,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 String vicinity = result.getVicinity();
                 LatLng latLng = new LatLng(lat, lng);
 
-
-                Log.d("TAG", "addMarkerOnMap: ");
                 mGoogleMap.addMarker(new MarkerOptions()
                         .position(latLng)
                         .title(placeName + " : " + vicinity))
@@ -294,10 +292,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
             String vicinity = result.getVicinity();
             LatLng latLng = new LatLng(lat, lng);
 
-
-            Log.d("TAG", "addMarkerOnMap: ");
             mGoogleMap.addMarker(new MarkerOptions()
                     .position(latLng)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                     .title(placeName + " : " + vicinity))
                     .setTag(result);
 
@@ -310,7 +307,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         RestaurantsResult markRestaurant = (RestaurantsResult) marker.getTag();
 
         // CAMERA
-        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),cameraZoomDefault));
+        mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
         Log.d("TAG", "onMarkerClick: " + marker.getTitle());
 
         viewModelRestaurant.bookedThisRestaurant((RestaurantsResult) marker.getTag());

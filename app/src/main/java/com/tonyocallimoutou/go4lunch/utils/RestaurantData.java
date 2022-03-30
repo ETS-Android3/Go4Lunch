@@ -1,9 +1,9 @@
 package com.tonyocallimoutou.go4lunch.utils;
 
 import android.location.Location;
-import android.os.Bundle;
 import android.util.Log;
 
+import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 
 public class RestaurantData {
@@ -28,11 +28,18 @@ public class RestaurantData {
 
     public static String getDistance() {
         if (userLocation != null) {
-            double distance = 1;
+            double lat1 = userLocation.getLatitude();
+            double lng1 = userLocation.getLongitude();
+            double lat2 = result.getGeometry().getLocation().getLat();
+            double lng2 = result.getGeometry().getLocation().getLng();
+            float[] distanceFloat = new float[1];
+            Location.distanceBetween(lat1,lng1,lat2,lng2,distanceFloat);
+
+            int distance = Math.round(distanceFloat[0]);
             return distance + "m";
         }
         else {
-            return "Aucune position";
+            return null;
         }
     }
 
@@ -40,17 +47,17 @@ public class RestaurantData {
         return result.getName();
     }
 
-    public static String getOpeningHour() {
+    public static int getOpeningHour() {
         if (result.getOpeningHours() != null) {
             if (result.getOpeningHours().getOpenNow()) {
-                return "Ouvert";
+                return R.string.restaurant_data_open;
             }
             else {
-                return "Fermé";
+                return R.string.restaurant_data_close;
             }
         }
         else {
-            return "Aucune infos";
+            return R.string.restaurant_data_no_data;
         }
     }
 
@@ -62,12 +69,16 @@ public class RestaurantData {
     }
 
     public static String getNbrWorkmates() {
-        if (result.getWorkmates().size() > 0) {
-            return "(" + result.getWorkmates().size() + ")";
+        if (result.getWorkmatesId().size() > 0) {
+            return "(" + result.getWorkmatesId().size() + ")";
         }
         else {
             return null;
         }
+    }
+
+    public static void getRate() {
+        Log.d("TAG", "getRate: " + result.getRating());
     }
 
 

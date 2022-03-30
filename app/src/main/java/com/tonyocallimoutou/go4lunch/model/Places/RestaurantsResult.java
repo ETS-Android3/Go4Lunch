@@ -3,6 +3,9 @@ package com.tonyocallimoutou.go4lunch.model.Places;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.tonyocallimoutou.go4lunch.model.Places.Geometry;
+import com.tonyocallimoutou.go4lunch.model.Places.OpeningHours;
+import com.tonyocallimoutou.go4lunch.model.Places.Photo;
 import com.tonyocallimoutou.go4lunch.model.User;
 
 import java.util.ArrayList;
@@ -51,7 +54,7 @@ public class RestaurantsResult {
     @Expose
     private Integer priceLevel;
 
-    private List<User> workmates = new ArrayList<>();
+    private List<String> workmatesId = new ArrayList<>();
 
     /**
      *
@@ -292,8 +295,8 @@ public class RestaurantsResult {
      * @return
      * The workmates
      */
-    public List<User> getWorkmates() {
-        return workmates;
+    public List<String> getWorkmatesId() {
+        return workmatesId;
     }
 
     /**
@@ -301,12 +304,12 @@ public class RestaurantsResult {
      * @param workmates
      * The price_level
      */
-    public void setWorkmates(List<User> workmates) {
-        this.workmates = workmates;
+    public void setWorkmatesId(List<String> workmates) {
+        this.workmatesId = workmates;
     }
 
     public boolean isBooked() {
-        return getWorkmates().size() != 0;
+        return getWorkmatesId().size() != 0;
     }
 
 }

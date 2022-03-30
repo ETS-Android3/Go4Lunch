@@ -12,6 +12,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 
@@ -27,6 +28,7 @@ public class ViewModelRestaurant extends ViewModel {
     private RestaurantRepository restaurantRepository;
     private UserRepository userRepository;
 
+    private final int nbrOfNearbyRestaurant = 10;
 
     private MutableLiveData<List<RestaurantsResult>> nearbyPlaceMutableLiveData = new MutableLiveData<>();
     private MutableLiveData<List<RestaurantsResult>> bookedRestaurantMutableLiveData = new MutableLiveData<>();
@@ -52,6 +54,7 @@ public class ViewModelRestaurant extends ViewModel {
             @Override
             public void onResponse(Call<NearbyPlace> call, Response<NearbyPlace> response) {
                 nearbyPlaceMutableLiveData.setValue(response.body().getResults());
+                Log.d("TAG", "onResponse: " + nearbyPlaceMutableLiveData.getValue().size());
             }
 
             @Override
@@ -74,15 +77,26 @@ public class ViewModelRestaurant extends ViewModel {
     public void bookedThisRestaurant(RestaurantsResult restaurant) {
         Log.d("TAG", "bookedThisRestaurant: ");
 
+        if (userRepository.getCurrentUser().getBookedRestaurant() != null) {
+            Log.d("TAG", "bookedThisRestaurant: CANCEL");
+            cancelBookedRestaurant(userRepository.getCurrentUser().getBookedRestaurant());
+        }
 
-        restaurant.getWorkmates().add(userRepository.getCurrentUser());
+        userRepository.bookedRestaurant(restaurant);
+
+        restaurant.getWorkmatesId().add(userRepository.getCurrentUser().getUid());
         createBookedRestaurantInFirebase(restaurant);
     }
 
-    public void cancelRestaurantBooking(RestaurantsResult restaurant) {
+    public void cancelBookedRestaurant(RestaurantsResult restaurant) {
         Log.d("TAG", "CancelRestaurantBooking: ");
-        restaurant.getWorkmates().remove(userRepository.getCurrentUser());
-        if (! restaurant.isBooked()) {
+
+        userRepository.cancelRestaurant();
+        restaurant.getWorkmatesId().remove(userRepository.getCurrentUser().getUid());
+
+        getBookedRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
+        if (!restaurant.isBooked()) {
+            Log.d("TAG", "cancelRestaurantBooking: OK");
             getBookedRestaurantsCollection().document(restaurant.getPlaceId()).delete();
         }
     }
@@ -90,6 +104,7 @@ public class ViewModelRestaurant extends ViewModel {
     public LiveData<List<RestaurantsResult>> getBookedRestaurantLiveData() {
         return bookedRestaurantMutableLiveData;
     }
+
 
     public void setBookedRestaurantList() {
         List<RestaurantsResult> restaurants = new ArrayList<>();
@@ -105,7 +120,6 @@ public class ViewModelRestaurant extends ViewModel {
                             }
                         }
 
-                        Log.d("TAG", "onSuccess: booke" + restaurants.size());
                         bookedRestaurantMutableLiveData.setValue(restaurants);
 
                     }

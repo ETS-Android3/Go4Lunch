@@ -45,9 +45,20 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
 
         holder.restaurantName.setText(RestaurantData.getRestaurantName());
         holder.restaurantTypeAndAddress.setText(RestaurantData.getTypeAndAddress());
-        holder.restaurantDistance.setText(RestaurantData.getDistance());
-        holder.restaurantHours.setText(RestaurantData.getOpeningHour());
+        holder.restaurantHours.setText(mContext.getString(RestaurantData.getOpeningHour()));
+
+
+        if (RestaurantData.getDistance() != null) {
+            holder.restaurantDistance.setText(RestaurantData.getDistance());
+        }
+        else {
+            holder.restaurantDistance.setText(mContext.getString(R.string.restaurant_data_no_data));
+        }
+
+
         if (RestaurantData.getNbrWorkmates() != null) {
+            holder.imgWorkmates.setVisibility(View.VISIBLE);
+            holder.nbrWorkmates.setVisibility(View.VISIBLE);
             holder.nbrWorkmates.setText(RestaurantData.getNbrWorkmates());
         }
         else {

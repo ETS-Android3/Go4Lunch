@@ -1,23 +1,20 @@
 package com.tonyocallimoutou.go4lunch.ui.listview;
 
+import android.content.res.Resources;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
-import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
@@ -89,5 +86,9 @@ public class ListViewFragment extends Fragment {
 
     public static void setNearbyRestaurant(List<RestaurantsResult> result) {
         nearbyRestaurant = result;
+    }
+
+    public static Resources getResourcesForData() {
+        return Resources.getSystem();
     }
 }
