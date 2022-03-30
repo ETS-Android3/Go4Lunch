@@ -27,6 +27,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
@@ -223,6 +224,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         viewModelUser.getWorkmates().observe(this, workmates -> {
             WorkmatesFragment.setWorkmates(workmates);
+            DetailsActivity.setWorkmates(workmates);
         });
 
         viewModelRestaurant.getNearbyRestaurantLiveData().observe(this, restaurantsResults -> {

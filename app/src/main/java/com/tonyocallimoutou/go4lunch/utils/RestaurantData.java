@@ -81,5 +81,9 @@ public class RestaurantData {
         Log.d("TAG", "getRate: " + result.getRating());
     }
 
+    public static void getPicture() {
+
+    }
+
 
 }

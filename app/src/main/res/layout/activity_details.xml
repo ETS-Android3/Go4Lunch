@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ui.detail.DetailsActivity">
+
+
+    <ImageView
+        android:id="@+id/detail_restaurant_picture"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/detail_picture_height"
+        android:src="@drawable/background_sign_in" />
+
+
+    <RelativeLayout
+        android:id="@+id/detail_layout_info"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detail_restaurant_picture"
+        android:padding="@dimen/detail_padding_info">
+
+        <TextView
+            android:id="@+id/detail_name_restaurant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/detail_margin_bottom_name"
+            android:text="NOM DU RESTAURANT" />
+
+        <ImageView
+            android:id="@+id/detail_rates_restaurant"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/detail_margin_start_rate"
+            android:layout_toEndOf="@+id/detail_name_restaurant"
+            android:src="@drawable/ic_person_outline_black_24dp" />
+
+        <TextView
+            android:id="@+id/detail_restaurant_address"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/detail_name_restaurant"
+            android:text="ADREESSE" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/detail_layout_action"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detail_layout_info"
+        android:padding="@dimen/detail_padding_action" >
+
+        <include
+            layout="@layout/include_detail_link" />
+    </LinearLayout>
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/detail_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/detail_layout_action"
+        tools:listitem="@layout/detail_list_workmates"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/detail_booked_restaurant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/margin_end_detail_fab"
+        android:layout_marginBottom="@dimen/margin_bottom_detail_fab"
+        android:layout_alignBottom="@+id/detail_restaurant_picture"
+        android:layout_alignParentEnd="true" />
+
+
+</RelativeLayout>

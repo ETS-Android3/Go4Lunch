@@ -35,7 +35,14 @@
     <dimen name="margin_item_list_view"> 8dp </dimen>
 
 
-
+    // Detail Activity
+    <dimen name="detail_picture_height"> 200dp </dimen>
+    <dimen name="detail_padding_info"> 16dp </dimen>
+    <dimen name="detail_padding_action"> 16dp </dimen>
+    <dimen name="detail_margin_bottom_name"> 8dp </dimen>
+    <dimen name="detail_margin_start_rate"> 8dp </dimen>
+    <dimen name="margin_end_detail_fab"> 24dp </dimen>
+    <dimen name="margin_bottom_detail_fab"> -24dp </dimen>
 
 
 

@@ -37,11 +37,10 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
-import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
-import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
 import java.util.ArrayList;
@@ -302,6 +301,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         viewModelRestaurant.bookedThisRestaurant(markRestaurant);
         //viewModelRestaurant.cancelBookedRestaurant(markRestaurant);
+
+        DetailsActivity.navigate(getActivity(), markRestaurant);
 
         return true;
     }
