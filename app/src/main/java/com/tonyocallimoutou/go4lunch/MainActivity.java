@@ -10,7 +10,6 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
-import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +18,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -26,10 +26,10 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
+import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -51,8 +51,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setContentView(R.layout.activity_main);
 
 
-        viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
-        viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+        viewModelUser = new ViewModelProvider(this).get(ViewModelUser.class);
+        viewModelRestaurant = new ViewModelProvider(this).get(ViewModelRestaurant.class);
+        //viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        //viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
         navigationView = findViewById(R.id.bottom_nav_view);
         initActionBar();
         initBottomNavigationView();
@@ -175,7 +177,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         switch (item.getItemId()) {
             case R.id.navigation_your_lunch:
-                Log.d("TAG", "onNavigationItemSelected: 1");
+                yourLunch();
                 break;
             case R.id.navigation_setting:
                 Log.d("TAG", "onNavigationItemSelected: 2");
@@ -194,6 +196,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return true;
     }
 
+    // Your Lunch
+    public void yourLunch() {
+        RestaurantsResult restaurant = viewModelRestaurant.getRestaurantOfCurrentUser();
+        if (restaurant != null) {
+            Toast.makeText(this, restaurant.getPlaceId(), Toast.LENGTH_SHORT).show();
+        }
+        else {
+            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     // InitData
 
     public void initData() {
@@ -203,6 +216,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewModelRestaurant.setBookedRestaurantList();
 
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
+            Log.d("TAG", "initData: " + restaurantsResults.size());
             ListViewFragment.setBookedRestaurant(restaurantsResults);
             MapViewFragment.setBookedRestaurant(restaurantsResults);
         });

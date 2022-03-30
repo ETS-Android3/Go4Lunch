@@ -10,6 +10,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
 import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.model.User;
@@ -34,19 +35,15 @@ public class ViewModelRestaurant extends ViewModel {
     private MutableLiveData<List<RestaurantsResult>> bookedRestaurantMutableLiveData = new MutableLiveData<>();
 
 
-    public ViewModelRestaurant(RestaurantRepository restaurantRepository, UserRepository userRepository) {
-        this.restaurantRepository = restaurantRepository;
-        this.userRepository = userRepository;
-    }
+    // Constructor
 
-
-    public LiveData<List<RestaurantsResult>> getNearbyRestaurantLiveData() {
-        return nearbyPlaceMutableLiveData ;
+    public ViewModelRestaurant() {
+        this.restaurantRepository = RestaurantRepository.getInstance(RetrofitMap.retrofit.create(RetrofitMap.class));
+        this.userRepository = UserRepository.getInstance();
     }
 
 
     // Nearby Restaurant
-
 
     public void setNearbyPlace(String location) {
 
@@ -63,6 +60,11 @@ public class ViewModelRestaurant extends ViewModel {
         });
     }
 
+    public LiveData<List<RestaurantsResult>> getNearbyRestaurantLiveData() {
+        return nearbyPlaceMutableLiveData ;
+    }
+
+
 
     // Booked Restaurant
 
@@ -72,6 +74,13 @@ public class ViewModelRestaurant extends ViewModel {
 
     private void createBookedRestaurantInFirebase(RestaurantsResult restaurant) {
         restaurantRepository.createBookedRestaurantInFirebase(restaurant);
+    }
+
+    public RestaurantsResult getRestaurantOfCurrentUser() {
+        if (userRepository.getCurrentUser() != null) {
+            return userRepository.getCurrentUser().getBookedRestaurant();
+        }
+        return null;
     }
 
     public void bookedThisRestaurant(RestaurantsResult restaurant) {
@@ -101,11 +110,6 @@ public class ViewModelRestaurant extends ViewModel {
         }
     }
 
-    public LiveData<List<RestaurantsResult>> getBookedRestaurantLiveData() {
-        return bookedRestaurantMutableLiveData;
-    }
-
-
     public void setBookedRestaurantList() {
         List<RestaurantsResult> restaurants = new ArrayList<>();
         getBookedRestaurantsCollection().get()
@@ -126,5 +130,10 @@ public class ViewModelRestaurant extends ViewModel {
                 });
 
     }
+
+    public LiveData<List<RestaurantsResult>> getBookedRestaurantLiveData() {
+        return bookedRestaurantMutableLiveData;
+    }
+
 
 }

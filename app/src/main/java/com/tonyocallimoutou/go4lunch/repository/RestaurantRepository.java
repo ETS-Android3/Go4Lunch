@@ -25,6 +25,9 @@ public class RestaurantRepository {
         this.retrofitMap = retrofitMap;
     }
 
+
+    // Instance
+
     public static RestaurantRepository getInstance(RetrofitMap retrofitMap) {
         RestaurantRepository result = instance;
         if (result != null) {
@@ -38,14 +41,19 @@ public class RestaurantRepository {
         }
     }
 
+    // My Firestore Collection
 
     public CollectionReference getBookedRestaurantsCollection() {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME_BOOKED_RESTAURANT);
     }
 
+    // Booked Restaurant
+
     public void createBookedRestaurantInFirebase (RestaurantsResult restaurant) {
         getBookedRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
     }
+
+    // Retrofit
 
     public Call<NearbyPlace> getNearbyPlace(String location) {
         return retrofitMap.getNearbyPlaces(location);

@@ -27,6 +27,8 @@ public class UserRepository {
 
     private UserRepository() {}
 
+    // Instance
+
     public static UserRepository getInstance() {
         UserRepository result = instance;
         if (result != null) {
@@ -39,6 +41,14 @@ public class UserRepository {
             return instance;
         }
     }
+
+    // My Firestore Collection
+
+    public CollectionReference getUsersCollection() {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
+    }
+
+    // Get Current User
 
     public FirebaseUser getCurrentFirebaseUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
@@ -55,14 +65,6 @@ public class UserRepository {
             return currentUser;
         }
         return null;
-    }
-
-    public Task<Void> signOut(Context context) {
-        return AuthUI.getInstance().signOut(context);
-    }
-
-    public CollectionReference getUsersCollection() {
-        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME);
     }
 
     public void createUser() {
@@ -104,6 +106,12 @@ public class UserRepository {
                     });
         }
     }
+
+    public Task<Void> signOut(Context context) {
+        return AuthUI.getInstance().signOut(context);
+    }
+
+    // Booked Restaurant
 
     public void bookedRestaurant(RestaurantsResult restaurant) {
         currentUser.setBookedRestaurant(restaurant);

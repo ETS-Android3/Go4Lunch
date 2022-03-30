@@ -42,7 +42,6 @@ import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
 import java.util.ArrayList;
@@ -89,7 +88,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         View view = inflater.inflate(R.layout.fragment_map_view, container, false);
         ButterKnife.bind(this, view);
 
-        viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+        viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
 
         fabMap.setVisibility(View.INVISIBLE);
 
@@ -312,6 +311,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         viewModelRestaurant.bookedThisRestaurant((RestaurantsResult) marker.getTag());
         //viewModelRestaurant.cancelRestaurantBooking((RestaurantsResult) marker.getTag());
+
+        viewModelRestaurant.setBookedRestaurantList();
         return true;
     }
 

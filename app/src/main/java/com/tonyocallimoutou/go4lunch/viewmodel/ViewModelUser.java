@@ -25,11 +25,11 @@ public class ViewModelUser extends ViewModel {
     private MutableLiveData<List<User>> workmates = new MutableLiveData<>();
 
 
-    public ViewModelUser (UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public ViewModelUser () {
+        this.userRepository = UserRepository.getInstance() ;
     }
 
-    // User
+    // Current User
 
     public FirebaseUser getCurrentFirebaseUser() {
         return userRepository.getCurrentFirebaseUser();
@@ -50,6 +50,8 @@ public class ViewModelUser extends ViewModel {
     public CollectionReference getUsersCollection(){
         return userRepository.getUsersCollection();
     }
+
+    // Workmates
 
     public LiveData<List<User>> getWorkmates() {
         return workmates;

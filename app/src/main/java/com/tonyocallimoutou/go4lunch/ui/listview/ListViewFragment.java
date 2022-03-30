@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+        viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
 
         viewModelRestaurant.setBookedRestaurantList();
         //view setNearbyPlace
