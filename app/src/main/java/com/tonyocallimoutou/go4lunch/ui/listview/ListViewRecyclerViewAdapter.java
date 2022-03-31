@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 
 import java.util.List;
 
@@ -23,10 +24,12 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
 
     private final List<RestaurantsResult> mRestaurants;
     private final Context mContext;
+    private final ListItemClickListener mListItemClickListener;
 
-    public ListViewRecyclerViewAdapter(Context context, List<RestaurantsResult> restaurants) {
+    public ListViewRecyclerViewAdapter(Context context, List<RestaurantsResult> restaurants,ListItemClickListener listItemClickListener) {
         mRestaurants = restaurants;
         mContext = context;
+        mListItemClickListener = listItemClickListener;
     }
 
     @NonNull
@@ -42,6 +45,12 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         RestaurantsResult restaurant = mRestaurants.get(position);
 
         RestaurantData.newInstance(restaurant);
+
+        int rate = RestaurantData.getRate();
+
+        RestaurantRate.newInstance(rate,holder.rateOne, holder.rateTwo, holder.rateThree);
+
+        RestaurantRate.setImage();
 
         holder.restaurantName.setText(RestaurantData.getRestaurantName());
         holder.restaurantTypeAndAddress.setText(RestaurantData.getTypeAndAddress());
@@ -72,6 +81,10 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         return mRestaurants.size()  ;
     }
 
+    public interface ListItemClickListener{
+        void onListItemClick(int position);
+    }
+
     public class ViewHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.list_view_restaurant_name)
@@ -98,6 +111,14 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    mListItemClickListener.onListItemClick(position);
+                }
+            });
         }
     }
 }

@@ -35,6 +35,8 @@ public class ViewModelUser extends ViewModel {
         return userRepository.getCurrentFirebaseUser();
     }
 
+    public User getCurrentUser() {return userRepository.getCurrentUser();}
+
     public boolean isCurrentLogged() {
         return (this.getCurrentFirebaseUser() != null);
     }

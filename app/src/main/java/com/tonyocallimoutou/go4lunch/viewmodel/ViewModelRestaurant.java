@@ -17,7 +17,6 @@ import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
-import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,12 +56,6 @@ public class ViewModelRestaurant extends ViewModel {
                 @Override
                 public void onResponse(Call<NearbyPlace> call, Response<NearbyPlace> response) {
                     nearbyPlaceMutableLiveData.setValue(response.body().getResults());
-                    List<RestaurantsResult> nearby = nearbyPlaceMutableLiveData.getValue();
-                    List<RestaurantsResult> booked = bookedRestaurantMutableLiveData.getValue();
-                    RestaurantMethod.getNearbyRestaurantWithoutBooked(nearby, booked);
-
-                    nearbyPlaceMutableLiveData.setValue(nearby);
-                    Log.d("TAG", "onResponse: " + nearbyPlaceMutableLiveData.getValue().size());
                 }
 
                 @Override
@@ -119,7 +112,6 @@ public class ViewModelRestaurant extends ViewModel {
         if (!restaurant.isBooked()) {
             Log.d("TAG", "cancelRestaurantBooking: OK");
             getBookedRestaurantsCollection().document(restaurant.getPlaceId()).delete();
-            nearbyPlaceMutableLiveData.getValue().add(restaurant);
         }
 
         setBookedRestaurantList();

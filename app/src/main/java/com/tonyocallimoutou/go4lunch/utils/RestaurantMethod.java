@@ -8,6 +8,8 @@ import java.util.List;
 public class RestaurantMethod {
 
     public static List<RestaurantsResult> getNearbyRestaurantWithoutBooked(List<RestaurantsResult> nearbyRestaurant, List<RestaurantsResult> bookedRestaurant) {
+        List<RestaurantsResult> results = new ArrayList<>();
+        results.addAll(nearbyRestaurant);
         if (bookedRestaurant != null) {
             List<RestaurantsResult> sup =  new ArrayList<>();
             for (RestaurantsResult nearby : nearbyRestaurant) {
@@ -17,9 +19,9 @@ public class RestaurantMethod {
                     }
                 }
             }
-            nearbyRestaurant.removeAll(sup);
+            results.removeAll(sup);
         }
-        return nearbyRestaurant;
+        return results;
     }
 
 }

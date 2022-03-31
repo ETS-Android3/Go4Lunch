@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
 import java.util.ArrayList;
@@ -63,7 +64,16 @@ public class ListViewFragment extends Fragment {
         mRecyclerView = (RecyclerView) view;
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        adapter = new ListViewRecyclerViewAdapter(getContext(),mRestaurants);
+
+        adapter = new ListViewRecyclerViewAdapter(getContext(), mRestaurants, new ListViewRecyclerViewAdapter.ListItemClickListener() {
+            @Override
+            public void onListItemClick(int position) {
+                RestaurantsResult restaurant = mRestaurants.get(position);
+                DetailsActivity.navigate(getActivity(), restaurant);
+            }
+        });
+
+
         initRestaurantList();
         mRecyclerView.setAdapter(adapter);
         return view;

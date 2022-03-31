@@ -43,6 +43,7 @@
     <dimen name="detail_margin_start_rate"> 8dp </dimen>
     <dimen name="margin_end_detail_fab"> 24dp </dimen>
     <dimen name="margin_bottom_detail_fab"> -24dp </dimen>
+    <dimen name="margin_detail_action"> 16dp </dimen>
 
 
 

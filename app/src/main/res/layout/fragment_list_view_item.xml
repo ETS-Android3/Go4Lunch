@@ -61,7 +61,7 @@
 
     <include
         android:id="@+id/include_rate"
-        layout="@layout/include_list_view_restaurant_rate"
+        layout="@layout/include_rate3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/include_workmate"

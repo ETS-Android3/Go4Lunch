@@ -41,6 +41,7 @@ import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
 import java.util.ArrayList;
@@ -253,24 +254,26 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     private static void initListForMarker() {
         mGoogleMap.clear();
         addMarker();
-
     }
 
     private static void addMarker() {
-        for (RestaurantsResult result : nearbyRestaurant) {
-            if ( ! result.isBooked()) {
+        Log.d("TAG", "addMarker: " + nearbyRestaurant.size());
+        List <RestaurantsResult> nearby = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant, bookedRestaurant);
+        Log.d("TAG", "addMarker: " + bookedRestaurant.size());
+        Log.d("TAG", "addMarker: " + nearby.size());
 
-                Double lat = result.getGeometry().getLocation().getLat();
-                Double lng = result.getGeometry().getLocation().getLng();
-                String placeName = result.getName();
-                String vicinity = result.getVicinity();
-                LatLng latLng = new LatLng(lat, lng);
+        for (RestaurantsResult result : nearby) {
+            Double lat = result.getGeometry().getLocation().getLat();
+            Double lng = result.getGeometry().getLocation().getLng();
+            String placeName = result.getName();
+            String vicinity = result.getVicinity();
+            LatLng latLng = new LatLng(lat, lng);
 
-                mGoogleMap.addMarker(new MarkerOptions()
-                        .position(latLng)
-                        .title(placeName + " : " + vicinity))
-                        .setTag(result);
-            }
+            mGoogleMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_nearby_restaurant))
+                    .title(placeName + " : " + vicinity))
+                    .setTag(result);
         }
 
         for (RestaurantsResult result : bookedRestaurant) {
@@ -283,7 +286,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
             mGoogleMap.addMarker(new MarkerOptions()
                     .position(latLng)
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_booked_restaurant))
                     .title(placeName + " : " + vicinity))
                     .setTag(result);
 
@@ -299,8 +302,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
         Log.d("TAG", "onMarkerClick: " + marker.getTitle());
 
-        viewModelRestaurant.bookedThisRestaurant(markRestaurant);
-        //viewModelRestaurant.cancelBookedRestaurant(markRestaurant);
 
         DetailsActivity.navigate(getActivity(), markRestaurant);
 
@@ -309,6 +310,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     // INIT BOOKED LIST
     public static void setBookedRestaurant(List<RestaurantsResult> results) {
+        Log.d("TAG", "setBookedRestaurant: ");
         bookedRestaurant = results;
         if (mGoogleMap != null) {
             initListForMarker();

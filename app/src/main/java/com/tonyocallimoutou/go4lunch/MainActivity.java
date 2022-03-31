@@ -200,10 +200,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void yourLunch() {
         RestaurantsResult restaurant = viewModelRestaurant.getRestaurantOfCurrentUser();
         if (restaurant != null) {
-            Toast.makeText(this, restaurant.getPlaceId(), Toast.LENGTH_SHORT).show();
+            DetailsActivity.navigate(this,restaurant);
         }
         else {
-            Toast.makeText(this, "null", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Vous n'avez pas encore choisi de restaurant", Toast.LENGTH_SHORT).show();
         }
     }
 

@@ -6,6 +6,8 @@ import android.util.Log;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 
+import java.util.Random;
+
 public class RestaurantData {
 
     private static RestaurantsResult result;
@@ -77,8 +79,10 @@ public class RestaurantData {
         }
     }
 
-    public static void getRate() {
+    public static int getRate() {
         Log.d("TAG", "getRate: " + result.getRating());
+        Random ran = new Random();
+        return ran.nextInt(4);
     }
 
     public static void getPicture() {
