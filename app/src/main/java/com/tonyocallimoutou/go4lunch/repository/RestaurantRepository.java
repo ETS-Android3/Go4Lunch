@@ -1,22 +1,25 @@
 package com.tonyocallimoutou.go4lunch.repository;
 
-import android.os.Build;
+import android.location.Location;
+import android.util.Log;
 
-import androidx.annotation.RequiresApi;
-
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
-import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
+import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
+
+import java.util.List;
 
 import retrofit2.Call;
 
 public class RestaurantRepository {
 
     private static final String COLLECTION_NAME_BOOKED_RESTAURANT = "booked_restaurant";
+
+    private static final String COLLECTION_NAME_LOCATION_NEARBY_RESTAURANT = "location_nearby_restaurant";
+    private static final String COLLECTION_NAME_NEARBY_RESTAURANT = "nearby_restaurant";
 
     private static volatile RestaurantRepository instance;
     private RetrofitMap retrofitMap;
@@ -47,16 +50,45 @@ public class RestaurantRepository {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME_BOOKED_RESTAURANT);
     }
 
+    public CollectionReference getLocationNearbyRestaurantsCollection() {
+        return FirebaseFirestore.getInstance().collection(COLLECTION_NAME_LOCATION_NEARBY_RESTAURANT);
+    }
+
+    public CollectionReference getNearbyRestaurantsCollection(Location userLocation) {
+        return getLocationNearbyRestaurantsCollection().document(userLocation.toString())
+                .collection(COLLECTION_NAME_NEARBY_RESTAURANT);
+    }
+
+
     // Booked Restaurant
 
-    public void createBookedRestaurantInFirebase (RestaurantsResult restaurant) {
+    public void createBookedRestaurantInFirebase (RestaurantDetails restaurant) {
         getBookedRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
+    }
+
+    // Nearby Restaurant
+
+    public void createNearbyRestaurantInFirebase (Location userLocation, List<RestaurantDetails> restaurants) {
+
+        for (RestaurantDetails restaurant : restaurants) {
+            getNearbyRestaurantsCollection(userLocation)
+                        .document(restaurant.getPlaceId())
+                        .set(restaurant);
+        }
+
+        getLocationNearbyRestaurantsCollection().document(userLocation.toString()).set(userLocation);
     }
 
     // Retrofit
 
     public Call<NearbyPlace> getNearbyPlace(String location) {
+        Log.e("ERROR", "APPEL API NEARBY: " );
         return retrofitMap.getNearbyPlaces(location);
+    }
+
+    public Call<PlaceDetails> getPlaceDetails (String placeId) {
+        Log.e("ERROR", "APPEL API DETAIL: " );
+        return retrofitMap.getPlaceDetails(placeId);
     }
 
 }

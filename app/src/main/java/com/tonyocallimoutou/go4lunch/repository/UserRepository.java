@@ -12,7 +12,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.User;
 
 import java.util.List;
@@ -113,7 +113,7 @@ public class UserRepository {
 
     // Booked Restaurant
 
-    public void bookedRestaurant(RestaurantsResult restaurant) {
+    public void bookedRestaurant(RestaurantDetails restaurant) {
         currentUser.setBookedRestaurant(restaurant);
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }

@@ -1,19 +1,19 @@
 package com.tonyocallimoutou.go4lunch.utils;
 
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RestaurantMethod {
 
-    public static List<RestaurantsResult> getNearbyRestaurantWithoutBooked(List<RestaurantsResult> nearbyRestaurant, List<RestaurantsResult> bookedRestaurant) {
-        List<RestaurantsResult> results = new ArrayList<>();
+    public static List<RestaurantDetails> getNearbyRestaurantWithoutBooked(List<RestaurantDetails> nearbyRestaurant, List<RestaurantDetails> bookedRestaurant) {
+        List<RestaurantDetails> results = new ArrayList<>();
         results.addAll(nearbyRestaurant);
         if (bookedRestaurant != null) {
-            List<RestaurantsResult> sup =  new ArrayList<>();
-            for (RestaurantsResult nearby : nearbyRestaurant) {
-                for (RestaurantsResult booked : bookedRestaurant) {
+            List<RestaurantDetails> sup =  new ArrayList<>();
+            for (RestaurantDetails nearby : nearbyRestaurant) {
+                for (RestaurantDetails booked : bookedRestaurant) {
                     if (nearby.getPlaceId().equals(booked.getPlaceId())) {
                         sup.add(nearby);
                     }

@@ -1,4 +1,4 @@
-package com.tonyocallimoutou.go4lunch.model.Places;
+package com.tonyocallimoutou.go4lunch.model.places;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;

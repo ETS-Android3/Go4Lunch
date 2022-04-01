@@ -8,6 +8,8 @@
     <color name="black"> #FF000000 </color>
     <color name="grey"> #474a4b</color>
     <color name="orange"> #fc7540 </color>
+    <color name="yellow"> #FFFF00 </color>
     <color name="red_warning"> #cc2036 </color>
+
 
 </resources>

@@ -11,8 +11,9 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantPhoto;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 
 import java.util.List;
@@ -22,11 +23,11 @@ import butterknife.ButterKnife;
 
 public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
 
-    private final List<RestaurantsResult> mRestaurants;
+    private final List<RestaurantDetails> mRestaurants;
     private final Context mContext;
     private final ListItemClickListener mListItemClickListener;
 
-    public ListViewRecyclerViewAdapter(Context context, List<RestaurantsResult> restaurants,ListItemClickListener listItemClickListener) {
+    public ListViewRecyclerViewAdapter(Context context, List<RestaurantDetails> restaurants,ListItemClickListener listItemClickListener) {
         mRestaurants = restaurants;
         mContext = context;
         mListItemClickListener = listItemClickListener;
@@ -42,15 +43,14 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
 
     @Override
     public void onBindViewHolder(@NonNull ListViewRecyclerViewAdapter.ViewHolder holder, int position) {
-        RestaurantsResult restaurant = mRestaurants.get(position);
+        RestaurantDetails restaurant = mRestaurants.get(position);
 
         RestaurantData.newInstance(restaurant);
-
-        int rate = RestaurantData.getRate();
-
-        RestaurantRate.newInstance(rate,holder.rateOne, holder.rateTwo, holder.rateThree);
+        RestaurantPhoto.newInstance(restaurant, holder.restaurantPicture);
+        RestaurantRate.newInstance(RestaurantData.getRate(),holder.rateOne, holder.rateTwo, holder.rateThree);
 
         RestaurantRate.setImage();
+        RestaurantPhoto.setLittlePhoto();
 
         holder.restaurantName.setText(RestaurantData.getRestaurantName());
         holder.restaurantTypeAndAddress.setText(RestaurantData.getTypeAndAddress());

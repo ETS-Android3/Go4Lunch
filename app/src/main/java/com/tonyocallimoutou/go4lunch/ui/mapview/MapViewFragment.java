@@ -37,9 +37,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
@@ -70,8 +70,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     Location userLocation;
 
 
-    private static List<RestaurantsResult> nearbyRestaurant = new ArrayList<>();
-    private static List<RestaurantsResult> bookedRestaurant = new ArrayList<>();
+    private static List<RestaurantDetails> nearbyRestaurant = new ArrayList<>();
+    private static List<RestaurantDetails> bookedRestaurant = new ArrayList<>();
 
 
     // Bundle
@@ -190,6 +190,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 RestaurantData.newInstanceOfPosition(location);
 
                 viewModelRestaurant.setNearbyPlace(userLocation);
+                Log.d("TAG", "onSuccess: " + location);
 
                 if (mGoogleMap == null) {
                     mapFragment.getMapAsync(MapViewFragment.this);
@@ -257,12 +258,9 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     }
 
     private static void addMarker() {
-        Log.d("TAG", "addMarker: " + nearbyRestaurant.size());
-        List <RestaurantsResult> nearby = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant, bookedRestaurant);
-        Log.d("TAG", "addMarker: " + bookedRestaurant.size());
-        Log.d("TAG", "addMarker: " + nearby.size());
+        List <RestaurantDetails> nearby = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant, bookedRestaurant);
 
-        for (RestaurantsResult result : nearby) {
+        for (RestaurantDetails result : nearby) {
             Double lat = result.getGeometry().getLocation().getLat();
             Double lng = result.getGeometry().getLocation().getLng();
             String placeName = result.getName();
@@ -276,7 +274,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                     .setTag(result);
         }
 
-        for (RestaurantsResult result : bookedRestaurant) {
+        for (RestaurantDetails result : bookedRestaurant) {
 
             Double lat = result.getGeometry().getLocation().getLat();
             Double lng = result.getGeometry().getLocation().getLng();
@@ -296,28 +294,26 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     @Override
     public boolean onMarkerClick(@NonNull Marker marker) {
 
-        RestaurantsResult markRestaurant = (RestaurantsResult) marker.getTag();
+        RestaurantDetails markRestaurant = (RestaurantDetails) marker.getTag();
 
         // CAMERA
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
         Log.d("TAG", "onMarkerClick: " + marker.getTitle());
 
-
-        DetailsActivity.navigate(getActivity(), markRestaurant);
+        DetailsActivity.navigate(getActivity(),markRestaurant);
 
         return true;
     }
 
     // INIT BOOKED LIST
-    public static void setBookedRestaurant(List<RestaurantsResult> results) {
-        Log.d("TAG", "setBookedRestaurant: ");
+    public static void setBookedRestaurant(List<RestaurantDetails> results) {
         bookedRestaurant = results;
         if (mGoogleMap != null) {
             initListForMarker();
         }
     }
 
-    public static void setNearbyRestaurant(List<RestaurantsResult> results) {
+    public static void setNearbyRestaurant(List<RestaurantDetails> results) {
         nearbyRestaurant = results;
         if (mGoogleMap != null) {
             initListForMarker();

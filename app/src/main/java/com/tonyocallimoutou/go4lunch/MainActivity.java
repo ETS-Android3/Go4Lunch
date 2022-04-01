@@ -10,6 +10,7 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.app.blob.BlobHandle;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,7 +19,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -26,12 +26,11 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseUser;
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
-import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -198,12 +197,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // Your Lunch
     public void yourLunch() {
-        RestaurantsResult restaurant = viewModelRestaurant.getRestaurantOfCurrentUser();
+        RestaurantDetails restaurant = viewModelRestaurant.getRestaurantOfCurrentUser();
         if (restaurant != null) {
             DetailsActivity.navigate(this,restaurant);
         }
         else {
-            Toast.makeText(this, "Vous n'avez pas encore choisi de restaurant", Toast.LENGTH_SHORT).show();
+            Log.e("TAG", "yourLunch: " );
         }
     }
 
@@ -217,7 +216,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewModelRestaurant.setNearbyPlace(null);
 
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
-            Log.d("TAG", "initData: " + restaurantsResults.size());
             ListViewFragment.setBookedRestaurant(restaurantsResults);
             MapViewFragment.setBookedRestaurant(restaurantsResults);
         });

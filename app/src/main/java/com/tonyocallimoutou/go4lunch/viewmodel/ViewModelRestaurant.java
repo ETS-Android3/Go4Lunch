@@ -12,11 +12,12 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
-import com.tonyocallimoutou.go4lunch.model.Places.NearbyPlace;
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
-import com.tonyocallimoutou.go4lunch.model.User;
+import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
+import com.tonyocallimoutou.go4lunch.utils.UtilDistance;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,8 @@ public class ViewModelRestaurant extends ViewModel {
     private RestaurantRepository restaurantRepository;
     private UserRepository userRepository;
 
-    private final int nbrOfNearbyRestaurant = 10;
-
-    private MutableLiveData<List<RestaurantsResult>> nearbyPlaceMutableLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<RestaurantsResult>> bookedRestaurantMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<RestaurantDetails>> nearbyPlaceMutableLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<RestaurantDetails>> bookedRestaurantMutableLiveData = new MutableLiveData<>();
 
 
     // Constructor
@@ -50,22 +49,88 @@ public class ViewModelRestaurant extends ViewModel {
 
         if (userLocation != null) {
 
-            String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
+            UtilDistance.roundToThousandths(userLocation);
 
-            restaurantRepository.getNearbyPlace(location).enqueue(new Callback<NearbyPlace>() {
-                @Override
-                public void onResponse(Call<NearbyPlace> call, Response<NearbyPlace> response) {
-                    nearbyPlaceMutableLiveData.setValue(response.body().getResults());
-                }
+            List<String> listLocation = new ArrayList<>();
 
+
+
+            restaurantRepository.getLocationNearbyRestaurantsCollection()
+                    .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                 @Override
-                public void onFailure(Call<NearbyPlace> call, Throwable t) {
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                    List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                    for (DocumentSnapshot document : list) {
+                        String location = document.getId();
+                        listLocation.add(location);
+                    }
+
+                    if (listLocation.contains(userLocation.toString())) {
+                        Log.d("TAG", "YES: ");
+                        initNearbyPlaceLiveData(userLocation);
+                    }
+                    else {
+                        Log.d("TAG", "NO: ");
+                        getNearbyPlace(userLocation);
+                    }
+
                 }
             });
+
+
         }
     }
 
-    public LiveData<List<RestaurantsResult>> getNearbyRestaurantLiveData() {
+    private void getNearbyPlace(Location userLocation) {
+        String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
+
+        restaurantRepository.getNearbyPlace(location).enqueue(new Callback<NearbyPlace>() {
+            @Override
+            public void onResponse(Call<NearbyPlace> call, Response<NearbyPlace> response) {
+                setListRestaurantsDetails(userLocation, response.body().getResults());
+            }
+
+            @Override
+            public void onFailure(Call<NearbyPlace> call, Throwable t) {
+            }
+        });
+    }
+
+    private CollectionReference getNearbyRestaurantsCollection(Location userLocation){
+        return restaurantRepository.getNearbyRestaurantsCollection(userLocation);
+    }
+
+    private void createNearbyRestaurantInFirebase(Location userLocation, List<RestaurantDetails> restaurants) {
+        restaurantRepository.createNearbyRestaurantInFirebase(userLocation, restaurants);
+    }
+
+    private void initNearbyPlaceLiveData(Location userLocation) {
+        Log.d("TAG", "initNearbyPlaceLiveData: ");
+        List<RestaurantDetails> restaurants = new ArrayList<>();
+        getNearbyRestaurantsCollection(userLocation).get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+                        List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                        Log.d("TAG", "onSuccess: " + list.size());
+                        for (DocumentSnapshot document : list) {
+                            RestaurantDetails restaurant = document.toObject(RestaurantDetails.class);
+                            restaurants.add(restaurant);
+                        }
+
+                        nearbyPlaceMutableLiveData.setValue(restaurants);
+
+                    }
+                });
+    }
+
+
+
+
+
+    public LiveData<List<RestaurantDetails>> getNearbyRestaurantLiveData() {
         return nearbyPlaceMutableLiveData ;
     }
 
@@ -73,44 +138,41 @@ public class ViewModelRestaurant extends ViewModel {
 
     // Booked Restaurant
 
-    public CollectionReference getBookedRestaurantsCollection(){
+    private CollectionReference getBookedRestaurantsCollection(){
         return restaurantRepository.getBookedRestaurantsCollection();
     }
 
-    private void createBookedRestaurantInFirebase(RestaurantsResult restaurant) {
+    private void createBookedRestaurantInFirebase(RestaurantDetails restaurant) {
         restaurantRepository.createBookedRestaurantInFirebase(restaurant);
     }
 
-    public RestaurantsResult getRestaurantOfCurrentUser() {
+    public RestaurantDetails getRestaurantOfCurrentUser() {
         if (userRepository.getCurrentUser() != null) {
             return userRepository.getCurrentUser().getBookedRestaurant();
         }
         return null;
     }
 
-    public void bookedThisRestaurant(RestaurantsResult restaurant) {
-        Log.d("TAG", "bookedThisRestaurant: ");
+    public void bookedThisRestaurant(RestaurantDetails restaurant) {
 
         if (userRepository.getCurrentUser().getBookedRestaurant() != null) {
-            Log.d("TAG", "bookedThisRestaurant: CANCEL");
             cancelBookedRestaurant(userRepository.getCurrentUser().getBookedRestaurant());
         }
 
-        userRepository.bookedRestaurant(restaurant);
 
         restaurant.getWorkmatesId().add(userRepository.getCurrentUser().getUid());
         createBookedRestaurantInFirebase(restaurant);
+
+        userRepository.bookedRestaurant(restaurant);
     }
 
-    public void cancelBookedRestaurant(RestaurantsResult restaurant) {
-        Log.d("TAG", "CancelRestaurantBooking: ");
+    public void cancelBookedRestaurant(RestaurantDetails restaurant) {
 
         userRepository.cancelRestaurant();
         restaurant.getWorkmatesId().remove(userRepository.getCurrentUser().getUid());
 
         getBookedRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
         if (!restaurant.isBooked()) {
-            Log.d("TAG", "cancelRestaurantBooking: OK");
             getBookedRestaurantsCollection().document(restaurant.getPlaceId()).delete();
         }
 
@@ -118,7 +180,7 @@ public class ViewModelRestaurant extends ViewModel {
     }
 
     public void setBookedRestaurantList() {
-        List<RestaurantsResult> restaurants = new ArrayList<>();
+        List<RestaurantDetails> restaurants = new ArrayList<>();
         getBookedRestaurantsCollection().get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -126,7 +188,7 @@ public class ViewModelRestaurant extends ViewModel {
                         if (!queryDocumentSnapshots.isEmpty()) {
                             List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                             for (DocumentSnapshot document : list) {
-                                RestaurantsResult restaurant = document.toObject(RestaurantsResult.class);
+                                RestaurantDetails restaurant = document.toObject(RestaurantDetails.class);
                                 restaurants.add(restaurant);
                             }
                         }
@@ -138,9 +200,41 @@ public class ViewModelRestaurant extends ViewModel {
 
     }
 
-    public LiveData<List<RestaurantsResult>> getBookedRestaurantLiveData() {
+    public LiveData<List<RestaurantDetails>> getBookedRestaurantLiveData() {
         return bookedRestaurantMutableLiveData;
     }
 
+
+    // List Restaurant Details
+
+    private void setListRestaurantsDetails(Location userLocation, List<RestaurantDetails> restaurants) {
+        List<RestaurantDetails> result = new ArrayList<>();
+
+        if (restaurants != null) {
+            for (RestaurantDetails restaurant : restaurants) {
+
+                String placeId = restaurant.getPlaceId();
+
+                restaurantRepository.getPlaceDetails(placeId).enqueue(new Callback<PlaceDetails>() {
+                    @Override
+                    public void onResponse(Call<PlaceDetails> call, Response<PlaceDetails> response) {
+                        result.add(response.body().getResult());
+
+                        if (result.size() == restaurants.size()) {
+
+                            createNearbyRestaurantInFirebase(userLocation, result);
+                            initNearbyPlaceLiveData(userLocation);
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call<PlaceDetails> call, Throwable t) {
+
+                    }
+                });
+            }
+        }
+
+    }
 
 }

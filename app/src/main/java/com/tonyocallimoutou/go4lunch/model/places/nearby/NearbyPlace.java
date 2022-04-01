@@ -1,7 +1,8 @@
-package com.tonyocallimoutou.go4lunch.model.Places;
+package com.tonyocallimoutou.go4lunch.model.places.nearby;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +17,7 @@ public class NearbyPlace {
     private String nextPageToken;
     @SerializedName("results")
     @Expose
-    private List<RestaurantsResult> placeResults = new ArrayList<RestaurantsResult>();
+    private List<RestaurantDetails> placeResults = new ArrayList<RestaurantDetails>();
     @SerializedName("status")
     @Expose
     private String status;
@@ -62,7 +63,7 @@ public class NearbyPlace {
      * @return
      * The results
      */
-    public List<RestaurantsResult> getResults() {
+    public List<RestaurantDetails> getResults() {
         return placeResults;
     }
 
@@ -71,7 +72,7 @@ public class NearbyPlace {
      * @param placeResults
      * The results
      */
-    public void setResults(List<RestaurantsResult> placeResults) {
+    public void setResults(List<RestaurantDetails> placeResults) {
         this.placeResults = placeResults;
     }
 

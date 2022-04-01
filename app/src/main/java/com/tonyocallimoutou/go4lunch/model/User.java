@@ -2,7 +2,7 @@ package com.tonyocallimoutou.go4lunch.model;
 
 import androidx.annotation.Nullable;
 
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
 public class User {
 
@@ -11,7 +11,7 @@ public class User {
     @Nullable
     private String urlPicture;
     @Nullable
-    private RestaurantsResult bookedRestaurant;
+    private RestaurantDetails bookedRestaurant;
 
     public User() {}
 
@@ -55,11 +55,11 @@ public class User {
     }
 
     @Nullable
-    public RestaurantsResult getBookedRestaurant() {
+    public RestaurantDetails getBookedRestaurant() {
         return bookedRestaurant;
     }
 
-    public void setBookedRestaurant(RestaurantsResult bookedRestaurantId) {
+    public void setBookedRestaurant(RestaurantDetails bookedRestaurantId) {
         this.bookedRestaurant = bookedRestaurantId;
     }
 }

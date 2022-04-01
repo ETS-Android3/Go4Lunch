@@ -11,17 +11,16 @@ import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.model.Places.RestaurantsResult;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.User;
-import com.tonyocallimoutou.go4lunch.ui.listview.ListViewRecyclerViewAdapter;
-import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
+import com.tonyocallimoutou.go4lunch.utils.RestaurantPhoto;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
@@ -39,6 +38,8 @@ public class DetailsActivity extends AppCompatActivity {
     ImageView restaurantPicture;
     @BindView(R.id.detail_name_restaurant)
     TextView restaurantName;
+    @BindView(R.id.detail_booked_restaurant)
+    FloatingActionButton fabBooked;
     @BindView(R.id.rate3)
     ImageView restaurantRate3;
     @BindView(R.id.rate2)
@@ -61,7 +62,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     boolean isBooked;
 
-    private static RestaurantsResult restaurant;
+    private static RestaurantDetails restaurant;
     private static List<User> workmates = new ArrayList<>();
 
     private ViewModelUser viewModelUser;
@@ -94,6 +95,8 @@ public class DetailsActivity extends AppCompatActivity {
         isBooked = restaurant.getWorkmatesId().contains(viewModelUser.getCurrentUser().getUid());
 
         workmates.add(viewModelUser.getCurrentUser());
+        Log.d("TAG", "WorkmateSize: " + workmates.size());
+        Log.d("TAG", "restaurant.Workmate.list: " + restaurant.getWorkmatesId());
 
         if (restaurant.getWorkmatesId().size() != 0) {
             for (User user : workmates) {
@@ -101,6 +104,7 @@ public class DetailsActivity extends AppCompatActivity {
                     workmates.remove(user);
                 }
             }
+            Log.d("TAG", "Workmate List: " + workmates);
         }
         else {
             workmates.clear();
@@ -114,15 +118,16 @@ public class DetailsActivity extends AppCompatActivity {
     public void setInformation () {
 
         RestaurantData.newInstance(restaurant);
-
-        int rate = RestaurantData.getRate();
-
-        RestaurantRate.newInstance(rate,restaurantRate1,restaurantRate2,restaurantRate3);
+        RestaurantRate.newInstance(RestaurantData.getRate(),restaurantRate1,restaurantRate2,restaurantRate3);
+        RestaurantPhoto.newInstance(restaurant,restaurantPicture);
 
         RestaurantRate.setImage();
+        RestaurantPhoto.setLittlePhoto();
 
         restaurantName.setText(RestaurantData.getRestaurantName());
         restaurantAddress.setText(RestaurantData.getTypeAndAddress());
+
+        setFAB();
     }
 
     @OnClick(R.id.detail_booked_restaurant)
@@ -138,8 +143,34 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
+    public void setFAB() {
+        if (isBooked) {
+            //Set FAB
+        }
+        else {
+            // Set FAB
+        }
+    }
 
-    public static void navigate(Activity activity, RestaurantsResult result ) {
+
+
+    @OnClick(R.id.detail_call)
+    public void call() {
+        Log.e("TAG", "call: " );
+    }
+
+    @OnClick(R.id.detail_like)
+    public void like() {
+        Log.e("TAG", "Like: " );
+    }
+
+    @OnClick(R.id.detail_website)
+    public void website() {
+        Log.e("TAG", "Website: " );
+    }
+
+
+    public static void navigate(Activity activity, RestaurantDetails result ) {
         restaurant = result;
         Intent intent = new Intent(activity, DetailsActivity.class);
         ActivityCompat.startActivity(activity, intent, null);
