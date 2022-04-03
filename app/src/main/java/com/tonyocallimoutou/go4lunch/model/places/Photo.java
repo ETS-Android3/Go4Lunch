@@ -22,6 +22,8 @@ public class Photo {
     @Expose
     private Integer width;
 
+    private String image;
+
     /**
      *
      * @return
@@ -92,5 +94,23 @@ public class Photo {
      */
     public void setWidth(Integer width) {
         this.width = width;
+    }
+
+    /**
+     *
+     * @return
+     * The width
+     */
+    public String getImage() {
+        return image;
+    }
+
+    /**
+     *
+     * @param image
+     * The width
+     */
+    public void setImage(String image) {
+        this.image = image;
     }
 }

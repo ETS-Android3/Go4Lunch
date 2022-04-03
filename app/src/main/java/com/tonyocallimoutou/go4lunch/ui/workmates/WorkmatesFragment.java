@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
@@ -19,12 +20,19 @@ import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * A simple {@link Fragment} subclass.
  */
 public class WorkmatesFragment extends Fragment {
 
-    private RecyclerView mRecyclerView;
+    @BindView(R.id.lbl_no_workmates)
+    TextView lblWorkmates;
+    @BindView(R.id.workmates_recycler_view)
+    RecyclerView mRecyclerView;
+
     private ViewModelUser viewModelUser;
     private List<User> mUsers = new ArrayList<>();
 
@@ -55,7 +63,8 @@ public class WorkmatesFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_workmates, container, false);
-        mRecyclerView = (RecyclerView) view;
+        ButterKnife.bind(this,view);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         adapter = new WorkmatesRecyclerViewAdapter(getContext(),mUsers);
@@ -68,6 +77,13 @@ public class WorkmatesFragment extends Fragment {
     public void initUserList() {
 
         mUsers.addAll(workmates);
+
+        if (mUsers.size() == 0) {
+            lblWorkmates.setVisibility(View.VISIBLE);
+        }
+        else {
+            lblWorkmates.setVisibility(View.GONE);
+        }
 
         adapter.notifyDataSetChanged();
 

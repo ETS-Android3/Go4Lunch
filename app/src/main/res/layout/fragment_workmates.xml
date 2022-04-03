@@ -1,8 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:listitem="@layout/fragment_workmates_item"
-    tools:context=".ui.workmates.WorkmatesFragment" />
+    tools:context=".ui.workmates.WorkmatesFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/workmates_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/fragment_workmates_item" />
+
+    <include
+        layout="@layout/include_no_workmates"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent" />
+
+</RelativeLayout>

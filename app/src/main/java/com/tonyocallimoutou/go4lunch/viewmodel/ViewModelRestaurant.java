@@ -53,7 +53,7 @@ public class ViewModelRestaurant extends ViewModel {
 
             List<String> listLocation = new ArrayList<>();
 
-
+            String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
 
             restaurantRepository.getLocationNearbyRestaurantsCollection()
                     .get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -66,7 +66,7 @@ public class ViewModelRestaurant extends ViewModel {
                         listLocation.add(location);
                     }
 
-                    if (listLocation.contains(userLocation.toString())) {
+                    if (listLocation.contains(location)) {
                         Log.d("TAG", "YES: ");
                         initNearbyPlaceLiveData(userLocation);
                     }
@@ -98,7 +98,8 @@ public class ViewModelRestaurant extends ViewModel {
     }
 
     private CollectionReference getNearbyRestaurantsCollection(Location userLocation){
-        return restaurantRepository.getNearbyRestaurantsCollection(userLocation);
+        String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
+        return restaurantRepository.getNearbyRestaurantsCollection(location);
     }
 
     private void createNearbyRestaurantInFirebase(Location userLocation, List<RestaurantDetails> restaurants) {
@@ -218,9 +219,12 @@ public class ViewModelRestaurant extends ViewModel {
                 restaurantRepository.getPlaceDetails(placeId).enqueue(new Callback<PlaceDetails>() {
                     @Override
                     public void onResponse(Call<PlaceDetails> call, Response<PlaceDetails> response) {
-                        result.add(response.body().getResult());
+                        RestaurantDetails restaurant = response.body().getResult();
+                        restaurantRepository.getImage(restaurant);
+                        result.add(restaurant);
 
                         if (result.size() == restaurants.size()) {
+                            Log.d("TAG", "OK: ");
 
                             createNearbyRestaurantInFirebase(userLocation, result);
                             initNearbyPlaceLiveData(userLocation);
@@ -236,5 +240,4 @@ public class ViewModelRestaurant extends ViewModel {
         }
 
     }
-
 }

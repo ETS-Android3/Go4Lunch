@@ -74,6 +74,9 @@ public class RestaurantDetails {
     @SerializedName("vicinity")
     @Expose
     private String vicinity;
+    @SerializedName("website")
+    @Expose
+    private String website;
 
     private List<String> workmatesId = new ArrayList<>();
 
@@ -245,21 +248,18 @@ public class RestaurantDetails {
         this.vicinity = vicinity;
     }
 
+    public String getWebsite() {
+        return website;
+    }
 
-    /**
-     *
-     * @return
-     * The workmates
-     */
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
     public List<String> getWorkmatesId() {
         return workmatesId;
     }
 
-    /**
-     *
-     * @param workmates
-     * The price_level
-     */
     public void setWorkmatesId(List<String> workmates) {
         this.workmatesId = workmates;
     }

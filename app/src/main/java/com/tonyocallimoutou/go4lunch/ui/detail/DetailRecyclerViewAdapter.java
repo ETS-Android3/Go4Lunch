@@ -46,7 +46,7 @@ public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailRecycl
     public void onBindViewHolder(@NonNull DetailRecyclerViewAdapter.ViewHolder holder, int position) {
         User user = mUsers.get(position);
 
-        holder.workmateText.setText(user.getUsername() + " " + mContext.getString(R.string.workmate_is_eating));
+        holder.workmateText.setText(user.getUsername() + " " + mContext.getString(R.string.workmate_is_joining));
 
         Glide.with(mContext)
                 .load(user.getUrlPicture())

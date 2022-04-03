@@ -10,10 +10,10 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
-import com.tonyocallimoutou.go4lunch.utils.RestaurantPhoto;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 
 import java.util.List;
@@ -46,16 +46,16 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         RestaurantDetails restaurant = mRestaurants.get(position);
 
         RestaurantData.newInstance(restaurant);
-        RestaurantPhoto.newInstance(restaurant, holder.restaurantPicture);
+        //RestaurantPhoto.newInstance(restaurant, holder.restaurantPicture);
         RestaurantRate.newInstance(RestaurantData.getRate(),holder.rateOne, holder.rateTwo, holder.rateThree);
 
         RestaurantRate.setImage();
-        RestaurantPhoto.setLittlePhoto();
+        //RestaurantPhoto.setLittlePhoto();
 
         holder.restaurantName.setText(RestaurantData.getRestaurantName());
         holder.restaurantTypeAndAddress.setText(RestaurantData.getTypeAndAddress());
         holder.restaurantHours.setText(mContext.getString(RestaurantData.getOpeningHour()));
-
+        Glide.with(mContext).load(RestaurantData.getPicture()).into(holder.restaurantPicture);
 
         if (RestaurantData.getDistance() != null) {
             holder.restaurantDistance.setText(RestaurantData.getDistance());

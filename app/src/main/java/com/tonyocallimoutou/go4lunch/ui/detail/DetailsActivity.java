@@ -1,5 +1,7 @@
 package com.tonyocallimoutou.go4lunch.ui.detail;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.ViewModelProvider;
@@ -7,20 +9,29 @@ import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
-import com.tonyocallimoutou.go4lunch.utils.RestaurantPhoto;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
@@ -34,6 +45,8 @@ import butterknife.OnClick;
 
 public class DetailsActivity extends AppCompatActivity {
 
+    @BindView(R.id.detail_relative_layout)
+    RelativeLayout view;
     @BindView(R.id.detail_restaurant_picture)
     ImageView restaurantPicture;
     @BindView(R.id.detail_name_restaurant)
@@ -56,6 +69,8 @@ public class DetailsActivity extends AppCompatActivity {
     RelativeLayout restaurantWebsite;
     @BindView(R.id.detail_recycler_view)
     RecyclerView recyclerView;
+    @BindView(R.id.lbl_no_workmates)
+    TextView lblWorkmates;
 
 
     DetailRecyclerViewAdapter adapter;
@@ -67,6 +82,8 @@ public class DetailsActivity extends AppCompatActivity {
 
     private ViewModelUser viewModelUser;
     private ViewModelRestaurant viewModelRestaurant;
+
+    private static final int MY_PERMISSION_REQUEST_CODE_CALL_PHONE = 555;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,22 +111,33 @@ public class DetailsActivity extends AppCompatActivity {
     public void initWorkmatesList() {
         isBooked = restaurant.getWorkmatesId().contains(viewModelUser.getCurrentUser().getUid());
 
-        workmates.add(viewModelUser.getCurrentUser());
-        Log.d("TAG", "WorkmateSize: " + workmates.size());
-        Log.d("TAG", "restaurant.Workmate.list: " + restaurant.getWorkmatesId());
+        if (isBooked) {
+            workmates.add(viewModelUser.getCurrentUser());
+        }
+
+        List<User> removeUser = new ArrayList<>();
 
         if (restaurant.getWorkmatesId().size() != 0) {
             for (User user : workmates) {
                 if ( ! restaurant.getWorkmatesId().contains(user.getUid())) {
-                    workmates.remove(user);
+                    removeUser.add(user);
                 }
             }
             Log.d("TAG", "Workmate List: " + workmates);
+
+            workmates.removeAll(removeUser);
         }
         else {
             workmates.clear();
         }
 
+
+        if (workmates.size() == 0) {
+            lblWorkmates.setVisibility(View.VISIBLE);
+        }
+        else {
+            lblWorkmates.setVisibility(View.GONE);
+        }
 
         adapter.notifyDataSetChanged();
     }
@@ -119,13 +147,12 @@ public class DetailsActivity extends AppCompatActivity {
 
         RestaurantData.newInstance(restaurant);
         RestaurantRate.newInstance(RestaurantData.getRate(),restaurantRate1,restaurantRate2,restaurantRate3);
-        RestaurantPhoto.newInstance(restaurant,restaurantPicture);
 
         RestaurantRate.setImage();
-        RestaurantPhoto.setLittlePhoto();
 
         restaurantName.setText(RestaurantData.getRestaurantName());
         restaurantAddress.setText(RestaurantData.getTypeAndAddress());
+        Glide.with(this).load(RestaurantData.getPicture()).into(restaurantPicture);
 
         setFAB();
     }
@@ -156,7 +183,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     @OnClick(R.id.detail_call)
     public void call() {
-        Log.e("TAG", "call: " );
+        callOrPermission();
     }
 
     @OnClick(R.id.detail_like)
@@ -166,9 +193,70 @@ public class DetailsActivity extends AppCompatActivity {
 
     @OnClick(R.id.detail_website)
     public void website() {
-        Log.e("TAG", "Website: " );
+        if (RestaurantData.getWebsite() != null) {
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse(RestaurantData.getWebsite()));
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
+        }
     }
 
+
+    // CALL
+
+    private void callOrPermission() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.M) { // 23
+
+            if (ActivityCompat.checkSelfPermission(this, Manifest.permission.CALL_PHONE) != PackageManager.PERMISSION_GRANTED) {
+                askForPermission();
+            } else {
+                callRestaurant();
+            }
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    public void askForPermission() {
+         requestPermissions(
+                new String[]{Manifest.permission.CALL_PHONE},
+                MY_PERMISSION_REQUEST_CODE_CALL_PHONE
+        );
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case MY_PERMISSION_REQUEST_CODE_CALL_PHONE: {
+
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                    callRestaurant();
+                }
+                else {
+                    explain();
+                }
+                break;
+            }
+        }
+    }
+
+    public void explain() {
+
+        Toast.makeText(this, getString(R.string.explain_call), Toast.LENGTH_SHORT).show();
+    }
+
+    private void callRestaurant() {
+        Log.d("TAG", "call: " + RestaurantData.getPhone() );
+        Intent intent = new Intent(Intent.ACTION_CALL);
+        intent.setData(Uri.parse("tel:" + RestaurantData.getPhone()));
+
+        startActivity(intent);
+    }
+
+
+    // INIT
 
     public static void navigate(Activity activity, RestaurantDetails result ) {
         restaurant = result;

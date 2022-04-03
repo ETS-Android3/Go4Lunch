@@ -5,6 +5,7 @@ import android.util.Log;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.tonyocallimoutou.go4lunch.BuildConfig;
 import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
@@ -54,8 +55,8 @@ public class RestaurantRepository {
         return FirebaseFirestore.getInstance().collection(COLLECTION_NAME_LOCATION_NEARBY_RESTAURANT);
     }
 
-    public CollectionReference getNearbyRestaurantsCollection(Location userLocation) {
-        return getLocationNearbyRestaurantsCollection().document(userLocation.toString())
+    public CollectionReference getNearbyRestaurantsCollection(String location) {
+        return getLocationNearbyRestaurantsCollection().document(location)
                 .collection(COLLECTION_NAME_NEARBY_RESTAURANT);
     }
 
@@ -70,13 +71,15 @@ public class RestaurantRepository {
 
     public void createNearbyRestaurantInFirebase (Location userLocation, List<RestaurantDetails> restaurants) {
 
+        String location = userLocation.getLatitude() + "," + userLocation.getLongitude();;
+
         for (RestaurantDetails restaurant : restaurants) {
-            getNearbyRestaurantsCollection(userLocation)
+            getNearbyRestaurantsCollection(location)
                         .document(restaurant.getPlaceId())
                         .set(restaurant);
         }
 
-        getLocationNearbyRestaurantsCollection().document(userLocation.toString()).set(userLocation);
+        getLocationNearbyRestaurantsCollection().document(location).set(userLocation);
     }
 
     // Retrofit
@@ -89,6 +92,18 @@ public class RestaurantRepository {
     public Call<PlaceDetails> getPlaceDetails (String placeId) {
         Log.e("ERROR", "APPEL API DETAIL: " );
         return retrofitMap.getPlaceDetails(placeId);
+    }
+
+    public void getImage (RestaurantDetails restaurant) {
+        Log.e("ERROR", "APPEL API PHOTO: " );
+        if (restaurant.getPhotos() != null) {
+            String photoId = restaurant.getPhotos().get(0).getPhotoReference();
+            String request = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&maxheight=400&key=" +
+                    BuildConfig.PLACES_API_KEY +
+                    "&photoreference=" + photoId;
+
+            restaurant.getPhotos().get(0).setImage(request);
+        }
     }
 
 }

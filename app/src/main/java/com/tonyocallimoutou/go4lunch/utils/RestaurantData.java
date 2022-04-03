@@ -87,8 +87,21 @@ public class RestaurantData {
         return ran.nextInt(4);
     }
 
-    public static void getPicture() {
-        Log.e("TAG", "getPicture: " );
+    public static String getPicture() {
+        if (result.getPhotos() != null) {
+            return result.getPhotos().get(0).getImage();
+        }
+        else {
+            return null;
+        }
+    }
+
+    public static String getPhone() {
+        return result.getInternationalPhoneNumber();
+    }
+
+    public static String getWebsite() {
+        return result.getWebsite();
     }
 
 
