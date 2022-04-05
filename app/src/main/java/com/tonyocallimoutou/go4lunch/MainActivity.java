@@ -3,6 +3,7 @@ package com.tonyocallimoutou.go4lunch;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
@@ -11,6 +12,7 @@ import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
 import android.app.blob.BlobHandle;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,43 +20,63 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.widget.Autocomplete;
+import com.google.android.libraries.places.widget.model.AutocompleteActivityMode;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
+import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
-    private DrawerLayout mDrawer;
-    private BottomNavigationView navigationView;
+    @BindView(R.id.drawer_layout)
+    DrawerLayout mDrawer;
+    @BindView(R.id.bottom_nav_view)
+    BottomNavigationView navigationView;
+
+    private SearchView searchView;
     private ViewModelUser viewModelUser;
     private ViewModelRestaurant viewModelRestaurant;
     private View sideView;
     private ActionBar actionBar;
 
+    private List<RestaurantDetails> nearbyRestaurant = new ArrayList<>();
+    private List<RestaurantDetails> bookedRestaurant = new ArrayList<>();
+    private List<User> workmates = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+
         setContentView(R.layout.activity_main);
+        ButterKnife.bind(this);
 
-
-        viewModelUser = new ViewModelProvider(this).get(ViewModelUser.class);
-        viewModelRestaurant = new ViewModelProvider(this).get(ViewModelRestaurant.class);
-        navigationView = findViewById(R.id.bottom_nav_view);
         initActionBar();
         initBottomNavigationView();
     }
@@ -97,6 +119,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actionbar_menu, menu);
+        searchView = (SearchView) menu.findItem(R.id.search_menu).getActionView();
         return true;
     }
 
@@ -104,7 +127,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
         actionBar.setDisplayHomeAsUpEnabled(true);
-        mDrawer = findViewById(R.id.drawer_layout);
     }
 
     @Override
@@ -119,9 +141,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             case R.id.search_menu:
                 Log.d("TAG", "onOptionsItemSelected: search");
+                initSearch();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    // INIT SEARCH ACTION
+
+    private void initSearch() {
+        searchView.setQueryHint(getString(R.string.search_hint));
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                for (RestaurantDetails restaurant : nearbyRestaurant) {
+                    if (restaurant.getName().equals(s)) {
+                        //viewModelRestaurant.search();
+                        // https://www.geeksforgeeks.org/android-searchview-with-example/
+                    }
+                }
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+        });
     }
 
     // INIT BOTTOM NAVIGATION
@@ -202,30 +248,33 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             DetailsActivity.navigate(this,restaurant);
         }
         else {
-            Log.e("TAG", "yourLunch: " );
+            Snackbar.make(mDrawer, getString(R.string.your_lunch), Snackbar.LENGTH_LONG).show();
         }
     }
 
     // InitData
 
     public void initData() {
-
-        Log.d("TAG", "initData: ");
         viewModelUser.setWorkmatesList();
         viewModelRestaurant.setBookedRestaurantList();
-        viewModelRestaurant.setNearbyPlace(null);
+        if (nearbyRestaurant.size() == 0) {
+            viewModelRestaurant.setNearbyPlace(null);
+        }
 
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
+            bookedRestaurant = restaurantsResults;
             ListViewFragment.setBookedRestaurant(restaurantsResults);
             MapViewFragment.setBookedRestaurant(restaurantsResults);
         });
 
         viewModelUser.getWorkmates().observe(this, workmates -> {
+            this.workmates = workmates;
             WorkmatesFragment.setWorkmates(workmates);
             DetailsActivity.setWorkmates(workmates);
         });
 
         viewModelRestaurant.getNearbyRestaurantLiveData().observe(this, restaurantsResults -> {
+            nearbyRestaurant = restaurantsResults;
             ListViewFragment.setNearbyRestaurant(restaurantsResults);
             MapViewFragment.setNearbyRestaurant(restaurantsResults);
         });

@@ -2,6 +2,7 @@ package com.tonyocallimoutou.go4lunch.viewmodel;
 
 import android.content.Context;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -25,8 +26,8 @@ public class ViewModelUser extends ViewModel {
     private MutableLiveData<List<User>> workmates = new MutableLiveData<>();
 
 
-    public ViewModelUser () {
-        this.userRepository = UserRepository.getInstance() ;
+    public ViewModelUser (UserRepository userRepository) {
+        this.userRepository = userRepository ;
     }
 
     // Current User

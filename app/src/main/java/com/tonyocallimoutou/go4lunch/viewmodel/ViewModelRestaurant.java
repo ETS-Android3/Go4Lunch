@@ -3,6 +3,7 @@ package com.tonyocallimoutou.go4lunch.viewmodel;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -28,18 +29,18 @@ import retrofit2.Response;
 
 public class ViewModelRestaurant extends ViewModel {
 
-    private RestaurantRepository restaurantRepository;
-    private UserRepository userRepository;
+    private final RestaurantRepository restaurantRepository;
+    private final UserRepository userRepository;
 
-    private MutableLiveData<List<RestaurantDetails>> nearbyPlaceMutableLiveData = new MutableLiveData<>();
-    private MutableLiveData<List<RestaurantDetails>> bookedRestaurantMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<RestaurantDetails>> nearbyPlaceMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<RestaurantDetails>> bookedRestaurantMutableLiveData = new MutableLiveData<>();
 
 
     // Constructor
 
-    public ViewModelRestaurant() {
-        this.restaurantRepository = RestaurantRepository.getInstance(RetrofitMap.retrofit.create(RetrofitMap.class));
-        this.userRepository = UserRepository.getInstance();
+    public ViewModelRestaurant(RestaurantRepository restaurantRepository, UserRepository userRepository) {
+        this.restaurantRepository = restaurantRepository;
+        this.userRepository = userRepository;
     }
 
 

@@ -33,6 +33,7 @@ import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -91,8 +92,8 @@ public class DetailsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_details);
         ButterKnife.bind(this);
 
-        viewModelUser = new ViewModelProvider(this).get(ViewModelUser.class);
-        viewModelRestaurant = new ViewModelProvider(this).get(ViewModelRestaurant.class);
+        viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+        viewModelRestaurant = new ViewModelProvider(this,ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
 
         initRecyclerView();
         initWorkmatesList();
