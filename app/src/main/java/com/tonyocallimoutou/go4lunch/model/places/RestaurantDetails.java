@@ -264,8 +264,4 @@ public class RestaurantDetails {
         this.workmatesId = workmates;
     }
 
-    public boolean isBooked() {
-        return getWorkmatesId().size() != 0;
-    }
-
 }

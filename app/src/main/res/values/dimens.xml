@@ -21,7 +21,7 @@
 
     // MapView
     <dimen name="margin_end_fab_map"> 24dp </dimen>
-    <dimen name="margin_bottom_fab_map"> 84dp </dimen>
+    <dimen name="margin_bottom_fab_map"> 40dp </dimen>
 
     <dimen name="margin_message_title_map_view"> 16dp </dimen>
     <dimen name="margin_message_text_map_view"> 16dp </dimen>

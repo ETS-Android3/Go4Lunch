@@ -3,6 +3,8 @@ package com.tonyocallimoutou.go4lunch.repository;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.lifecycle.MutableLiveData;
+
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
@@ -15,6 +17,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.User;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class UserRepository {
@@ -110,6 +113,33 @@ public class UserRepository {
     public Task<Void> signOut(Context context) {
         return AuthUI.getInstance().signOut(context);
     }
+
+
+    // List of Workmates
+
+    public void setWorkmatesList(MutableLiveData<List<User>> liveData) {
+        List<User> workmatesList = new ArrayList<>();
+
+        getUsersCollection().get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        if (!queryDocumentSnapshots.isEmpty()) {
+                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                            for (DocumentSnapshot document : list) {
+                                User user = document.toObject(User.class);
+                                if (!user.getUid().equals(getCurrentFirebaseUser().getUid())) {
+                                    workmatesList.add(user);
+                                }
+                            }
+                        }
+
+                        liveData.setValue(workmatesList);
+                    }
+                });
+    }
+
+
 
     // Booked Restaurant
 

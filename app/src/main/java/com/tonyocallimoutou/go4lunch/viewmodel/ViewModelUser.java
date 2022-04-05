@@ -55,30 +55,12 @@ public class ViewModelUser extends ViewModel {
 
     // Workmates
 
-    public LiveData<List<User>> getWorkmates() {
-        return workmates;
+    public void setWorkmatesList() {
+        userRepository.setWorkmatesList(workmates);
     }
 
-    public void setWorkmatesList() {
-        List<User> workmatesList = new ArrayList<>();
-
-        getUsersCollection().get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot document : list) {
-                                User user = document.toObject(User.class);
-                                if (!user.getUid().equals(getCurrentFirebaseUser().getUid())) {
-                                    workmatesList.add(user);
-                                }
-                            }
-                        }
-
-                        workmates.setValue(workmatesList);
-                    }
-                });
+    public LiveData<List<User>> getWorkmates() {
+        return workmates;
     }
 
 }

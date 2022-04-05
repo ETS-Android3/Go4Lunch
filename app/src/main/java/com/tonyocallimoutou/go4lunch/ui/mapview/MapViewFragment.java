@@ -64,10 +64,10 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     float cameraZoomDefault = 15;
     View locationButton;
 
-    ViewModelRestaurant viewModelRestaurant;
+    private static ViewModelRestaurant viewModelRestaurant;
 
     FusedLocationProviderClient fusedLocationProviderClient;
-    Location userLocation;
+    private static Location userLocation;
 
 
     private static List<RestaurantDetails> nearbyRestaurant = new ArrayList<>();
@@ -300,6 +300,8 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
         Log.d("TAG", "onMarkerClick: " + marker.getTitle());
 
+        Log.d("TAG", "onMarkerClick: " + markRestaurant.getWorkmatesId());
+
         DetailsActivity.navigate(getActivity(),markRestaurant);
 
         return true;
@@ -309,7 +311,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     public static void setBookedRestaurant(List<RestaurantDetails> results) {
         bookedRestaurant = results;
         if (mGoogleMap != null) {
-            initListForMarker();
+            viewModelRestaurant.setNearbyPlace(userLocation);
         }
     }
 

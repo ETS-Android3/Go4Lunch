@@ -123,7 +123,6 @@ public class DetailsActivity extends AppCompatActivity {
                     removeUser.add(user);
                 }
             }
-            Log.d("TAG", "Workmate List: " + workmates);
 
             workmates.removeAll(removeUser);
         }
