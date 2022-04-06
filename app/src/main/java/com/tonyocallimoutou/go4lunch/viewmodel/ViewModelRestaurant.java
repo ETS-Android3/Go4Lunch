@@ -47,7 +47,6 @@ public class ViewModelRestaurant extends ViewModel {
     // Nearby Restaurant
 
     public void setNearbyPlace(Location userLocation) {
-        Log.d("TAG", "setNearbyPlace: ");
         restaurantRepository.setNearbyPlace(userLocation, nearbyPlaceMutableLiveData);
     }
 
@@ -68,7 +67,6 @@ public class ViewModelRestaurant extends ViewModel {
     public void bookedThisRestaurant(RestaurantDetails restaurant) {
 
         if (getRestaurantOfCurrentUser() != null) {
-            Log.d("TAG", "bookedThisRestaurant: Test ");
             cancelBookedRestaurant(getRestaurantOfCurrentUser());
         }
 

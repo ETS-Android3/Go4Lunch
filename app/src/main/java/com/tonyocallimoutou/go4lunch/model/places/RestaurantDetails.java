@@ -264,4 +264,22 @@ public class RestaurantDetails {
         this.workmatesId = workmates;
     }
 
+    // Constructor for Test
+
+    public RestaurantDetails() {}
+
+    public RestaurantDetails(String placeId,
+                             String name,
+                             String type,
+                             String adrAddress,
+                             String internationalPhoneNumber,
+                             String website) {
+        this.placeId = placeId;
+        this.name = name;
+        this.types = new ArrayList<>();
+        this.types.add(type);
+        this.vicinity = adrAddress;
+        this.internationalPhoneNumber = internationalPhoneNumber;
+        this.website = website;
+    }
 }
