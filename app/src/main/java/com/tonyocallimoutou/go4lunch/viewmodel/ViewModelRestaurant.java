@@ -1,31 +1,16 @@
 package com.tonyocallimoutou.go4lunch.viewmodel;
 
 import android.location.Location;
-import android.util.Log;
 
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
-import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
-import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
-import com.tonyocallimoutou.go4lunch.utils.UtilDistance;
 
-import java.util.ArrayList;
 import java.util.List;
-
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 public class ViewModelRestaurant extends ViewModel {
 

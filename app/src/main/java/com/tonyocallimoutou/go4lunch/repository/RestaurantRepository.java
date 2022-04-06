@@ -3,7 +3,6 @@ package com.tonyocallimoutou.go4lunch.repository;
 import android.location.Location;
 import android.util.Log;
 
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -12,10 +11,10 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.BuildConfig;
-import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
-import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
-import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
+import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
 import com.tonyocallimoutou.go4lunch.utils.UtilDistance;
 
 import java.util.ArrayList;

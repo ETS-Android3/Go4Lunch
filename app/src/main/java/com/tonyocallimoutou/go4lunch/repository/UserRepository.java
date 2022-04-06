@@ -14,8 +14,8 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.User;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
 import java.util.ArrayList;
 import java.util.List;

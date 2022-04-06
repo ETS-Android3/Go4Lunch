@@ -2,9 +2,6 @@ package com.tonyocallimoutou.go4lunch.model.places;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.tonyocallimoutou.go4lunch.model.places.Geometry;
-import com.tonyocallimoutou.go4lunch.model.places.OpeningHours;
-import com.tonyocallimoutou.go4lunch.model.places.Photo;
 
 import java.util.ArrayList;
 import java.util.List;
