@@ -11,6 +11,9 @@ public class OpeningHours {
     @SerializedName("open_now")
     @Expose
     private Boolean openNow;
+    @SerializedName("periods")
+    @Expose
+    private List<Period> periods = null;
     @SerializedName("weekday_text")
     @Expose
     private List<String> weekdayText = new ArrayList<String>();
@@ -22,6 +25,24 @@ public class OpeningHours {
      */
     public Boolean getOpenNow() {
         return openNow;
+    }
+
+    /**
+     *
+     * @param periods
+     * The open_now
+     */
+    public void setPeriods(List<Period> periods) {
+        this.periods = periods;
+    }
+
+    /**
+     *
+     * @return
+     * The periods
+     */
+    public List<Period> getPeriods() {
+        return periods;
     }
 
     /**

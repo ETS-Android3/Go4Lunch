@@ -1,33 +1,42 @@
 package com.tonyocallimoutou.go4lunch.utils;
 
+import android.content.Context;
 import android.location.Location;
+import android.text.format.Time;
 import android.util.Log;
 
 import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.model.places.Close;
+import com.tonyocallimoutou.go4lunch.model.places.Period;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 public class RestaurantData {
 
+    private static Context context;
     private static RestaurantDetails result;
     private static Location userLocation;
 
-    private RestaurantData(RestaurantDetails restaurant) {
+    private RestaurantData(Context data, RestaurantDetails restaurant) {
+        context = data;
         result = restaurant;
     }
 
 
-    public static RestaurantData newInstance(RestaurantDetails restaurant) {
-
-        return new RestaurantData(restaurant);
+    public static RestaurantData newInstance(Context context, RestaurantDetails restaurant) {
+        return new RestaurantData(context, restaurant);
     }
     public static void newInstanceOfPosition(Location location) {
         userLocation = location;
     }
 
 
-    // Get String
+    // Getter
 
     public static String getDistance() {
         if (userLocation != null) {
@@ -50,18 +59,53 @@ public class RestaurantData {
         return result.getName();
     }
 
-    public static int getOpeningHour() {
-        Log.e("TAG", "getOpeningHour: ");
+    public static String getOpeningHour() {
+        Calendar currentTime = Calendar.getInstance();
+
+        int dayOfWeek = currentTime.get(Calendar.DAY_OF_WEEK)-1;
+
+        int time = currentTime.get(Calendar.HOUR_OF_DAY)*100 + currentTime.get(Calendar.MINUTE);
+
         if (result.getOpeningHours() != null) {
             if (result.getOpeningHours().getOpenNow()) {
-                return R.string.restaurant_data_open;
+
+                if(result.getOpeningHours().getPeriods().size() == 1) {
+                    Period period = result.getOpeningHours().getPeriods().get(0);
+                    if (period.getOpen().getTime().equals("0000") && period.getClose() == null) {
+                        return context.getString(R.string.restaurant_data_open_24h7j);
+                    }
+                }
+
+                for (Period period : result.getOpeningHours().getPeriods()) {
+                    if (period.getOpen().getDay() == dayOfWeek) {
+
+                        if (period.getClose() == null) {
+                            return context.getString(R.string.restaurant_data_open_24h);
+                        }
+
+                        int openHour = Integer.parseInt(period.getOpen().getTime());
+                        int closeHour = Integer.parseInt(period.getClose().getTime());
+
+                        if (openHour < time && closeHour > time ) {
+                            int hour = closeHour/100;
+                            int minute = closeHour%100;
+
+                            if (minute == 0) {
+                                return context.getString(R.string.restaurant_data_open_until) + " " + hour +":00";
+                            }
+
+                            return context.getString(R.string.restaurant_data_open_until)+" " + hour + ":" + minute;
+                        }
+                    }
+                }
+                return context.getString(R.string.restaurant_data_open);
             }
             else {
-                return R.string.restaurant_data_close;
+                return context.getString(R.string.restaurant_data_close);
             }
         }
         else {
-            return R.string.restaurant_data_no_data;
+            return context.getString(R.string.restaurant_data_no_data);
         }
     }
 

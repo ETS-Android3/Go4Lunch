@@ -45,16 +45,14 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
     public void onBindViewHolder(@NonNull ListViewRecyclerViewAdapter.ViewHolder holder, int position) {
         RestaurantDetails restaurant = mRestaurants.get(position);
 
-        RestaurantData.newInstance(restaurant);
-        //RestaurantPhoto.newInstance(restaurant, holder.restaurantPicture);
+        RestaurantData.newInstance(mContext, restaurant);
         RestaurantRate.newInstance(RestaurantData.getRate(),holder.rateOne, holder.rateTwo, holder.rateThree);
 
         RestaurantRate.setImage();
-        //RestaurantPhoto.setLittlePhoto();
 
         holder.restaurantName.setText(RestaurantData.getRestaurantName());
         holder.restaurantTypeAndAddress.setText(RestaurantData.getTypeAndAddress());
-        holder.restaurantHours.setText(mContext.getString(RestaurantData.getOpeningHour()));
+        holder.restaurantHours.setText(RestaurantData.getOpeningHour());
         Glide.with(mContext).load(RestaurantData.getPicture()).into(holder.restaurantPicture);
 
         if (RestaurantData.getDistance() != null) {

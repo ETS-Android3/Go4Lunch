@@ -142,7 +142,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     public void setInformation () {
 
-        RestaurantData.newInstance(restaurant);
+        RestaurantData.newInstance(this, restaurant);
         RestaurantRate.newInstance(RestaurantData.getRate(),restaurantRate1,restaurantRate2,restaurantRate3);
 
         RestaurantRate.setImage();

@@ -25,35 +25,30 @@ public class RestaurantRate {
     public static void setImage() {
         switch (rateRestaurant) {
             case 0:
-                Log.d("TAG", "0: " + rateRestaurant);
                 restaurantRate1.setVisibility(View.GONE);
                 restaurantRate2.setVisibility(View.GONE);
                 restaurantRate3.setVisibility(View.GONE);
                 break;
 
             case 1:
-                Log.d("TAG", "1: " + rateRestaurant);
                 restaurantRate1.setVisibility(View.VISIBLE);
                 restaurantRate2.setVisibility(View.GONE);
                 restaurantRate3.setVisibility(View.GONE);
                 break;
 
             case 2:
-                Log.d("TAG", "2: " + rateRestaurant);
                 restaurantRate1.setVisibility(View.VISIBLE);
                 restaurantRate2.setVisibility(View.VISIBLE);
                 restaurantRate3.setVisibility(View.GONE);
                 break;
 
             case 3:
-                Log.d("TAG", "3: " + rateRestaurant);
                 restaurantRate1.setVisibility(View.VISIBLE);
                 restaurantRate2.setVisibility(View.VISIBLE);
                 restaurantRate3.setVisibility(View.VISIBLE);
                 break;
 
             default:
-                Log.d("TAG", "PB: " + rateRestaurant);
                 break;
         }
     }

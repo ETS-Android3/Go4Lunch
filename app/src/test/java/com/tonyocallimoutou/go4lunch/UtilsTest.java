@@ -51,7 +51,7 @@ public class UtilsTest {
 
         restaurant.setWorkmatesId(workmatesId);
 
-        RestaurantData.newInstance(restaurant);
+        RestaurantData.newInstance(null,restaurant);
 
         String name = RestaurantData.getRestaurantName();
         String phone = RestaurantData.getPhone();
