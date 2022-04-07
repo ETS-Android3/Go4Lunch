@@ -199,6 +199,7 @@ public class RestaurantRepository {
                 public void onResponse(Call<PlaceDetails> call, Response<PlaceDetails> response) {
                     RestaurantDetails restaurant = response.body().getResult();
                     setImage(restaurant);
+                    restaurant.setRating(0.0);
                     result.add(restaurant);
 
                     if (result.size() == restaurants.size()) {

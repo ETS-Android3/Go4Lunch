@@ -128,9 +128,7 @@ public class UserRepository {
                             List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
                             for (DocumentSnapshot document : list) {
                                 User user = document.toObject(User.class);
-                                if (!user.getUid().equals(getCurrentFirebaseUser().getUid())) {
-                                    workmatesList.add(user);
-                                }
+                                workmatesList.add(user);
                             }
                         }
 
@@ -153,5 +151,25 @@ public class UserRepository {
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
 
+    // Like restaurant
+
+    public void likeThisRestaurant(RestaurantDetails restaurant){
+        List<String> listRestaurantId = getCurrentUser().getLikeRestaurantId();
+        if ( ! listRestaurantId.contains(restaurant.getPlaceId())) {
+            listRestaurantId.add(restaurant.getPlaceId());
+        }
+
+        getCurrentUser().setLikeRestaurantId(listRestaurantId);
+        getUsersCollection().document(currentUser.getUid()).set(currentUser);
+    }
+
+    public void dislikeThisRestaurant(RestaurantDetails restaurant) {
+        List<String> listRestaurantId = getCurrentUser().getLikeRestaurantId();
+        if ( listRestaurantId.contains(restaurant.getPlaceId())) {
+            listRestaurantId.remove(restaurant.getPlaceId());
+        }
+        getCurrentUser().setLikeRestaurantId(listRestaurantId);
+        getUsersCollection().document(currentUser.getUid()).set(currentUser);
+    }
 
 }

@@ -65,6 +65,8 @@ public class DetailsActivity extends AppCompatActivity {
     RelativeLayout restaurantLike;
     @BindView(R.id.detail_website)
     RelativeLayout restaurantWebsite;
+    @BindView(R.id.detail_img_like)
+    ImageView likeButton;
     @BindView(R.id.detail_recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.lbl_no_workmates)
@@ -74,9 +76,11 @@ public class DetailsActivity extends AppCompatActivity {
     DetailRecyclerViewAdapter adapter;
 
     boolean isBooked;
+    boolean isLike;
 
     private static RestaurantDetails restaurant;
     private static List<User> workmates = new ArrayList<>();
+    private List<User> workmatesLunch = new ArrayList<>();
 
     private ViewModelUser viewModelUser;
     private ViewModelRestaurant viewModelRestaurant;
@@ -102,32 +106,29 @@ public class DetailsActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.addItemDecoration(new DividerItemDecoration(this, DividerItemDecoration.VERTICAL));
-        adapter = new DetailRecyclerViewAdapter(this,workmates);
+        adapter = new DetailRecyclerViewAdapter(this,workmatesLunch);
         recyclerView.setAdapter(adapter);
     }
 
     public void initWorkmatesList() {
         isBooked = restaurant.getWorkmatesId().contains(viewModelUser.getCurrentUser().getUid());
-
-        if (isBooked) {
-            workmates.add(viewModelUser.getCurrentUser());
-        }
+        isLike = viewModelUser.getCurrentUser().getLikeRestaurantId().contains(restaurant.getPlaceId());
 
         List<User> removeUser = new ArrayList<>();
+        workmatesLunch.clear();
+        workmatesLunch.addAll(workmates);
 
         if (restaurant.getWorkmatesId().size() != 0) {
-            for (User user : workmates) {
+            for (User user : workmatesLunch) {
                 if ( ! restaurant.getWorkmatesId().contains(user.getUid())) {
                     removeUser.add(user);
                 }
             }
-
-            workmates.removeAll(removeUser);
+            workmatesLunch.removeAll(removeUser);
         }
         else {
-            workmates.clear();
+            workmatesLunch.clear();
         }
-
 
         if (workmates.size() == 0) {
             lblWorkmates.setVisibility(View.VISIBLE);
@@ -141,17 +142,28 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     public void setInformation () {
+        List<User> users = new ArrayList<>();
+        users.addAll(workmates);
+
+        for (User user : users) {
+            if (user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
+                workmates.add(viewModelUser.getCurrentUser());
+                workmates.remove(user);
+            }
+        }
 
         RestaurantData.newInstance(this, restaurant);
-        RestaurantRate.newInstance(RestaurantData.getRate(),restaurantRate1,restaurantRate2,restaurantRate3);
+        RestaurantRate.newInstance(restaurant,restaurantRate1,restaurantRate2,restaurantRate3, workmates);
 
         RestaurantRate.setImage();
+        Log.d("TAG", "setInformation: " + RestaurantRate.getRate());
 
         restaurantName.setText(RestaurantData.getRestaurantName());
         restaurantAddress.setText(RestaurantData.getTypeAndAddress());
         Glide.with(this).load(RestaurantData.getPicture()).into(restaurantPicture);
 
         setFAB();
+        setLike();
     }
 
     @OnClick(R.id.detail_booked_restaurant)
@@ -167,7 +179,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     }
 
-    public void setFAB() {
+    private void setFAB() {
         if (isBooked) {
             //Set FAB
         }
@@ -175,6 +187,17 @@ public class DetailsActivity extends AppCompatActivity {
             // Set FAB
         }
     }
+
+    private void setLike() {
+        Log.d("TAG", "set Button Like: ");
+        if (isLike) {
+            likeButton.setImageDrawable(getDrawable(R.drawable.ic_star_gold_24dp));
+        }
+        else {
+            likeButton.setImageDrawable(getDrawable(R.drawable.ic_star_border_black_24dp));
+        }
+    }
+
 
 
 
@@ -185,7 +208,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     @OnClick(R.id.detail_like)
     public void like() {
-        Log.e("TAG", "Like: " );
+        likeRestaurant();
     }
 
     @OnClick(R.id.detail_website)
@@ -245,13 +268,28 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void callRestaurant() {
-        Log.d("TAG", "call: " + RestaurantData.getPhone() );
         Intent intent = new Intent(Intent.ACTION_CALL);
         intent.setData(Uri.parse("tel:" + RestaurantData.getPhone()));
 
         startActivity(intent);
     }
 
+    // Like
+
+    private void likeRestaurant() {
+        if (isLike) {
+            viewModelRestaurant.dislikeThisRestaurant(restaurant);
+            Toast.makeText(this, "You don't like it", Toast.LENGTH_SHORT).show();
+        }
+        else {
+            viewModelRestaurant.likeThisRestaurant(restaurant);
+            Toast.makeText(this, "You like it", Toast.LENGTH_SHORT).show();
+        }
+
+        isLike = !isLike;
+        setInformation();
+
+    }
 
     // INIT
 

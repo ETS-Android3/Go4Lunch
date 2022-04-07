@@ -77,6 +77,14 @@ public class WorkmatesFragment extends Fragment {
 
         mUsers.addAll(workmates);
 
+        List<User> userToRemove = new ArrayList<>();
+        for (User user : mUsers) {
+            if (user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
+                userToRemove.add(user);
+            }
+        }
+        mUsers.removeAll(userToRemove);
+
         if (mUsers.size() == 0) {
             lblWorkmates.setVisibility(View.VISIBLE);
         }

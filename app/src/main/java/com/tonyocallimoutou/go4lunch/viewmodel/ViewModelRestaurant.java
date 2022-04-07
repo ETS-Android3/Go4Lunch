@@ -1,6 +1,7 @@
 package com.tonyocallimoutou.go4lunch.viewmodel;
 
 import android.location.Location;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -77,5 +78,15 @@ public class ViewModelRestaurant extends ViewModel {
 
     public LiveData<List<RestaurantDetails>> getBookedRestaurantLiveData() {
         return bookedRestaurantMutableLiveData;
+    }
+
+    // Like
+
+    public void likeThisRestaurant(RestaurantDetails restaurant) {
+        userRepository.likeThisRestaurant(restaurant);
+    }
+
+    public void dislikeThisRestaurant(RestaurantDetails restaurant) {
+        userRepository.dislikeThisRestaurant(restaurant);
     }
 }

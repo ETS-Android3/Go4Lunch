@@ -4,7 +4,11 @@ import androidx.annotation.Nullable;
 
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
-public class User {
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
+
+public class User implements Serializable {
 
     private String uid;
     private String username;
@@ -12,6 +16,7 @@ public class User {
     private String urlPicture;
     @Nullable
     private RestaurantDetails bookedRestaurant;
+    private List<String> likeRestaurantId;
 
     public User() {}
 
@@ -20,6 +25,7 @@ public class User {
         username = user.getUsername();
         urlPicture = user.getUrlPicture();
         bookedRestaurant = user.getBookedRestaurant();
+        likeRestaurantId = user.getLikeRestaurantId();
     }
 
     public User(String uid, String username, @Nullable String urlPicture) {
@@ -27,6 +33,7 @@ public class User {
         this.username = username;
         this.urlPicture = urlPicture;
         this.bookedRestaurant = null;
+        this.likeRestaurantId = new ArrayList<>();  
     }
 
     public String getUid() {
@@ -61,5 +68,13 @@ public class User {
 
     public void setBookedRestaurant(RestaurantDetails bookedRestaurantId) {
         this.bookedRestaurant = bookedRestaurantId;
+    }
+
+    public List<String> getLikeRestaurantId() {
+        return likeRestaurantId;
+    }
+
+    public void setLikeRestaurantId(List<String> likeRestaurantId) {
+        this.likeRestaurantId = likeRestaurantId;
     }
 }

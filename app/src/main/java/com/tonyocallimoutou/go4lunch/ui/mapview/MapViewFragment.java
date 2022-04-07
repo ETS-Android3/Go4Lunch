@@ -311,7 +311,7 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
     public static void setBookedRestaurant(List<RestaurantDetails> results) {
         bookedRestaurant = results;
         if (mGoogleMap != null) {
-            viewModelRestaurant.setNearbyPlace(userLocation);
+            initListForMarker();
         }
     }
 

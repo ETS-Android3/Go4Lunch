@@ -1,6 +1,7 @@
 package com.tonyocallimoutou.go4lunch.ui.listview;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
@@ -26,11 +28,16 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
     private final List<RestaurantDetails> mRestaurants;
     private final Context mContext;
     private final ListItemClickListener mListItemClickListener;
+    private final List<User> mWorkmates;
 
-    public ListViewRecyclerViewAdapter(Context context, List<RestaurantDetails> restaurants,ListItemClickListener listItemClickListener) {
+    public ListViewRecyclerViewAdapter(Context context,
+                                       List<RestaurantDetails> restaurants,
+                                       List<User> workmates,
+                                       ListItemClickListener listItemClickListener) {
         mRestaurants = restaurants;
         mContext = context;
         mListItemClickListener = listItemClickListener;
+        mWorkmates = workmates;
     }
 
     @NonNull
@@ -46,7 +53,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         RestaurantDetails restaurant = mRestaurants.get(position);
 
         RestaurantData.newInstance(mContext, restaurant);
-        RestaurantRate.newInstance(RestaurantData.getRate(),holder.rateOne, holder.rateTwo, holder.rateThree);
+        RestaurantRate.newInstance(restaurant,holder.rateOne, holder.rateTwo, holder.rateThree, mWorkmates);
 
         RestaurantRate.setImage();
 

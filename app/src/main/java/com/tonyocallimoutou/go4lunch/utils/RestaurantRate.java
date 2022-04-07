@@ -4,25 +4,35 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.google.android.gms.maps.UiSettings;
+import com.tonyocallimoutou.go4lunch.model.User;
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+
+import java.util.List;
+
 public class RestaurantRate {
 
-    private static int rateRestaurant;
+    private static RestaurantDetails restaurant;
     private static ImageView restaurantRate1;
     private static ImageView restaurantRate2;
     private static ImageView restaurantRate3;
+    private static List<User> listWorkmates;
+    private static int rateRestaurant;
 
-    public RestaurantRate(int rate, ImageView rate1, ImageView rate2, ImageView rate3) {
-        rateRestaurant = rate;
+    public RestaurantRate(RestaurantDetails restaurantDetails, ImageView rate1, ImageView rate2, ImageView rate3, List<User> workmates) {
+        restaurant = restaurantDetails;
         restaurantRate1 = rate1;
         restaurantRate2 = rate2;
         restaurantRate3 = rate3;
+        listWorkmates = workmates;
     }
 
-    public static RestaurantRate newInstance(int rate, ImageView rate1, ImageView rate2, ImageView rate3) {
-        return new RestaurantRate(rate,rate1,rate2,rate3);
+    public static RestaurantRate newInstance(RestaurantDetails restaurant, ImageView rate1, ImageView rate2, ImageView rate3, List<User> workmates) {
+        return new RestaurantRate(restaurant,rate1,rate2,rate3,workmates);
     }
 
     public static void setImage() {
+        setRate();
         switch (rateRestaurant) {
             case 0:
                 restaurantRate1.setVisibility(View.GONE);
@@ -51,5 +61,23 @@ public class RestaurantRate {
             default:
                 break;
         }
+    }
+
+    private static void setRate() {
+        double count = 0;
+        for (User user : listWorkmates) {
+            if (user.getLikeRestaurantId().contains(restaurant.getPlaceId())) {
+                count ++;
+            }
+        }
+
+        double rate = count/listWorkmates.size();
+
+        rateRestaurant = (int) Math.round(rate*3);
+        Log.d("TAG", "setRate: " + rateRestaurant);
+    }
+
+    public static int getRate() {
+        return rateRestaurant;
     }
 }
