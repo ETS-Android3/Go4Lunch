@@ -190,7 +190,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                 RestaurantData.newInstanceOfPosition(location);
 
                 viewModelRestaurant.setNearbyPlace(userLocation);
-                Log.d("TAG", "onSuccess: " + location);
 
                 if (mGoogleMap == null) {
                     mapFragment.getMapAsync(MapViewFragment.this);
@@ -298,10 +297,6 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
         // CAMERA
         mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(marker.getPosition()));
-        Log.d("TAG", "onMarkerClick: " + marker.getTitle());
-
-        Log.d("TAG", "onMarkerClick: " + markRestaurant.getWorkmatesId());
-
         DetailsActivity.navigate(getActivity(),markRestaurant);
 
         return true;

@@ -3,6 +3,7 @@ package com.tonyocallimoutou.go4lunch.repository;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.ui.auth.AuthUI;
@@ -12,7 +13,9 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
@@ -93,8 +96,6 @@ public class UserRepository {
                             }
                             if ( ! isAlreadyExisting) {
 
-                                Log.d("TAG", "createUser: " + user);
-
                                 String urlPicture = (user.getPhotoUrl() != null) ?
                                         user.getPhotoUrl().toString()
                                         : null;
@@ -118,23 +119,25 @@ public class UserRepository {
     // List of Workmates
 
     public void setWorkmatesList(MutableLiveData<List<User>> liveData) {
-        List<User> workmatesList = new ArrayList<>();
 
-        getUsersCollection().get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot document : list) {
-                                User user = document.toObject(User.class);
-                                workmatesList.add(user);
-                            }
-                        }
+        getUsersCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
-                        liveData.setValue(workmatesList);
-                    }
-                });
+                if (error != null) {
+                    Log.w("TAG", "Listen failed.", error);
+                    return;
+                }
+
+                List<User> workmatesList = new ArrayList<>();
+                for (DocumentSnapshot document : value) {
+                    User user = document.toObject(User.class);
+                    workmatesList.add(user);
+                }
+
+                liveData.setValue(workmatesList);
+            }
+        });
     }
 
 

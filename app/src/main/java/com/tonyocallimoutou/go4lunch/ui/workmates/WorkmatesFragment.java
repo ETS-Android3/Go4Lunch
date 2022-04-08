@@ -27,17 +27,17 @@ import butterknife.ButterKnife;
  */
 public class WorkmatesFragment extends Fragment {
 
-    @BindView(R.id.lbl_no_workmates)
-    TextView lblWorkmates;
+
+    private static TextView lblWorkmates;
     @BindView(R.id.workmates_recycler_view)
     RecyclerView mRecyclerView;
 
-    private ViewModelUser viewModelUser;
-    private List<User> mUsers = new ArrayList<>();
+    private static ViewModelUser viewModelUser;
+    private static List<User> mUsers = new ArrayList<>();
 
     private static List<User> workmates = new ArrayList<>();
 
-    WorkmatesRecyclerViewAdapter adapter;
+    private static WorkmatesRecyclerViewAdapter adapter;
 
 
     public WorkmatesFragment() {
@@ -64,6 +64,8 @@ public class WorkmatesFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_workmates, container, false);
         ButterKnife.bind(this,view);
 
+        lblWorkmates = view.findViewById(R.id.lbl_no_workmates);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
         adapter = new WorkmatesRecyclerViewAdapter(getContext(),mUsers);
@@ -73,30 +75,38 @@ public class WorkmatesFragment extends Fragment {
 
     }
 
-    public void initUserList() {
+    public static void initUserList() {
 
-        mUsers.addAll(workmates);
+        if (adapter != null) {
 
-        List<User> userToRemove = new ArrayList<>();
-        for (User user : mUsers) {
-            if (user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
-                userToRemove.add(user);
+            mUsers.clear();
+
+            mUsers.addAll(workmates);
+
+            List<User> userToRemove = new ArrayList<>();
+            for (User user : mUsers) {
+                if (user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
+                    userToRemove.add(user);
+                }
             }
-        }
-        mUsers.removeAll(userToRemove);
+            mUsers.removeAll(userToRemove);
 
-        if (mUsers.size() == 0) {
-            lblWorkmates.setVisibility(View.VISIBLE);
-        }
-        else {
-            lblWorkmates.setVisibility(View.GONE);
-        }
+            if (lblWorkmates != null) {
+                if (mUsers.size() == 0) {
+                    lblWorkmates.setVisibility(View.VISIBLE);
+                } else {
+                    lblWorkmates.setVisibility(View.GONE);
+                }
+            }
 
-        adapter.notifyDataSetChanged();
+
+            adapter.notifyDataSetChanged();
+        }
 
     }
 
     public static void setWorkmates(List<User> result) {
         workmates = result;
+        initUserList();
     }
 }

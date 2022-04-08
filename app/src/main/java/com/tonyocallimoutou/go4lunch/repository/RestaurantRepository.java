@@ -3,15 +3,19 @@ package com.tonyocallimoutou.go4lunch.repository;
 import android.location.Location;
 import android.util.Log;
 
+import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.BuildConfig;
 import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
+import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
 import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
@@ -89,23 +93,26 @@ public class RestaurantRepository {
     }
 
     public void setBookedRestaurantFirestore(MutableLiveData<List<RestaurantDetails>> liveData) {
-        List<RestaurantDetails> restaurants = new ArrayList<>();
-        getBookedRestaurantsCollection().get()
-                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                    @Override
-                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                        if (!queryDocumentSnapshots.isEmpty()) {
-                            List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                            for (DocumentSnapshot document : list) {
-                                RestaurantDetails restaurant = document.toObject(RestaurantDetails.class);
-                                restaurants.add(restaurant);
-                            }
-                        }
 
-                        liveData.setValue(restaurants);
+        getBookedRestaurantsCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
 
-                    }
-                });
+                if (error != null) {
+                    Log.w("TAG", "Listen failed.", error);
+                    return;
+                }
+
+                List<RestaurantDetails> restaurants = new ArrayList<>();
+                for (DocumentSnapshot document : value) {
+                    RestaurantDetails restaurant = document.toObject(RestaurantDetails.class);
+                    restaurants.add(restaurant);
+                }
+
+                liveData.setValue(restaurants);
+            }
+        });
+
     }
 
 
@@ -133,11 +140,9 @@ public class RestaurantRepository {
                     }
 
                     if (listLocation.contains(location)) {
-                        Log.d("TAG", "YES: ");
                         getNearbyRestaurantFirestore(userLocation, liveData);
                     }
                     else {
-                        Log.d("TAG", "NO: ");
                         getNearbyPlace(userLocation, liveData);
                     }
 
@@ -158,7 +163,6 @@ public class RestaurantRepository {
                     @Override
                     public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                         List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                        Log.d("TAG", "onSuccess: " + list.size());
                         for (DocumentSnapshot document : list) {
                             RestaurantDetails restaurant = document.toObject(RestaurantDetails.class);
                             restaurants.add(restaurant);
@@ -203,7 +207,6 @@ public class RestaurantRepository {
                     result.add(restaurant);
 
                     if (result.size() == restaurants.size()) {
-                        Log.d("TAG", "OK: ");
 
                         liveData.setValue(result);
                         createNearbyRestaurantInFirebase(userLocation, result);

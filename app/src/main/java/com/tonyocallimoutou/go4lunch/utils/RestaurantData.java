@@ -126,7 +126,6 @@ public class RestaurantData {
     }
 
     public static int getRate() {
-        Log.e("TAG", "getRate: " + result.getRating());
         Random ran = new Random();
         return ran.nextInt(4);
     }

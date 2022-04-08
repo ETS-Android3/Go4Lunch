@@ -256,14 +256,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
 
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
-            Log.d("TAG", "Booked Changed: ");
             bookedRestaurant = restaurantsResults;
             ListViewFragment.setBookedRestaurant(restaurantsResults);
             MapViewFragment.setBookedRestaurant(restaurantsResults);
         });
 
         viewModelUser.getWorkmates().observe(this, workmates -> {
-            Log.d("TAG", "workmates Changed: ");
             this.workmates = workmates;
             WorkmatesFragment.setWorkmates(workmates);
             ListViewFragment.setWorkmates(workmates);
@@ -271,7 +269,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         });
 
         viewModelRestaurant.getNearbyRestaurantLiveData().observe(this, restaurantsResults -> {
-            Log.d("TAG", "nearby Changed: ");
+            for (RestaurantDetails restaurant : restaurantsResults) {
+                restaurant.getWorkmatesId().clear();
+            }
             nearbyRestaurant = restaurantsResults;
             ListViewFragment.setNearbyRestaurant(restaurantsResults);
             MapViewFragment.setNearbyRestaurant(restaurantsResults);

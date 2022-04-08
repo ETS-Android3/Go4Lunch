@@ -156,7 +156,6 @@ public class DetailsActivity extends AppCompatActivity {
         RestaurantRate.newInstance(restaurant,restaurantRate1,restaurantRate2,restaurantRate3, workmates);
 
         RestaurantRate.setImage();
-        Log.d("TAG", "setInformation: " + RestaurantRate.getRate());
 
         restaurantName.setText(RestaurantData.getRestaurantName());
         restaurantAddress.setText(RestaurantData.getTypeAndAddress());
@@ -189,7 +188,6 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void setLike() {
-        Log.d("TAG", "set Button Like: ");
         if (isLike) {
             likeButton.setImageDrawable(getDrawable(R.drawable.ic_star_gold_24dp));
         }
@@ -279,11 +277,11 @@ public class DetailsActivity extends AppCompatActivity {
     private void likeRestaurant() {
         if (isLike) {
             viewModelRestaurant.dislikeThisRestaurant(restaurant);
-            Toast.makeText(this, "You don't like it", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.you_not_like_it), Toast.LENGTH_SHORT).show();
         }
         else {
             viewModelRestaurant.likeThisRestaurant(restaurant);
-            Toast.makeText(this, "You like it", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.you_like_it), Toast.LENGTH_SHORT).show();
         }
 
         isLike = !isLike;
@@ -300,6 +298,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public static void setWorkmates(List<User> result) {
-        workmates = result;
+        workmates.clear();
+        workmates.addAll(result);
     }
 }

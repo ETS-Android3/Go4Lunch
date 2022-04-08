@@ -74,7 +74,6 @@ public class RestaurantRate {
         double rate = count/listWorkmates.size();
 
         rateRestaurant = (int) Math.round(rate*3);
-        Log.d("TAG", "setRate: " + rateRestaurant);
     }
 
     public static int getRate() {

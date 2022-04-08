@@ -1,5 +1,6 @@
 package com.tonyocallimoutou.go4lunch.ui.listview;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -7,7 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -31,18 +34,18 @@ import java.util.List;
  */
 public class ListViewFragment extends Fragment {
 
-    private RecyclerView mRecyclerView;
+    private static RecyclerView mRecyclerView;
     private ViewModelRestaurant viewModelRestaurant;
 
     private static List<RestaurantDetails> mRestaurants = new ArrayList<>();
     private static List<RestaurantDetails> bookedRestaurant = new ArrayList<>();
     private static List<RestaurantDetails> nearbyRestaurant = new ArrayList<>();
+    private static List<RestaurantDetails> nearbyWithoutBooked = new ArrayList<>();
     private static List<User> workmates = new ArrayList<>();
 
     private static ListViewRecyclerViewAdapter adapter;
-
-    private final String KEY_WORKMATES = "KEY_WORKMATES";
-    private final String KEY_RESTAURANT = "KEY_RESTAURANT";
+    private static Context mContext;
+    private static FragmentActivity mActivity;
 
     public ListViewFragment() {
         // Required empty public constructor
@@ -68,49 +71,55 @@ public class ListViewFragment extends Fragment {
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
-        adapter = new ListViewRecyclerViewAdapter(getContext(), mRestaurants, workmates, new ListViewRecyclerViewAdapter.ListItemClickListener() {
-            @Override
-            public void onListItemClick(int position) {
-                RestaurantDetails restaurant = mRestaurants.get(position);
-                DetailsActivity.navigate(getActivity(), restaurant);
-            }
-        });
-
-
+        mContext = getContext();
+        mActivity = getActivity();
         initRestaurantList();
-        mRecyclerView.setAdapter(adapter);
         return view;
     }
 
     public static void initRestaurantList() {
 
         mRestaurants.clear();
-
+        nearbyWithoutBooked.clear();
         if (nearbyRestaurant.size() != 0) {
-            nearbyRestaurant = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant,bookedRestaurant);
+            nearbyWithoutBooked = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant,bookedRestaurant);
         }
         mRestaurants.addAll(bookedRestaurant);
-        mRestaurants.addAll(nearbyRestaurant);
+        mRestaurants.addAll(nearbyWithoutBooked);
 
-        if (adapter != null) {
-            Log.d("TAG", "initRestaurantList: " + workmates.size());
-            adapter.notifyDataSetChanged();
+        if (mRecyclerView != null) {
+            initAdapter();
         }
 
     }
 
+    private static void initAdapter() {
+        adapter = new ListViewRecyclerViewAdapter(mContext, mRestaurants, workmates, new ListViewRecyclerViewAdapter.ListItemClickListener() {
+            @Override
+            public void onListItemClick(int position) {
+                RestaurantDetails restaurant = mRestaurants.get(position);
+                DetailsActivity.navigate(mActivity, restaurant);
+            }
+        });
+
+        mRecyclerView.setAdapter(adapter);
+    }
+
     public static void setBookedRestaurant(List<RestaurantDetails> result) {
-        bookedRestaurant = result;
+        bookedRestaurant.clear();
+        bookedRestaurant.addAll(result);
         initRestaurantList();
     }
 
     public static void setNearbyRestaurant(List<RestaurantDetails> result) {
-        nearbyRestaurant = result;
+        nearbyRestaurant.clear();
+        nearbyRestaurant.addAll(result);
         initRestaurantList();
     }
 
     public static void setWorkmates(List<User> result) {
-        workmates = result;
+        workmates.clear();
+        workmates.addAll(result);
         initRestaurantList();
     }
 
