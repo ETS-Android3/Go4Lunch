@@ -71,4 +71,14 @@ public class OpeningHours {
     public void setWeekdayText(List<String> weekdayText) {
         this.weekdayText = weekdayText;
     }
+
+    // Constructor for Test
+
+    public OpeningHours() {
+    }
+
+    public OpeningHours(Boolean openNow, List<Period> periods) {
+        this.openNow = openNow;
+        this.periods = periods;
+    }
 }

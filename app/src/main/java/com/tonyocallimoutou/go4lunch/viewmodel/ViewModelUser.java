@@ -45,8 +45,8 @@ public class ViewModelUser extends ViewModel {
         userRepository.createUser();
     }
 
-    public CollectionReference getUsersCollection(){
-        return userRepository.getUsersCollection();
+    public Task<Void> deleteUser(Context context){
+        return userRepository.deleteUser(context);
     }
 
     // Workmates

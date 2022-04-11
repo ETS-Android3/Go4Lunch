@@ -2,13 +2,16 @@ package com.tonyocallimoutou.go4lunch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
+import android.content.Context;
 import android.location.Location;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
@@ -53,6 +56,9 @@ public class TestViewModel {
     private ViewModelUser viewModelUser;
     @Mock
     private ViewModelRestaurant viewModelRestaurant;
+    @Mock
+    private Context context;
+
 
 
     private final List<User> fakeWorkmates = new ArrayList<>(FakeData.getFakeWorkmates());
@@ -154,6 +160,39 @@ public class TestViewModel {
             }
         }).when(userRepository).setWorkmatesList(any(MutableLiveData.class));
 
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                List<User> listTest = new ArrayList<>();
+                listTest.addAll(fakeWorkmates);
+                for (User user : listTest) {
+                    if (user.getUid().equals(currentUser.getUid())) {
+                        fakeWorkmates.remove(user);
+                        fakeWorkmates.add(currentUser);
+                    }
+                }
+                if (! fakeWorkmates.contains(currentUser)) {
+                    fakeWorkmates.add(currentUser);
+                }
+                return null;
+            }
+        }).when(userRepository).createUser();
+
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                List<User> listTest = new ArrayList<>();
+                listTest.addAll(fakeWorkmates);
+                for (User user : listTest) {
+                    if (user.getUid().equals(currentUser.getUid())) {
+                        fakeWorkmates.remove(user);
+                    }
+                }
+                return null;
+            }
+        }).when(userRepository).deleteUser(any(Context.class));
+
 
         doAnswer(new Answer() {
             @Override
@@ -173,8 +212,32 @@ public class TestViewModel {
                 return null;
             }
         }).when(userRepository).cancelRestaurant();
-    }
 
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantDetails restaurant = (RestaurantDetails) args[0];
+                if (! currentUser.getLikeRestaurantId().contains(restaurant.getPlaceId())) {
+                    currentUser.getLikeRestaurantId().add(restaurant.getPlaceId());
+                }
+                return null;
+            }
+        }).when(userRepository).likeThisRestaurant(any(RestaurantDetails.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantDetails restaurant = (RestaurantDetails) args[0];
+                if (currentUser.getLikeRestaurantId().contains(restaurant.getPlaceId())) {
+                    currentUser.getLikeRestaurantId().remove(restaurant.getPlaceId());
+                }
+                return null;
+            }
+        }).when(userRepository).dislikeThisRestaurant(any(RestaurantDetails.class));
+
+    }
 
     @Test
     public void getCurrentUser() {
@@ -184,6 +247,30 @@ public class TestViewModel {
         assertEquals(currentUser.getUid(), user.getUid());
         assertEquals(currentUser.getUsername(), user.getUsername());
         assertEquals(currentUser.getUrlPicture(), user.getUrlPicture());
+    }
+
+    @Test
+    public void createUser() {
+        int workmatesSize = fakeWorkmates.size();
+        for (User user : fakeWorkmates) {
+            assertNotEquals(user.getUid(), currentUser.getUid());
+        }
+        viewModelUser.createUser();
+        assertEquals(workmatesSize+1, fakeWorkmates.size());
+        assertTrue(fakeWorkmates.contains(currentUser));
+    }
+
+    @Test
+    public void deleteUser() {
+        viewModelUser.createUser();
+        assertTrue(fakeWorkmates.contains(currentUser));
+
+        viewModelUser.deleteUser(context);
+
+        assertFalse(fakeWorkmates.contains(currentUser));
+        for (User user : fakeWorkmates) {
+            assertNotEquals(user.getUid(), currentUser.getUid());
+        }
     }
 
     @Test
@@ -312,6 +399,28 @@ public class TestViewModel {
 
         assertEquals(sizeWorkmate-1, restaurantTest.getWorkmatesId().size());
         assertFalse(restaurantTest.getWorkmatesId().contains(currentUser.getUid()));
+    }
+
+    @Test
+    public void likeThisRestaurant() {
+        assertEquals(0, currentUser.getLikeRestaurantId().size());
+
+        viewModelRestaurant.likeThisRestaurant(restaurantTest);
+
+        assertEquals(1,currentUser.getLikeRestaurantId().size());
+        assertEquals(restaurantTest.getPlaceId(),currentUser.getLikeRestaurantId().get(0));
+    }
+
+    @Test
+    public void dislikeRestaurant() {
+        viewModelRestaurant.likeThisRestaurant(restaurantTest);
+
+        assertEquals(1,currentUser.getLikeRestaurantId().size());
+        assertEquals(restaurantTest.getPlaceId(),currentUser.getLikeRestaurantId().get(0));
+
+        viewModelRestaurant.dislikeThisRestaurant(restaurantTest);
+        assertEquals(0,currentUser.getLikeRestaurantId().size());
+
     }
 
 }

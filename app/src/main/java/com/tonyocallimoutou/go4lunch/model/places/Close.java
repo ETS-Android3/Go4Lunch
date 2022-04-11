@@ -28,4 +28,13 @@ public class Close {
         this.time = time;
     }
 
+    // Constructor for Test
+
+    public Close() {
+    }
+
+    public Close(Integer day, String time) {
+        this.day = day;
+        this.time = time;
+    }
 }

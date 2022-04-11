@@ -28,4 +28,13 @@ public class Period {
         this.open = open;
     }
 
+    // Constructor for Test
+
+    public Period() {
+    }
+
+    public Period(Open open, Close close) {
+        this.close = close;
+        this.open = open;
+    }
 }
