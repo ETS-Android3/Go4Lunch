@@ -8,6 +8,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 
@@ -20,6 +21,8 @@ public class ViewModelRestaurant extends ViewModel {
 
     private final MutableLiveData<List<RestaurantDetails>> nearbyPlaceMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<RestaurantDetails>> bookedRestaurantMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<List<Prediction>> predictionsMutableLiveData = new MutableLiveData<>();
+    private Location userLocation;
 
 
     // Constructor
@@ -33,6 +36,7 @@ public class ViewModelRestaurant extends ViewModel {
     // Nearby Restaurant
 
     public void setNearbyPlace(Location userLocation) {
+        this.userLocation = userLocation;
         restaurantRepository.setNearbyPlace(userLocation, nearbyPlaceMutableLiveData);
     }
 
@@ -88,5 +92,18 @@ public class ViewModelRestaurant extends ViewModel {
 
     public void dislikeThisRestaurant(RestaurantDetails restaurant) {
         userRepository.dislikeThisRestaurant(restaurant);
+    }
+
+    // Search
+
+    public void setSearchRestaurant(String input) {
+        Log.d("TAG", "setSearchRestaurant: " + input);
+        if (input != null) {
+            restaurantRepository.setSearchRestaurant(userLocation, input, predictionsMutableLiveData);
+        }
+    }
+
+    public LiveData<List<Prediction>> getPredictionLiveData() {
+        return predictionsMutableLiveData;
     }
 }

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
@@ -27,8 +28,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
-import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
@@ -51,6 +52,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @BindView(R.id.bottom_nav_view)
     BottomNavigationView navigationView;
 
+    private AutocompleteFragment autocompleteFragment;
     private SearchView searchView;
     private ViewModelUser viewModelUser;
     private ViewModelRestaurant viewModelRestaurant;
@@ -59,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private List<RestaurantDetails> nearbyRestaurant = new ArrayList<>();
     private List<RestaurantDetails> bookedRestaurant = new ArrayList<>();
-    private List<User> workmates = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.actionbar_menu, menu);
         searchView = (SearchView) menu.findItem(R.id.search_menu).getActionView();
+        initSearch();
         return true;
     }
 
@@ -135,7 +137,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             case R.id.search_menu:
                 Log.d("TAG", "onOptionsItemSelected: search");
-                initSearch();
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -144,21 +145,42 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // INIT SEARCH ACTION
 
     private void initSearch() {
+
         searchView.setQueryHint(getString(R.string.search_hint));
+        searchView.setOnSearchClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                autocompleteFragment = new AutocompleteFragment();
+                FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+                fragmentTransaction.replace(R.id.host_fragment_autocomplete, autocompleteFragment);
+                fragmentTransaction.commit();
+                Log.d("TAG", "onClick: ");
+            }
+        });
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener() {
+            @Override
+            public boolean onClose() {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .remove(autocompleteFragment)
+                        .commit();
+                Log.d("TAG", "onClose: ");
+                return false;
+            }
+        });
+
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String s) {
-                for (RestaurantDetails restaurant : nearbyRestaurant) {
-                    if (restaurant.getName().equals(s)) {
-                        //viewModelRestaurant.search();
-                        // https://www.geeksforgeeks.org/android-searchview-with-example/
-                    }
-                }
-                return true;
+                Log.d("TAG", "onQueryTextSubmit: ");
+                viewModelRestaurant.setSearchRestaurant(s);
+                return false;
             }
 
             @Override
             public boolean onQueryTextChange(String s) {
+
                 return false;
             }
         });
@@ -254,15 +276,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (nearbyRestaurant.size() == 0) {
             viewModelRestaurant.setNearbyPlace(null);
         }
+        viewModelRestaurant.setSearchRestaurant(null);
 
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
-            bookedRestaurant = restaurantsResults;
+            bookedRestaurant.clear();
+            bookedRestaurant.addAll(restaurantsResults);
             ListViewFragment.setBookedRestaurant(restaurantsResults);
             MapViewFragment.setBookedRestaurant(restaurantsResults);
         });
 
         viewModelUser.getWorkmates().observe(this, workmates -> {
-            this.workmates = workmates;
             WorkmatesFragment.setWorkmates(workmates);
             ListViewFragment.setWorkmates(workmates);
             DetailsActivity.setWorkmates(workmates);
@@ -272,9 +295,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for (RestaurantDetails restaurant : restaurantsResults) {
                 restaurant.getWorkmatesId().clear();
             }
-            nearbyRestaurant = restaurantsResults;
+            nearbyRestaurant.clear();
+            nearbyRestaurant.addAll(restaurantsResults);
             ListViewFragment.setNearbyRestaurant(restaurantsResults);
             MapViewFragment.setNearbyRestaurant(restaurantsResults);
+        });
+
+        viewModelRestaurant.getPredictionLiveData().observe(this, predictionsResults -> {
+            AutocompleteFragment.setPredictions(predictionsResults);
         });
     }
 }

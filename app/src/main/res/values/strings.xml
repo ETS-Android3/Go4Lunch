@@ -20,7 +20,7 @@
     <string name="workmate_is_eating"> is eating </string>
     <string name="workmate_has_not_decided_yet"> hasn\'t decided yet </string>
     <string name="workmate_is_joining"> is joining ! </string>
-    <string name="no_workmates" > NO WORKMATES </string>
+    <string name="no_workmates"> NO WORKMATES </string>
 
     <string name="title_message_map_view"> We are Sorry </string>
     <string name="message_map_view"> We need to acces to your location to show you the map.\nDo you want to grant us this permission</string>
@@ -37,7 +37,7 @@
     <string name="restaurant_data_open_24h7j"> Open 24/7 </string>
     <string name="restaurant_data_close"> Close </string>
     <string name="restaurant_data_no_data"> No data </string>
-    
+
     <string name="detail_call"> CALL </string>
     <string name="detail_like"> LIKE </string>
     <string name="detail_website"> WEBSITE </string>
@@ -45,7 +45,8 @@
     <string name="explain_call"> Sorry, we need your permission to call </string>
     <string name="you_like_it"> You like it </string>
     <string name="you_not_like_it"> You don\'t like it </string>
-
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 
 
 </resources>

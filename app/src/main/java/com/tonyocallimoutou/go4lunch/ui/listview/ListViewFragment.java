@@ -35,7 +35,6 @@ import java.util.List;
 public class ListViewFragment extends Fragment {
 
     private static RecyclerView mRecyclerView;
-    private ViewModelRestaurant viewModelRestaurant;
 
     private static List<RestaurantDetails> mRestaurants = new ArrayList<>();
     private static List<RestaurantDetails> bookedRestaurant = new ArrayList<>();
@@ -59,7 +58,6 @@ public class ListViewFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
     }
 
     @Override
