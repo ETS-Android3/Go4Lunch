@@ -19,6 +19,7 @@ public class ViewModelUser extends ViewModel {
     private UserRepository userRepository;
 
     private MutableLiveData<List<User>> workmates = new MutableLiveData<>();
+    private MutableLiveData<User> currentUserLiveData = new MutableLiveData<>();
 
 
     public ViewModelUser (UserRepository userRepository) {
@@ -32,6 +33,14 @@ public class ViewModelUser extends ViewModel {
     }
 
     public User getCurrentUser() {return userRepository.getCurrentUser();}
+
+    public void setCurrentUserLiveData() {
+        userRepository.setCurrentUserLivedata(currentUserLiveData);
+    }
+
+    public LiveData<User> getCurrentUserLiveData() {
+        return currentUserLiveData;
+    }
 
     public boolean isCurrentLogged() {
         return (this.getCurrentFirebaseUser() != null);

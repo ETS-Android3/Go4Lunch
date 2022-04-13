@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.ui.auth.AuthUI;
@@ -77,7 +78,6 @@ public class UserRepository {
 
         FirebaseUser user = getCurrentFirebaseUser();
         if (user != null) {
-
 
             getUsersCollection().get()
                     .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -176,4 +176,25 @@ public class UserRepository {
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
 
+
+    public void setCurrentUserLivedata(MutableLiveData<User> liveData) {
+        getUsersCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                if (error != null) {
+                    Log.w("TAG", "Listen failed.", error);
+                    return;
+                }
+
+                for (DocumentSnapshot document : value) {
+                    User user = document.toObject(User.class);
+                    if (user.getUid().equals(getCurrentFirebaseUser().getUid())) {
+                        liveData.setValue(user);
+                    }
+
+                }
+            }
+        });
+    }
 }

@@ -1,5 +1,8 @@
 package com.tonyocallimoutou.go4lunch;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -33,12 +36,15 @@ import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
+import com.tonyocallimoutou.go4lunch.utils.Notification;
+import com.tonyocallimoutou.go4lunch.utils.NotificationReceiver;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -249,6 +255,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // InitData
 
     public void initData() {
+        viewModelUser.setCurrentUserLiveData();
         viewModelUser.setWorkmatesList();
         viewModelRestaurant.setBookedRestaurantList();
         if (nearbyRestaurant.size() == 0) {
@@ -263,9 +270,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         viewModelUser.getWorkmates().observe(this, workmates -> {
             this.workmates = workmates;
+            Notification.newInstance(workmates);
             WorkmatesFragment.setWorkmates(workmates);
             ListViewFragment.setWorkmates(workmates);
-            DetailsActivity.setWorkmates(workmates);
         });
 
         viewModelRestaurant.getNearbyRestaurantLiveData().observe(this, restaurantsResults -> {
@@ -275,6 +282,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             nearbyRestaurant = restaurantsResults;
             ListViewFragment.setNearbyRestaurant(restaurantsResults);
             MapViewFragment.setNearbyRestaurant(restaurantsResults);
+        });
+
+        viewModelUser.getCurrentUserLiveData().observe(this, currentUserResults -> {
+            if (currentUserResults != null) {
+                Notification.setNotification(this,currentUserResults);
+            }
         });
     }
 }

@@ -28,8 +28,13 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
+import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
+import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
+import com.tonyocallimoutou.go4lunch.utils.Notification;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
+import com.tonyocallimoutou.go4lunch.utils.WorkmatesLunch;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
@@ -79,13 +84,15 @@ public class DetailsActivity extends AppCompatActivity {
     boolean isLike;
 
     private static RestaurantDetails restaurant;
-    private static List<User> workmates = new ArrayList<>();
+    private List<User> workmates = new ArrayList<>();
     private List<User> workmatesLunch = new ArrayList<>();
 
     private ViewModelUser viewModelUser;
     private ViewModelRestaurant viewModelRestaurant;
 
     private static final int MY_PERMISSION_REQUEST_CODE_CALL_PHONE = 555;
+    private final String KEY_EXTRA_DETAIL_ACTIVITY = "KEY_EXTRA_DETAIL_ACTIVITY";
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,9 +103,14 @@ public class DetailsActivity extends AppCompatActivity {
         viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
         viewModelRestaurant = new ViewModelProvider(this,ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
 
-        initRecyclerView();
-        initWorkmatesList();
-        setInformation();
+        Bundle extras = getIntent().getExtras();
+        if(extras != null) {
+            if (extras.getString(KEY_EXTRA_DETAIL_ACTIVITY).equals("NOTIFICATION")) {
+                restaurant = viewModelRestaurant.getRestaurantOfCurrentUser();
+            }
+        }
+
+        initData();
     }
 
 
@@ -114,30 +126,18 @@ public class DetailsActivity extends AppCompatActivity {
         isBooked = restaurant.getWorkmatesId().contains(viewModelUser.getCurrentUser().getUid());
         isLike = viewModelUser.getCurrentUser().getLikeRestaurantId().contains(restaurant.getPlaceId());
 
-        List<User> removeUser = new ArrayList<>();
-        workmatesLunch.clear();
-        workmatesLunch.addAll(workmates);
+        workmatesLunch = WorkmatesLunch.getWorkmatesLunch(restaurant,workmates);
 
-        if (restaurant.getWorkmatesId().size() != 0) {
-            for (User user : workmatesLunch) {
-                if ( ! restaurant.getWorkmatesId().contains(user.getUid())) {
-                    removeUser.add(user);
-                }
-            }
-            workmatesLunch.removeAll(removeUser);
-        }
-        else {
-            workmatesLunch.clear();
-        }
-
-        if (workmates.size() == 0) {
+        if (workmatesLunch.size() == 0) {
             lblWorkmates.setVisibility(View.VISIBLE);
         }
         else {
             lblWorkmates.setVisibility(View.GONE);
         }
 
-        adapter.notifyDataSetChanged();
+
+        initRecyclerView();
+        setInformation();
     }
 
 
@@ -291,14 +291,26 @@ public class DetailsActivity extends AppCompatActivity {
 
     // INIT
 
+    public void initData() {
+        viewModelUser.setCurrentUserLiveData();
+        viewModelUser.setWorkmatesList();
+
+        viewModelUser.getWorkmates().observe(this, workmates -> {
+            this.workmates = workmates;
+            Notification.newInstance(workmates);
+            initWorkmatesList();
+        });
+
+        viewModelUser.getCurrentUserLiveData().observe(this, currentUserResults -> {
+            if (currentUserResults != null) {
+                Notification.setNotification(this,currentUserResults);
+            }
+        });
+    }
+
     public static void navigate(Activity activity, RestaurantDetails result ) {
         restaurant = result;
         Intent intent = new Intent(activity, DetailsActivity.class);
         ActivityCompat.startActivity(activity, intent, null);
-    }
-
-    public static void setWorkmates(List<User> result) {
-        workmates.clear();
-        workmates.addAll(result);
     }
 }
