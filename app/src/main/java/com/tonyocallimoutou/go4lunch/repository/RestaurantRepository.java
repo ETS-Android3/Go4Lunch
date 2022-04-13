@@ -257,11 +257,38 @@ public class RestaurantRepository {
         retrofitMap.getSearchPlace(location, input).enqueue(new Callback<SearchPlace>() {
             @Override
             public void onResponse(Call<SearchPlace> call, Response<SearchPlace> response) {
-                liveData.setValue(response.body().getResults());
+                List<Prediction> predictions = new ArrayList<>();
+                for (Prediction prediction : response.body().getResults()) {
+                    if (prediction.getTypes().contains("food") || prediction.getTypes().contains("restaurant")) {
+                        predictions.add(prediction);
+                    }
+                }
+                liveData.setValue(predictions);
             }
 
             @Override
             public void onFailure(Call<SearchPlace> call, Throwable t) {
+
+            }
+        });
+    }
+
+    // Detail
+
+    public void setDetailForPrediction(Prediction prediction, MutableLiveData<RestaurantDetails> liveData) {
+        retrofitMap.getPlaceDetails(prediction.getPlaceId()).enqueue(new Callback<PlaceDetails>() {
+            @Override
+            public void onResponse(Call<PlaceDetails> call, Response<PlaceDetails> response) {
+                RestaurantDetails restaurant = response.body().getResult();
+                setImage(restaurant);
+                restaurant.setRating(0.0);
+
+                liveData.setValue(restaurant);
+
+            }
+
+            @Override
+            public void onFailure(Call<PlaceDetails> call, Throwable t) {
 
             }
         });

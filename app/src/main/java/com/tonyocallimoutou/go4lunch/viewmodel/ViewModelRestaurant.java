@@ -7,10 +7,12 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
+import com.tonyocallimoutou.go4lunch.utils.PredictionOfWorkmates;
 
 import java.util.List;
 
@@ -22,6 +24,7 @@ public class ViewModelRestaurant extends ViewModel {
     private final MutableLiveData<List<RestaurantDetails>> nearbyPlaceMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<RestaurantDetails>> bookedRestaurantMutableLiveData = new MutableLiveData<>();
     private final MutableLiveData<List<Prediction>> predictionsMutableLiveData = new MutableLiveData<>();
+    private final MutableLiveData<RestaurantDetails> detailsRestaurantMutableLiveDataMutableLiveData = new MutableLiveData<>();
     private Location userLocation;
 
 
@@ -97,13 +100,30 @@ public class ViewModelRestaurant extends ViewModel {
     // Search
 
     public void setSearchRestaurant(String input) {
-        Log.d("TAG", "setSearchRestaurant: " + input);
         if (input != null) {
             restaurantRepository.setSearchRestaurant(userLocation, input, predictionsMutableLiveData);
         }
     }
 
+    public void setSearchWorkmates(String input, List<User> workmates) {
+        if (input != null) {
+            List<Prediction> predictions = PredictionOfWorkmates.getWorkmates(input,workmates);
+            predictionsMutableLiveData.setValue(predictions);
+        }
+
+    }
+
     public LiveData<List<Prediction>> getPredictionLiveData() {
         return predictionsMutableLiveData;
+    }
+
+    // Detail Restaurant
+
+    public void setDetailsRestaurantForPrediction(Prediction prediction) {
+        restaurantRepository.setDetailForPrediction(prediction,detailsRestaurantMutableLiveDataMutableLiveData);
+    }
+
+    public LiveData<RestaurantDetails> getDetailPrediction() {
+        return detailsRestaurantMutableLiveDataMutableLiveData;
     }
 }

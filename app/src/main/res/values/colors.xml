@@ -7,6 +7,7 @@
     <color name="white"> #ffff </color>
     <color name="black"> #FF000000 </color>
     <color name="grey"> #474a4b</color>
+    <color name="light_grey"> #F0F0F2</color>
     <color name="orange"> #fc7540 </color>
     <color name="gold"> #FFD700 </color>
     <color name="red_warning"> #cc2036 </color>

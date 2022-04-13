@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
@@ -27,22 +28,26 @@ import butterknife.ButterKnife;
  * Use the {@link AutocompleteFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AutocompleteFragment extends Fragment {
+public class AutocompleteFragment extends Fragment{
 
     @BindView(R.id.autocomplete_recycler_view)
     RecyclerView mRecyclerView;
+
+    private static TextView textNoPrediction;
 
     private static AutocompleteRecyclerViewAdapter adapter;
 
     private static List<Prediction> mPredictions = new ArrayList<>();
 
+    private static AutocompleteRecyclerViewAdapter.PredictionItemClickListener mPredictionItemClickListener;
+
     public AutocompleteFragment() {
         // Required empty public constructor
     }
 
-    public static AutocompleteFragment newInstance() {
-        AutocompleteFragment fragment = new AutocompleteFragment();
-        return fragment;
+    public static AutocompleteFragment newInstance(AutocompleteRecyclerViewAdapter.PredictionItemClickListener predictionItemClickListener) {
+        mPredictionItemClickListener = predictionItemClickListener;
+        return new AutocompleteFragment();
     }
 
     @Override
@@ -58,17 +63,35 @@ public class AutocompleteFragment extends Fragment {
 
         ButterKnife.bind(this,view);
 
+        textNoPrediction = view.findViewById(R.id.autocomplete_no_prediction);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        adapter = new AutocompleteRecyclerViewAdapter(mPredictions);
+        adapter = new AutocompleteRecyclerViewAdapter(getContext(), mPredictions,mPredictionItemClickListener);
+        initList();
         mRecyclerView.setAdapter(adapter);
         return view;
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mPredictions.clear();
+    }
+
+    private static void initList() {
+        if (mPredictions.size() == 0) {
+            textNoPrediction.setVisibility(View.VISIBLE);
+        }
+        else {
+            textNoPrediction.setVisibility(View.GONE);
+        }
     }
 
     public static void setPredictions(List<Prediction> results) {
         mPredictions.clear();
         mPredictions.addAll(results);
-        Log.d("TAG", "setPredictions: " + mPredictions.size());
+        initList();
         adapter.notifyDataSetChanged();
     }
 }

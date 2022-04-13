@@ -54,8 +54,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private AutocompleteFragment autocompleteFragment;
     private SearchView searchView;
-    private ViewModelUser viewModelUser;
-    private ViewModelRestaurant viewModelRestaurant;
+    private  ViewModelUser viewModelUser;
+    private static ViewModelRestaurant viewModelRestaurant;
     private View sideView;
     private ActionBar actionBar;
 
@@ -111,13 +111,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // INIT ACTION BAR
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
-        searchView = (SearchView) menu.findItem(R.id.search_menu).getActionView();
-        initSearch();
-        return true;
-    }
 
     private void initActionBar() {
         actionBar = getSupportActionBar();
@@ -189,7 +182,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // INIT BOTTOM NAVIGATION
 
     private void initBottomNavigationView() {
-        BottomNavigationView navigationView = findViewById(R.id.bottom_nav_view);
 
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.navigation_map, R.id.navigation_list, R.id.navigation_workmates)

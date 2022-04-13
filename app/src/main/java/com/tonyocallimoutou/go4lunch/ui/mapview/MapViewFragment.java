@@ -19,6 +19,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -39,6 +40,9 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
+import com.tonyocallimoutou.go4lunch.ui.BaseFragment;
+import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
@@ -51,22 +55,25 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
+public class MapViewFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
     @BindView(R.id.message_map_view)
     LinearLayout message_map_view;
     @BindView(R.id.fab_map_view)
     FloatingActionButton fabMap;
 
-    SupportMapFragment mapFragment;
+    private SupportMapFragment mapFragment;
     private static GoogleMap mGoogleMap;
-    CameraPosition cameraPosition;
-    float cameraZoomDefault = 15;
-    View locationButton;
+    private CameraPosition cameraPosition;
+    private float cameraZoomDefault = 15;
+    private View locationButton;
+
+
+    private AutocompleteFragment autocompleteFragment;
 
     private static ViewModelRestaurant viewModelRestaurant;
 
-    FusedLocationProviderClient fusedLocationProviderClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
     private static Location userLocation;
 
 
@@ -95,6 +102,27 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         return view;
+    }
+
+    // BASE FRAGMENT SEARCH
+
+    @Override
+    public boolean onQueryTextSubmit(String s) {
+        Log.d("TAG", "onQueryTextSubmit: ");
+        viewModelRestaurant.setSearchRestaurant(s);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String s) {
+        return false;
+    }
+
+    @Override
+    public void onPredictionItemClick(Prediction prediction) {
+        super.onPredictionItemClick(prediction);
+        viewModelRestaurant.setDetailsRestaurantForPrediction(prediction);
+        setPrediction();
     }
 
     @Override
@@ -315,5 +343,29 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         if (mGoogleMap != null) {
             initListForMarker();
         }
+    }
+
+    // INIT PREDICTION
+
+    public void setPrediction() {
+        viewModelRestaurant.getDetailPrediction().observe(this, restaurant ->  {
+
+            mGoogleMap.clear();
+
+            Double lat = restaurant.getGeometry().getLocation().getLat();
+            Double lng = restaurant.getGeometry().getLocation().getLng();
+            String placeName = restaurant.getName();
+            String vicinity = restaurant.getVicinity();
+            LatLng latLng = new LatLng(lat, lng);
+
+            mGoogleMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_nearby_restaurant))
+                    .title(placeName + " : " + vicinity))
+                    .setTag(restaurant);
+
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+        });
+
     }
 }

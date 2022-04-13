@@ -1,5 +1,7 @@
 package com.tonyocallimoutou.go4lunch.ui.autocomplete;
 
+import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
@@ -20,9 +23,13 @@ import butterknife.ButterKnife;
 public class AutocompleteRecyclerViewAdapter  extends RecyclerView.Adapter<AutocompleteRecyclerViewAdapter.ViewHolder>{
 
     private final List<Prediction> mPredictions;
+    private final Context mContext;
+    private final PredictionItemClickListener mPredictionItemClickListener;
 
-    public AutocompleteRecyclerViewAdapter(List<Prediction> mPredictions) {
-        this.mPredictions = mPredictions;
+    public AutocompleteRecyclerViewAdapter(Context context, List<Prediction> predictions, PredictionItemClickListener predictionItemClickListener) {
+        this.mContext = context;
+        this.mPredictions = predictions;
+        this.mPredictionItemClickListener = predictionItemClickListener;
     }
 
     @NonNull
@@ -35,14 +42,25 @@ public class AutocompleteRecyclerViewAdapter  extends RecyclerView.Adapter<Autoc
 
     @Override
     public void onBindViewHolder(@NonNull AutocompleteRecyclerViewAdapter.ViewHolder holder, int position) {
-        Prediction prediction = mPredictions.get(position);
+        if (getItemCount() == 0) {
+            holder.predictionText.setText(mContext.getString(R.string.no_prediction));
+        }
+        else {
 
-        holder.predictionText.setText(prediction.getDescription());
+            Prediction prediction = mPredictions.get(position);
+
+            holder.predictionText.setText(prediction.getStructuredFormatting().getMainText());
+        }
     }
 
     @Override
     public int getItemCount() {
         return mPredictions.size();
+    }
+
+
+    public interface PredictionItemClickListener{
+        void onPredictionItemClick(Prediction prediction);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -52,6 +70,14 @@ public class AutocompleteRecyclerViewAdapter  extends RecyclerView.Adapter<Autoc
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    mPredictionItemClickListener.onPredictionItemClick(mPredictions.get(position));
+                }
+            });
         }
     }
 }
