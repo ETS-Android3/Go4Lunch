@@ -73,7 +73,7 @@
         android:layout_height="@dimen/restaurant_picture_list_height"
         android:layout_margin="@dimen/margin_restaurant_picture_list"
         android:layout_centerVertical="true"
-        android:src="@drawable/background_sign_in"
+        android:src="@drawable/ic_no_image_available"
         android:layout_alignParentEnd="true"/>
 
 

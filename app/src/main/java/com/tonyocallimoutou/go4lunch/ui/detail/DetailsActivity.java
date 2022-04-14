@@ -159,7 +159,9 @@ public class DetailsActivity extends AppCompatActivity {
 
         restaurantName.setText(RestaurantData.getRestaurantName());
         restaurantAddress.setText(RestaurantData.getTypeAndAddress());
-        Glide.with(this).load(RestaurantData.getPicture()).into(restaurantPicture);
+        if (RestaurantData.getPicture() != null) {
+            Glide.with(this).load(RestaurantData.getPicture()).into(restaurantPicture);
+        }
 
         setFAB();
         setLike();

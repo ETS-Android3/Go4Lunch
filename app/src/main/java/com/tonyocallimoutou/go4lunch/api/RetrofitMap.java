@@ -22,7 +22,7 @@ public interface RetrofitMap {
     @GET("details/json?key="+BuildConfig.PLACES_API_KEY)
     Call<PlaceDetails> getPlaceDetails(@Query("place_id") String placeId);
 
-    @GET("autocomplete/json?type=establishment&key="+BuildConfig.PLACES_API_KEY)
+    @GET("autocomplete/json?radius=20000&type=establishment&key="+BuildConfig.PLACES_API_KEY)
     Call<SearchPlace> getSearchPlace(@Query("location") String location, @Query("input") String input);
 
 

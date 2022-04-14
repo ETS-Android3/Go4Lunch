@@ -67,15 +67,15 @@ public class WorkmatesFragment extends BaseFragment {
 
     // BASE FRAGMENT SEARCH
 
+
     @Override
-    public boolean onQueryTextSubmit(String s) {
-        viewModelRestaurant.setSearchWorkmates(s,workmatesWithoutUser);
-        return false;
+    public String getQueryHint() {
+        return getString(R.string.search_hint_workmates);
     }
 
     @Override
-    public boolean onQueryTextChange(String s) {
-        return false;
+    public void doSearch(String s) {
+        viewModelRestaurant.setSearchWorkmates(s,workmatesWithoutUser);
     }
 
     @Override

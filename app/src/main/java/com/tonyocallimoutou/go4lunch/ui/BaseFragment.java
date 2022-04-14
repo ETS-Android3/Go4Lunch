@@ -19,17 +19,23 @@ import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
 import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteRecyclerViewAdapter;
+import com.tonyocallimoutou.go4lunch.utils.SearchAction;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
-public abstract class BaseFragment extends Fragment implements SearchView.OnQueryTextListener, AutocompleteRecyclerViewAdapter.PredictionItemClickListener {
+import java.util.Timer;
+import java.util.TimerTask;
+
+public abstract class BaseFragment extends Fragment implements AutocompleteRecyclerViewAdapter.PredictionItemClickListener, SearchAction {
 
     private SearchView searchView;
     private AutocompleteFragment autocompleteFragment;
 
+    private Timer timer;
+    private int delay = 400; //400 ms
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d("TAG", "onCreate: ");
         setHasOptionsMenu(true);
         super.onCreate(savedInstanceState);
     }
@@ -50,13 +56,16 @@ public abstract class BaseFragment extends Fragment implements SearchView.OnQuer
             searchView.onActionViewCollapsed();
             closeFragment();
         }
-        Log.d("TAG", "onPause: ");
+    }
+
+    public String getQueryHint() {
+        return getString(R.string.search_hint_restaurant);
     }
 
 
     private void initSearch() {
 
-        searchView.setQueryHint(getString(R.string.search_hint));
+        searchView.setQueryHint(getQueryHint());
 
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +87,30 @@ public abstract class BaseFragment extends Fragment implements SearchView.OnQuer
             }
         });
 
-        searchView.setOnQueryTextListener(this);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String s) {
+                doSearch(s);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String s) {
+                if (s.length() >= 3) {
+                    if (timer != null) {
+                        timer.cancel();
+                    }
+                    timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            doSearch(s);
+                        }
+                    }, delay);
+                }
+                return false;
+            }
+        });
     }
 
     private void closeFragment() {

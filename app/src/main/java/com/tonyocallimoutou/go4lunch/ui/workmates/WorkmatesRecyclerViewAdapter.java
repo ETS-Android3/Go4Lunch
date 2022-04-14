@@ -47,10 +47,12 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
 
         initText(holder, user);
 
-        Glide.with(mContext)
-                .load(user.getUrlPicture())
-                .apply(RequestOptions.circleCropTransform())
-                .into(holder.workmatePicture);
+        if (user.getUrlPicture() != null) {
+            Glide.with(mContext)
+                    .load(user.getUrlPicture())
+                    .apply(RequestOptions.circleCropTransform())
+                    .into(holder.workmatePicture);
+        }
     }
 
     @Override

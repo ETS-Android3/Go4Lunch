@@ -111,7 +111,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // INIT ACTION BAR
 
-
     private void initActionBar() {
         actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -139,7 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void initSearch() {
 
-        searchView.setQueryHint(getString(R.string.search_hint));
+        searchView.setQueryHint(getString(R.string.search_hint_restaurant));
         searchView.setOnSearchClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

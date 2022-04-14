@@ -49,7 +49,7 @@ public class AutocompleteRecyclerViewAdapter  extends RecyclerView.Adapter<Autoc
 
             Prediction prediction = mPredictions.get(position);
 
-            holder.predictionText.setText(prediction.getStructuredFormatting().getMainText());
+            holder.predictionText.setText(prediction.getDescription());
         }
     }
 

@@ -30,10 +30,8 @@ public class PredictionOfWorkmates {
 
         for (User user : workmatesPrediction) {
             Prediction prediction = new Prediction();
-            StructuredFormatting structuredFormatting = new StructuredFormatting();
-            structuredFormatting.setMainText(user.getUsername());
 
-            prediction.setStructuredFormatting(structuredFormatting);
+            prediction.setDescription(user.getUsername());
             prediction.setPlaceId(user.getUid());
 
             predictions.add(prediction);

@@ -2,6 +2,7 @@ package com.tonyocallimoutou.go4lunch.utils;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.details.Period;
@@ -34,14 +35,9 @@ public class RestaurantData {
 
     public static String getDistance() {
         if (userLocation != null) {
-            double lat1 = userLocation.getLatitude();
-            double lng1 = userLocation.getLongitude();
-            double lat2 = result.getGeometry().getLocation().getLat();
-            double lng2 = result.getGeometry().getLocation().getLng();
-            float[] distanceFloat = new float[1];
-            Location.distanceBetween(lat1,lng1,lat2,lng2,distanceFloat);
 
-            int distance = Math.round(distanceFloat[0]);
+            int distance = UtilDistance.getDistanceWithRestaurant(userLocation,result);
+
             return distance + "m";
         }
         else {

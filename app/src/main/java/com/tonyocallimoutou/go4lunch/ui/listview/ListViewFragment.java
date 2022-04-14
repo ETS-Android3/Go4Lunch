@@ -72,15 +72,8 @@ public class ListViewFragment extends BaseFragment {
     // BASE FRAGMENT SEARCH
 
     @Override
-    public boolean onQueryTextSubmit(String s) {
-        Log.d("TAG", "onQueryTextSubmit: ");
+    public void doSearch(String s) {
         viewModelRestaurant.setSearchRestaurant(s);
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String s) {
-        return false;
     }
 
     @Override
