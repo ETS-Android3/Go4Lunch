@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/border"
+    android:paddingStart="12dp"
+    android:paddingEnd="12dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="8dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/autocomplete_no_prediction"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/AutocompleteItemText"
+        android:text="@string/no_prediction" />
+
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/autocomplete_recycler_view"
+        tools:listitem="@layout/fragment_autocomplete_item"
+        tools:context=".ui.autocomplete.AutocompleteFragment" />
+
+</LinearLayout>

@@ -1,8 +1,5 @@
 package com.tonyocallimoutou.go4lunch;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -32,19 +29,18 @@ import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseUser;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.utils.Notification;
-import com.tonyocallimoutou.go4lunch.utils.NotificationReceiver;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 import butterknife.BindView;
@@ -116,13 +112,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     // INIT ACTION BAR
 
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.actionbar_menu, menu);
-        searchView = (SearchView) menu.findItem(R.id.search_menu).getActionView();
-        return true;
-    }
-
     private void initActionBar() {
         actionBar = getSupportActionBar();
         actionBar.setHomeAsUpIndicator(R.drawable.ic_menu_white_24dp);
@@ -141,33 +130,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             case R.id.search_menu:
                 Log.d("TAG", "onOptionsItemSelected: search");
-                initSearch();
                 return true;
         }
         return super.onOptionsItemSelected(item);
-    }
-
-    // INIT SEARCH ACTION
-
-    private void initSearch() {
-        searchView.setQueryHint(getString(R.string.search_hint));
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String s) {
-                for (RestaurantDetails restaurant : nearbyRestaurant) {
-                    if (restaurant.getName().equals(s)) {
-                        //viewModelRestaurant.search();
-                        // https://www.geeksforgeeks.org/android-searchview-with-example/
-                    }
-                }
-                return true;
-            }
-
-            @Override
-            public boolean onQueryTextChange(String s) {
-                return false;
-            }
-        });
     }
 
     // INIT BOTTOM NAVIGATION
@@ -261,15 +226,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (nearbyRestaurant.size() == 0) {
             viewModelRestaurant.setNearbyPlace(null);
         }
+        viewModelRestaurant.setSearchRestaurant(null);
 
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
-            bookedRestaurant = restaurantsResults;
+            bookedRestaurant.clear();
+            bookedRestaurant.addAll(restaurantsResults);
             ListViewFragment.setBookedRestaurant(restaurantsResults);
             MapViewFragment.setBookedRestaurant(restaurantsResults);
         });
 
         viewModelUser.getWorkmates().observe(this, workmates -> {
-            this.workmates = workmates;
             Notification.newInstance(workmates);
             WorkmatesFragment.setWorkmates(workmates);
             ListViewFragment.setWorkmates(workmates);
@@ -279,7 +245,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for (RestaurantDetails restaurant : restaurantsResults) {
                 restaurant.getWorkmatesId().clear();
             }
-            nearbyRestaurant = restaurantsResults;
+            nearbyRestaurant.clear();
+            nearbyRestaurant.addAll(restaurantsResults);
             ListViewFragment.setNearbyRestaurant(restaurantsResults);
             MapViewFragment.setNearbyRestaurant(restaurantsResults);
         });
@@ -288,6 +255,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             if (currentUserResults != null) {
                 Notification.setNotification(this,currentUserResults);
             }
+        });
+
+        viewModelRestaurant.getPredictionLiveData().observe(this, predictionsResults -> {
+            AutocompleteFragment.setPredictions(predictionsResults);
         });
     }
 }

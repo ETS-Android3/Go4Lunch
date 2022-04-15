@@ -8,7 +8,8 @@
         android:id="@+id/profile_picture_workmate"
         android:layout_width="@dimen/profile_picture_workmates_width"
         android:layout_height="@dimen/profile_picture_workmates_height"
-        android:layout_margin="@dimen/profile_picture_workmates_margin"/>
+        android:layout_margin="@dimen/profile_picture_workmates_margin"
+        android:src="@drawable/ic_no_image_available"/>
 
     <TextView
         android:id="@+id/workmates_text"

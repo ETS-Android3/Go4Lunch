@@ -3,6 +3,7 @@ package com.tonyocallimoutou.go4lunch.api;
 import com.tonyocallimoutou.go4lunch.BuildConfig;
 import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
 import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
+import com.tonyocallimoutou.go4lunch.model.places.search.SearchPlace;
 
 import retrofit2.Call;
 import retrofit2.Retrofit;
@@ -20,6 +21,9 @@ public interface RetrofitMap {
 
     @GET("details/json?key="+BuildConfig.PLACES_API_KEY)
     Call<PlaceDetails> getPlaceDetails(@Query("place_id") String placeId);
+
+    @GET("autocomplete/json?radius=20000&type=establishment&key="+BuildConfig.PLACES_API_KEY)
+    Call<SearchPlace> getSearchPlace(@Query("location") String location, @Query("input") String input);
 
 
     public static final String baseUrl = "https://maps.googleapis.com/maps/api/place/";

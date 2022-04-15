@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,6 +20,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
+import com.tonyocallimoutou.go4lunch.ui.BaseFragment;
+import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
@@ -32,10 +36,11 @@ import java.util.List;
  * Use the {@link ListViewFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ListViewFragment extends Fragment {
+public class ListViewFragment extends BaseFragment {
 
     private static RecyclerView mRecyclerView;
-    private ViewModelRestaurant viewModelRestaurant;
+
+    private AutocompleteFragment autocompleteFragment;
 
     private static List<RestaurantDetails> mRestaurants = new ArrayList<>();
     private static List<RestaurantDetails> bookedRestaurant = new ArrayList<>();
@@ -46,6 +51,8 @@ public class ListViewFragment extends Fragment {
     private static ListViewRecyclerViewAdapter adapter;
     private static Context mContext;
     private static FragmentActivity mActivity;
+
+    private ViewModelRestaurant viewModelRestaurant;
 
     public ListViewFragment() {
         // Required empty public constructor
@@ -58,8 +65,22 @@ public class ListViewFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
         viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
+        super.onCreate(savedInstanceState);
+    }
+
+    // BASE FRAGMENT SEARCH
+
+    @Override
+    public void doSearch(String s) {
+        viewModelRestaurant.setSearchRestaurant(s);
+    }
+
+    @Override
+    public void onPredictionItemClick(Prediction prediction) {
+        super.onPredictionItemClick(prediction);
+        viewModelRestaurant.setDetailsRestaurantForPrediction(prediction);
+        setPrediction();
     }
 
     @Override
@@ -82,7 +103,7 @@ public class ListViewFragment extends Fragment {
         mRestaurants.clear();
         nearbyWithoutBooked.clear();
         if (nearbyRestaurant.size() != 0) {
-            nearbyWithoutBooked = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant,bookedRestaurant);
+            nearbyWithoutBooked = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant, bookedRestaurant);
         }
         mRestaurants.addAll(bookedRestaurant);
         mRestaurants.addAll(nearbyWithoutBooked);
@@ -123,4 +144,13 @@ public class ListViewFragment extends Fragment {
         initRestaurantList();
     }
 
+    public void setPrediction() {
+        viewModelRestaurant.getDetailPrediction().observe(this, result -> {
+            Log.d("TAG", "setPrediction: ");
+            mRestaurants.clear();
+            mRestaurants.add(result);
+            adapter.notifyDataSetChanged();
+        });
+    }
 }
+

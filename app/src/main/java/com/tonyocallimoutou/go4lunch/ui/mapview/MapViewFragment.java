@@ -5,13 +5,16 @@ import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
@@ -19,10 +22,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapsInitializer;
@@ -30,7 +35,10 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.Circle;
+import com.google.android.gms.maps.model.CircleOptions;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MapStyleOptions;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -39,34 +47,44 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
+import com.tonyocallimoutou.go4lunch.ui.BaseFragment;
+import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
+import com.tonyocallimoutou.go4lunch.utils.CompareRestaurant;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
+import com.tonyocallimoutou.go4lunch.utils.UtilDistance;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapViewFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
+public class MapViewFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
 
     @BindView(R.id.message_map_view)
     LinearLayout message_map_view;
     @BindView(R.id.fab_map_view)
     FloatingActionButton fabMap;
 
-    SupportMapFragment mapFragment;
+    private SupportMapFragment mapFragment;
     private static GoogleMap mGoogleMap;
-    CameraPosition cameraPosition;
-    float cameraZoomDefault = 15;
-    View locationButton;
+    private CameraPosition cameraPosition;
+    private static float cameraZoomDefault = 15;
+    private View locationButton;
+
+
+    private Timer timer;
 
     private static ViewModelRestaurant viewModelRestaurant;
 
-    FusedLocationProviderClient fusedLocationProviderClient;
+    private FusedLocationProviderClient fusedLocationProviderClient;
     private static Location userLocation;
 
 
@@ -95,6 +113,20 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());
 
         return view;
+    }
+
+    // BASE FRAGMENT SEARCH
+
+    @Override
+    public void doSearch(String s) {
+        viewModelRestaurant.setSearchRestaurant(s);
+    }
+
+    @Override
+    public void onPredictionItemClick(Prediction prediction) {
+        super.onPredictionItemClick(prediction);
+        viewModelRestaurant.setDetailsRestaurantForPrediction(prediction);
+        setPrediction();
     }
 
     @Override
@@ -253,11 +285,16 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     private static void initListForMarker() {
         mGoogleMap.clear();
+
+        LatLng latLng = new LatLng(userLocation.getLatitude(), userLocation.getLongitude());
+        mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, cameraZoomDefault));
         addMarker();
     }
 
     private static void addMarker() {
         List <RestaurantDetails> nearby = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant, bookedRestaurant);
+
+        List<MarkerOptions> listMarkers =new ArrayList<>();
 
         for (RestaurantDetails result : nearby) {
             Double lat = result.getGeometry().getLocation().getLat();
@@ -266,10 +303,14 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
             String vicinity = result.getVicinity();
             LatLng latLng = new LatLng(lat, lng);
 
-            mGoogleMap.addMarker(new MarkerOptions()
+            MarkerOptions markerOptions = new MarkerOptions()
                     .position(latLng)
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_nearby_restaurant))
-                    .title(placeName + " : " + vicinity))
+                    .title(placeName + " : " + vicinity);
+
+            listMarkers.add(markerOptions);
+
+            mGoogleMap.addMarker(markerOptions)
                     .setTag(result);
         }
 
@@ -288,6 +329,21 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
                     .setTag(result);
 
         }
+
+        // ZOOM WITH NEARBY PLACE
+
+        if (nearbyRestaurant.size() != 0) {
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+            for (MarkerOptions marker : listMarkers) {
+                builder.include(marker.getPosition());
+            }
+            builder.include(new LatLng(userLocation.getLatitude(),userLocation.getLongitude()));
+            LatLngBounds bounds = builder.build();
+
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 50);
+
+            mGoogleMap.moveCamera(cu);
+        }
     }
 
     @Override
@@ -304,16 +360,44 @@ public class MapViewFragment extends Fragment implements OnMapReadyCallback, Goo
 
     // INIT BOOKED LIST
     public static void setBookedRestaurant(List<RestaurantDetails> results) {
-        bookedRestaurant = results;
-        if (mGoogleMap != null) {
-            initListForMarker();
+        if (! CompareRestaurant.isEqual(bookedRestaurant,results)) {
+            bookedRestaurant = results;
+            if (mGoogleMap != null) {
+                initListForMarker();
+            }
         }
     }
 
     public static void setNearbyRestaurant(List<RestaurantDetails> results) {
-        nearbyRestaurant = results;
-        if (mGoogleMap != null) {
-            initListForMarker();
+        if (! CompareRestaurant.isEqual(nearbyRestaurant,results)) {
+            nearbyRestaurant = results;
+            if (mGoogleMap != null) {
+                initListForMarker();
+            }
         }
+    }
+
+    // INIT PREDICTION
+
+    public void setPrediction() {
+        viewModelRestaurant.getDetailPrediction().observe(this, restaurant ->  {
+
+            mGoogleMap.clear();
+
+            Double lat = restaurant.getGeometry().getLocation().getLat();
+            Double lng = restaurant.getGeometry().getLocation().getLng();
+            String placeName = restaurant.getName();
+            String vicinity = restaurant.getVicinity();
+            LatLng latLng = new LatLng(lat, lng);
+
+            mGoogleMap.addMarker(new MarkerOptions()
+                    .position(latLng)
+                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_nearby_restaurant))
+                    .title(placeName + " : " + vicinity))
+                    .setTag(restaurant);
+
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,cameraZoomDefault));
+        });
+
     }
 }

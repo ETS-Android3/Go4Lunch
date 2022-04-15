@@ -1,12 +1,14 @@
 package com.tonyocallimoutou.go4lunch.ui.workmates;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -14,6 +16,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
+import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
+import com.tonyocallimoutou.go4lunch.ui.BaseFragment;
+import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
+import com.tonyocallimoutou.go4lunch.utils.PredictionOfWorkmates;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.ArrayList;
@@ -25,7 +32,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class WorkmatesFragment extends Fragment {
+public class WorkmatesFragment extends BaseFragment {
 
 
     private static TextView lblWorkmates;
@@ -33,7 +40,8 @@ public class WorkmatesFragment extends Fragment {
     RecyclerView mRecyclerView;
 
     private static ViewModelUser viewModelUser;
-    private static List<User> mUsers = new ArrayList<>();
+    private static ViewModelRestaurant viewModelRestaurant;
+    private static List<User> workmatesWithoutUser = new ArrayList<>();
 
     private static List<User> workmates = new ArrayList<>();
 
@@ -54,7 +62,31 @@ public class WorkmatesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         viewModelUser = new ViewModelProvider(requireActivity()).get(ViewModelUser.class);
+        viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
+    }
 
+    // BASE FRAGMENT SEARCH
+
+
+    @Override
+    public String getQueryHint() {
+        return getString(R.string.search_hint_workmates);
+    }
+
+    @Override
+    public void doSearch(String s) {
+        viewModelRestaurant.setSearchWorkmates(s,workmatesWithoutUser);
+    }
+
+    @Override
+    public void onPredictionItemClick(Prediction prediction) {
+        super.onPredictionItemClick(prediction);
+        workmatesWithoutUser.clear();
+        for (User user : workmates) {
+            if (user.getUid().equals(prediction.getPlaceId())) {
+                workmatesWithoutUser.add(user);
+            }
+        }
     }
 
     @Override
@@ -68,7 +100,7 @@ public class WorkmatesFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        adapter = new WorkmatesRecyclerViewAdapter(getContext(),mUsers);
+        adapter = new WorkmatesRecyclerViewAdapter(getContext(),workmatesWithoutUser);
         initUserList();
         mRecyclerView.setAdapter(adapter);
         return view;
@@ -79,20 +111,20 @@ public class WorkmatesFragment extends Fragment {
 
         if (adapter != null) {
 
-            mUsers.clear();
+            workmatesWithoutUser.clear();
 
-            mUsers.addAll(workmates);
+            workmatesWithoutUser.addAll(workmates);
 
             List<User> userToRemove = new ArrayList<>();
-            for (User user : mUsers) {
+            for (User user : workmatesWithoutUser) {
                 if (user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
                     userToRemove.add(user);
                 }
             }
-            mUsers.removeAll(userToRemove);
+            workmatesWithoutUser.removeAll(userToRemove);
 
             if (lblWorkmates != null) {
-                if (mUsers.size() == 0) {
+                if (workmatesWithoutUser.size() == 0) {
                     lblWorkmates.setVisibility(View.VISIBLE);
                 } else {
                     lblWorkmates.setVisibility(View.GONE);

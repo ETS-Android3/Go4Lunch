@@ -15,12 +15,13 @@
     <string name="fb_login_protocol_scheme">fb947763842588942</string>
 
     <string name="your_lunch"> sorry you haven\'t chosen a restaurant yet</string>
-    <string name="search_hint"> Name of restaurant </string>
+    <string name="search_hint_restaurant"> Name of restaurant </string>
+    <string name="search_hint_workmates"> Name of workmate </string>
 
     <string name="workmate_is_eating"> is eating </string>
     <string name="workmate_has_not_decided_yet"> hasn\'t decided yet </string>
     <string name="workmate_is_joining"> is joining ! </string>
-    <string name="no_workmates" > NO WORKMATES </string>
+    <string name="no_workmates"> NO WORKMATES </string>
 
     <string name="title_message_map_view"> We are Sorry </string>
     <string name="message_map_view"> We need to acces to your location to show you the map.\nDo you want to grant us this permission</string>
@@ -37,7 +38,7 @@
     <string name="restaurant_data_open_24h7j"> Open 24/7 </string>
     <string name="restaurant_data_close"> Close </string>
     <string name="restaurant_data_no_data"> No data </string>
-    
+
     <string name="detail_call"> CALL </string>
     <string name="detail_like"> LIKE </string>
     <string name="detail_website"> WEBSITE </string>
@@ -53,6 +54,7 @@
     <string name="notification_content_no_restaurant"> you still have time to decide</string>
     <string name="notification_content_no_workmates"> no workmates </string>
 
+    <string name="no_prediction">no result found</string>
 
 
 </resources>

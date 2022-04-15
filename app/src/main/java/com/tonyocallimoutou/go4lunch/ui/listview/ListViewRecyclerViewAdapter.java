@@ -60,7 +60,9 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         holder.restaurantName.setText(RestaurantData.getRestaurantName());
         holder.restaurantTypeAndAddress.setText(RestaurantData.getTypeAndAddress());
         holder.restaurantHours.setText(RestaurantData.getOpeningHour());
-        Glide.with(mContext).load(RestaurantData.getPicture()).into(holder.restaurantPicture);
+        if (RestaurantData.getPicture() != null) {
+            Glide.with(mContext).load(RestaurantData.getPicture()).into(holder.restaurantPicture);
+        }
 
         if (RestaurantData.getDistance() != null) {
             holder.restaurantDistance.setText(RestaurantData.getDistance());

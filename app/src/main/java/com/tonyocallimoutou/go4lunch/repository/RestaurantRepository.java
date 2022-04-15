@@ -15,10 +15,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.BuildConfig;
 import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
-import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
 import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
+import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
+import com.tonyocallimoutou.go4lunch.model.places.search.SearchPlace;
 import com.tonyocallimoutou.go4lunch.utils.UtilDistance;
 
 import java.util.ArrayList;
@@ -237,7 +238,7 @@ public class RestaurantRepository {
 
     private void createNearbyRestaurantInFirebase (Location userLocation, List<RestaurantDetails> restaurants) {
 
-        String location = userLocation.getLatitude() + "," + userLocation.getLongitude();;
+        String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
 
         for (RestaurantDetails restaurant : restaurants) {
             getNearbyRestaurantsCollection(userLocation)
@@ -248,6 +249,49 @@ public class RestaurantRepository {
         getLocationNearbyRestaurantsCollection().document(location).set(userLocation);
     }
 
+    // SEARCH
 
+    public void setSearchRestaurant(Location userLocation, String input, MutableLiveData<List<Prediction>> liveData) {
+        String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
+
+        retrofitMap.getSearchPlace(location, input).enqueue(new Callback<SearchPlace>() {
+            @Override
+            public void onResponse(Call<SearchPlace> call, Response<SearchPlace> response) {
+                List<Prediction> predictions = new ArrayList<>();
+                for (Prediction prediction : response.body().getResults()) {
+                    if (prediction.getTypes().contains("food") || prediction.getTypes().contains("restaurant")) {
+                        predictions.add(prediction);
+                    }
+                }
+                liveData.setValue(predictions);
+            }
+
+            @Override
+            public void onFailure(Call<SearchPlace> call, Throwable t) {
+
+            }
+        });
+    }
+
+    // Detail
+
+    public void setDetailForPrediction(Prediction prediction, MutableLiveData<RestaurantDetails> liveData) {
+        retrofitMap.getPlaceDetails(prediction.getPlaceId()).enqueue(new Callback<PlaceDetails>() {
+            @Override
+            public void onResponse(Call<PlaceDetails> call, Response<PlaceDetails> response) {
+                RestaurantDetails restaurant = response.body().getResult();
+                setImage(restaurant);
+                restaurant.setRating(0.0);
+
+                liveData.setValue(restaurant);
+
+            }
+
+            @Override
+            public void onFailure(Call<PlaceDetails> call, Throwable t) {
+
+            }
+        });
+    }
 
 }

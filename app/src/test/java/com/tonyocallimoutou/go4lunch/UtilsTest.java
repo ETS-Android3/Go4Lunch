@@ -8,10 +8,10 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 import android.content.Context;
 
-import com.tonyocallimoutou.go4lunch.model.places.Close;
-import com.tonyocallimoutou.go4lunch.model.places.Open;
-import com.tonyocallimoutou.go4lunch.model.places.OpeningHours;
-import com.tonyocallimoutou.go4lunch.model.places.Period;
+import com.tonyocallimoutou.go4lunch.model.places.details.Close;
+import com.tonyocallimoutou.go4lunch.model.places.details.Open;
+import com.tonyocallimoutou.go4lunch.model.places.details.OpeningHours;
+import com.tonyocallimoutou.go4lunch.model.places.details.Period;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.test.FakeData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
