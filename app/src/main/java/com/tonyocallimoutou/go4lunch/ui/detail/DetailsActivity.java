@@ -25,13 +25,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
-import com.tonyocallimoutou.go4lunch.utils.Notification;
+import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 import com.tonyocallimoutou.go4lunch.utils.WorkmatesLunch;
@@ -84,6 +85,7 @@ public class DetailsActivity extends AppCompatActivity {
     boolean isLike;
 
     private static RestaurantDetails restaurant;
+    private User currentUser;
     private List<User> workmates = new ArrayList<>();
     private List<User> workmatesLunch = new ArrayList<>();
 
@@ -91,7 +93,7 @@ public class DetailsActivity extends AppCompatActivity {
     private ViewModelRestaurant viewModelRestaurant;
 
     private static final int MY_PERMISSION_REQUEST_CODE_CALL_PHONE = 555;
-    private final String KEY_EXTRA_DETAIL_ACTIVITY = "KEY_EXTRA_DETAIL_ACTIVITY";
+    public static final String KEY_EXTRA_DETAIL_ACTIVITY = "KEY_EXTRA_DETAIL_ACTIVITY";
 
 
     @Override
@@ -103,16 +105,49 @@ public class DetailsActivity extends AppCompatActivity {
         viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
         viewModelRestaurant = new ViewModelProvider(this,ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
 
+
+        initDataWhithoutCurrentUserLiveData();
+
+        // Come From Notification
         Bundle extras = getIntent().getExtras();
-        if(extras != null) {
-            if (extras.getString(KEY_EXTRA_DETAIL_ACTIVITY).equals("NOTIFICATION")) {
-                restaurant = viewModelRestaurant.getRestaurantOfCurrentUser();
+        if (restaurant == null && extras != null) {
+            if (extras.getBoolean(KEY_EXTRA_DETAIL_ACTIVITY)) {
+                viewModelUser.setCurrentUserLiveData();
+
+                viewModelUser.getCurrentUserLiveData().observe(this, currentUserResults -> {
+                    if (currentUserResults != null) {
+                        currentUser = currentUserResults;
+                        restaurant = currentUser.getBookedRestaurant();
+
+                        // remove Restaurant before click on Notification
+                        if(restaurant == null) {
+                            Intent intent = new Intent(this, MainActivity.class);
+                            startActivity(intent);
+                        }
+                        else {
+                            UtilNotification.newInstance(null,null,this,currentUserResults);
+                            initWorkmatesList();
+                        }
+
+
+
+                    }
+                });
+            }
+            else {
+                Log.e("TAG", "onCreate: ");
             }
         }
-
-        initData();
+        else {
+            initLiveDataCurrentUser();
+        }
     }
 
+    @Override
+    protected void onStop() {
+        super.onStop();
+        restaurant = null;
+    }
 
     public void initRecyclerView(){
 
@@ -123,8 +158,8 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public void initWorkmatesList() {
-        isBooked = restaurant.getWorkmatesId().contains(viewModelUser.getCurrentUser().getUid());
-        isLike = viewModelUser.getCurrentUser().getLikeRestaurantId().contains(restaurant.getPlaceId());
+        isBooked = restaurant.getWorkmatesId().contains(currentUser.getUid());
+        isLike = currentUser.getLikeRestaurantId().contains(restaurant.getPlaceId());
 
         workmatesLunch = WorkmatesLunch.getWorkmatesLunch(restaurant,workmates);
 
@@ -146,8 +181,8 @@ public class DetailsActivity extends AppCompatActivity {
         users.addAll(workmates);
 
         for (User user : users) {
-            if (user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
-                workmates.add(viewModelUser.getCurrentUser());
+            if (user.getUid().equals(currentUser.getUid())) {
+                workmates.add(currentUser);
                 workmates.remove(user);
             }
         }
@@ -293,21 +328,31 @@ public class DetailsActivity extends AppCompatActivity {
 
     // INIT
 
-    public void initData() {
-        viewModelUser.setCurrentUserLiveData();
+    public void initDataWhithoutCurrentUserLiveData() {
         viewModelUser.setWorkmatesList();
+        viewModelRestaurant.setBookedRestaurantList();
 
         viewModelUser.getWorkmates().observe(this, workmates -> {
             this.workmates = workmates;
-            Notification.newInstance(workmates);
-            initWorkmatesList();
+            UtilNotification.newInstance(workmates,null,null,null);
         });
+
+        viewModelRestaurant.getBookedRestaurantLiveData().observe(this, bookedRestaurantResult -> {
+            UtilNotification.newInstance(null,bookedRestaurantResult,null,null);
+        });
+    }
+
+    public void initLiveDataCurrentUser() {
+        viewModelUser.setCurrentUserLiveData();
 
         viewModelUser.getCurrentUserLiveData().observe(this, currentUserResults -> {
             if (currentUserResults != null) {
-                Notification.setNotification(this,currentUserResults);
+                UtilNotification.newInstance(null,null,this,currentUserResults);
+                currentUser = currentUserResults;
+                initWorkmatesList();
             }
         });
+
     }
 
     public static void navigate(Activity activity, RestaurantDetails result ) {

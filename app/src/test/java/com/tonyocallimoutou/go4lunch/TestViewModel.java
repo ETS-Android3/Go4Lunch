@@ -126,7 +126,7 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(restaurantRepository).createBookedRestaurantInFirebase(any(RestaurantDetails.class));
+        }).when(restaurantRepository).bookedThisRestaurant(any(RestaurantDetails.class));
 
 
         doAnswer(new Answer() {
@@ -147,7 +147,7 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(restaurantRepository).cancelBookedRestaurantInFirebase(any(RestaurantDetails.class));
+        }).when(restaurantRepository).cancelBookedRestaurant(any(RestaurantDetails.class));
 
 
         doAnswer(new Answer() {

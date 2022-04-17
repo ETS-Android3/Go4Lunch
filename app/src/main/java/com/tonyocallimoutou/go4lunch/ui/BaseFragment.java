@@ -51,7 +51,7 @@ public abstract class BaseFragment extends Fragment implements AutocompleteRecyc
     @Override
     public void onPause() {
         super.onPause();
-        if (!searchView.isIconified()) {
+        if (searchView != null && !searchView.isIconified()) {
             searchView.setIconified(true);
             searchView.onActionViewCollapsed();
             closeFragment();

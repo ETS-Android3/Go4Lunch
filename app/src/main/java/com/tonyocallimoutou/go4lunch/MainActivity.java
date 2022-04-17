@@ -3,7 +3,6 @@ package com.tonyocallimoutou.go4lunch;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -34,7 +33,7 @@ import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
-import com.tonyocallimoutou.go4lunch.utils.Notification;
+import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
@@ -231,12 +230,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, restaurantsResults -> {
             bookedRestaurant.clear();
             bookedRestaurant.addAll(restaurantsResults);
+            UtilNotification.newInstance(null,restaurantsResults,null,null);
             ListViewFragment.setBookedRestaurant(restaurantsResults);
             MapViewFragment.setBookedRestaurant(restaurantsResults);
         });
 
         viewModelUser.getWorkmates().observe(this, workmates -> {
-            Notification.newInstance(workmates);
+            UtilNotification.newInstance(workmates,null,null,null);
             WorkmatesFragment.setWorkmates(workmates);
             ListViewFragment.setWorkmates(workmates);
         });
@@ -253,7 +253,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         viewModelUser.getCurrentUserLiveData().observe(this, currentUserResults -> {
             if (currentUserResults != null) {
-                Notification.setNotification(this,currentUserResults);
+                UtilNotification.newInstance(null,null,this,currentUserResults);
             }
         });
 

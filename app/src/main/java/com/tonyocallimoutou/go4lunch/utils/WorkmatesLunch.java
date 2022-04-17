@@ -9,17 +9,17 @@ import java.util.List;
 public class WorkmatesLunch {
 
     public static List<User> getWorkmatesLunch(RestaurantDetails restaurant, List<User> workmates) {
-        List<User> removeUser = new ArrayList<>();
+
         List<User> workmatesLunch = new ArrayList<>();
-        workmatesLunch.addAll(workmates);
 
         if (restaurant.getWorkmatesId().size() != 0) {
-            for (User user : workmatesLunch) {
-                if ( ! restaurant.getWorkmatesId().contains(user.getUid())) {
-                    removeUser.add(user);
+            for (User user : workmates) {
+                if (user.getBookedRestaurant() != null) {
+                    if (user.getBookedRestaurant().getPlaceId().equals(restaurant.getPlaceId())) {
+                        workmatesLunch.add(user);
+                    }
                 }
             }
-            workmatesLunch.removeAll(removeUser);
         }
         else {
             workmatesLunch.clear();

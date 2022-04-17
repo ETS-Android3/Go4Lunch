@@ -217,14 +217,16 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
             @Override
             public void onSuccess(Location location) {
 
-                userLocation = location;
+                if (location != null) {
+                    userLocation = location;
 
-                RestaurantData.newInstanceOfPosition(location);
+                    RestaurantData.newInstanceOfPosition(location);
 
-                viewModelRestaurant.setNearbyPlace(userLocation);
+                    viewModelRestaurant.setNearbyPlace(userLocation);
 
-                if (mGoogleMap == null) {
-                    mapFragment.getMapAsync(MapViewFragment.this);
+                    if (mGoogleMap == null) {
+                        mapFragment.getMapAsync(MapViewFragment.this);
+                    }
                 }
             }
         });
