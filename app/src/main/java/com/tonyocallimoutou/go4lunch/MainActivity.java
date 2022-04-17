@@ -1,5 +1,6 @@
 package com.tonyocallimoutou.go4lunch;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -188,6 +189,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 yourLunch();
                 break;
             case R.id.navigation_setting:
+                Intent intent = new Intent(this, SettingActivity.class);
+                startActivity(intent);
                 break;
             case R.id.navigation_logout:
                 mDrawer.close();

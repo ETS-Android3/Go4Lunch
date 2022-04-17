@@ -79,9 +79,6 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
     private static float cameraZoomDefault = 15;
     private View locationButton;
 
-
-    private Timer timer;
-
     private static ViewModelRestaurant viewModelRestaurant;
 
     private FusedLocationProviderClient fusedLocationProviderClient;

@@ -34,6 +34,7 @@ public class UtilNotification {
     private static String title;
     private static String content;
     private static int hour;
+    private static int minutes;
     private static boolean isBooked;
 
     public UtilNotification() {
@@ -83,13 +84,15 @@ public class UtilNotification {
     private static void setNoRestaurant() {
         title = context.getString(R.string.notification_title_no_restaurant);
         content = context.getString(R.string.notification_content_no_restaurant);
-        hour = 11;
+        hour = UtilData.getHoursNoRestaurant();
+        minutes = UtilData.getMinutesNoRestaurant();
         isBooked = false;
     }
 
     private static void setRestaurant() {
         title = context.getString(R.string.notification_title);
-        hour = 12;
+        hour = UtilData.getHoursRestaurant();
+        minutes = UtilData.getMinutesRestaurant();
         isBooked = true;
 
         for (RestaurantDetails result : restaurants) {
@@ -133,7 +136,7 @@ public class UtilNotification {
         Calendar now = Calendar.getInstance();
         Calendar cal = Calendar.getInstance();
         cal.set(Calendar.HOUR_OF_DAY,hour);
-        cal.set(Calendar.MINUTE, 0);
+        cal.set(Calendar.MINUTE, minutes);
         cal.set(Calendar.SECOND, 0);
 
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);

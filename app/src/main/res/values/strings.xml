@@ -46,7 +46,7 @@
     <string name="explain_call"> Sorry, we need your permission to call </string>
     <string name="you_like_it"> You like it </string>
     <string name="you_not_like_it"> You don\'t like it </string>
-    
+
     <string name="notification_channel_name"> Go4Lunch</string>
     <string name="notification_channel_description"> it\'s lunch time</string>
     <string name="notification_title"> Go4Lunch </string>
@@ -55,6 +55,18 @@
     <string name="notification_content_no_workmates"> no workmates </string>
 
     <string name="no_prediction">no result found</string>
+
+    <string name="setting_text_language"> Language </string>
+    <string name="setting_text_account"> Account </string>
+    <string name="setting_text_remove_account"> Remove Account </string>
+    <string name="setting_text_notification_no_restaurant"> alarm when you didn\'t choose a restaurant </string>
+    <string name="setting_text_notification_restaurant"> alarm to remind you to go to restaurant </string>
+
+    <string name="setting_account_title_alert"> Remove Account </string>
+    <string name="setting_account_message_alert"> Are you sure you want to delete your account ? </string>
+    <string name="setting_account_button_alert"> remove </string>
+
+
 
 
 </resources>

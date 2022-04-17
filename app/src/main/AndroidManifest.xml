@@ -14,7 +14,9 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.Go4Lunch">
-
+        <activity
+            android:name=".SettingActivity"
+            android:exported="false" />
         <activity
             android:name=".ui.detail.DetailsActivity"
             android:exported="false" />
@@ -32,14 +34,14 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <meta-data android:name="android.app.default_searchable"
+            <meta-data
+                android:name="android.app.default_searchable"
                 android:value=".SearchableActivity" />
         </activity>
 
         <receiver
             android:name=".utils.NotificationReceiver"
             android:exported="true" />
-
     </application>
 
 </manifest>
