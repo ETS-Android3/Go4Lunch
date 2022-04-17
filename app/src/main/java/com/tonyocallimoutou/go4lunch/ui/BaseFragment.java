@@ -74,7 +74,6 @@ public abstract class BaseFragment extends Fragment implements AutocompleteRecyc
                 FragmentTransaction fragmentTransaction = getActivity().getSupportFragmentManager().beginTransaction();
                 fragmentTransaction.replace(R.id.host_fragment_autocomplete, autocompleteFragment);
                 fragmentTransaction.commit();
-                Log.d("TAG", "onClick: ");
             }
         });
 
@@ -82,7 +81,6 @@ public abstract class BaseFragment extends Fragment implements AutocompleteRecyc
             @Override
             public boolean onClose() {
                 closeFragment();
-                Log.d("TAG", "onClose: ");
                 return false;
             }
         });

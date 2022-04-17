@@ -29,13 +29,14 @@ import java.util.Date;
 import java.util.List;
 
 
-public class UtilsTest {
+public class TestRestaurantData {
 
     @Mock
     Context context;
 
     List<RestaurantDetails> nearbyRestaurant = new ArrayList<>(FakeData.getFakeNearbyRestaurant());
     List<RestaurantDetails> bookedRestaurant = new ArrayList<>(FakeData.getFakeBookedRestaurant());
+    RestaurantDetails restaurant = nearbyRestaurant.get(0);
     List<Period> periods = Arrays.asList(
             // Lundi
             new Period(
@@ -58,34 +59,8 @@ public class UtilsTest {
 
     }
 
-
-    @Test
-    public void FilterRestaurantIfBooked() {
-        bookedRestaurant.clear();
-
-        for (int i=1; i<nearbyRestaurant.size(); i++) {
-            bookedRestaurant.add(nearbyRestaurant.get(i));
-        }
-
-        List <RestaurantDetails> listTest = RestaurantMethod.getNearbyRestaurantWithoutBooked(nearbyRestaurant,bookedRestaurant);
-        List<RestaurantDetails> testAllRestaurant = new ArrayList<>();
-        testAllRestaurant.addAll(listTest);
-        testAllRestaurant.addAll(bookedRestaurant);
-
-
-        assertEquals( nearbyRestaurant.size() -1, bookedRestaurant.size());
-        assertEquals(1, listTest.size());
-
-        assertEquals(testAllRestaurant.size(),nearbyRestaurant.size());
-
-        for (int i=0; i<nearbyRestaurant.size() ; i++) {
-            assertEquals(nearbyRestaurant.get(i), testAllRestaurant.get(i));
-        }
-    }
-
     @Test
     public void getSimpleDataFromRestaurant() {
-        RestaurantDetails restaurant = nearbyRestaurant.get(0);
 
         List<String> workmatesId = new ArrayList<>();
         workmatesId.add("Test1");
@@ -107,12 +82,9 @@ public class UtilsTest {
         assertEquals("(2)", nbrWorkmate);
         assertEquals("type1 - address1", typeAddress);
 
-
-
     }
     @Test
     public void getOpeningHoursFromRestaurantForLunch() {
-        RestaurantDetails restaurant = nearbyRestaurant.get(0);
 
         OpeningHours openingHours = new OpeningHours(true,periods);
 
@@ -136,7 +108,6 @@ public class UtilsTest {
 
     @Test
     public void getOpeningHoursFromRestaurantForDinner() {
-        RestaurantDetails restaurant = nearbyRestaurant.get(0);
 
         OpeningHours openingHours = new OpeningHours(true,periods);
 
@@ -161,7 +132,6 @@ public class UtilsTest {
 
     @Test
     public void getOpeningHoursWithConflict() {
-        RestaurantDetails restaurant = nearbyRestaurant.get(0);
 
         OpeningHours openingHours = new OpeningHours(true,periods);
 
@@ -185,7 +155,6 @@ public class UtilsTest {
 
     @Test
     public void getOpeningHoursButClose() {
-        RestaurantDetails restaurant = nearbyRestaurant.get(0);
 
         OpeningHours openingHours = new OpeningHours(false,periods);
 
@@ -209,7 +178,8 @@ public class UtilsTest {
 
     @Test
     public void getOpeningHoursButNoData() {
-        RestaurantDetails restaurant = nearbyRestaurant.get(0);
+
+        restaurant.setOpeningHours(null);
 
         RestaurantData.newInstance(context,restaurant);
 

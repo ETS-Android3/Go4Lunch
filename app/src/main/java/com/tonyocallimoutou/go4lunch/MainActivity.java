@@ -128,7 +128,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 }
                 return true;
             case R.id.search_menu:
-                Log.d("TAG", "onOptionsItemSelected: search");
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -189,7 +188,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 yourLunch();
                 break;
             case R.id.navigation_setting:
-                Log.d("TAG", "onNavigationItemSelected: 2");
                 break;
             case R.id.navigation_logout:
                 mDrawer.close();

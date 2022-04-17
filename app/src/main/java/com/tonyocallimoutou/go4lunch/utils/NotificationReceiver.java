@@ -40,13 +40,11 @@ public class NotificationReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        Log.d("TAG", "onReceive: ");
         this.context = context;
 
         isBooked = intent.getBooleanExtra(BOOLEAN_IS_BOOKED,false);
         title = intent.getStringExtra(NOTIFICATION_TITLE);
         content = intent.getStringExtra(NOTIFICATION_CONTENT);
-        Log.d("TAG", "onReceive: " + intent.getStringExtra(NOTIFICATION_CONTENT));
 
         initNotification();
         getNotification();

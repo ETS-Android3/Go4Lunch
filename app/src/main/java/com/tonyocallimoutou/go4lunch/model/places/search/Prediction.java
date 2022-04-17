@@ -3,6 +3,7 @@ package com.tonyocallimoutou.go4lunch.model.places.search;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Prediction {
@@ -82,5 +83,16 @@ public class Prediction {
 
     public void setTypes(List<String> types) {
         this.types = types;
+    }
+
+    // Constructor for Test
+
+    public Prediction() {}
+
+    public Prediction(String placeId,
+                      String description) {
+        this.placeId = placeId;
+        this.description = description;
+
     }
 }

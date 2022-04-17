@@ -6,7 +6,7 @@ import java.util.List;
 
 public class CompareRestaurant {
 
-    public static boolean isEqual(List<RestaurantDetails> restaurants, List<RestaurantDetails> comparator) {
+    public static boolean ListRestaurantIsEqual(List<RestaurantDetails> restaurants, List<RestaurantDetails> comparator) {
         if (restaurants == null || comparator == null || restaurants.size() ==0) {
             return false;
         }

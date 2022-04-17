@@ -362,7 +362,7 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
 
     // INIT BOOKED LIST
     public static void setBookedRestaurant(List<RestaurantDetails> results) {
-        if (! CompareRestaurant.isEqual(bookedRestaurant,results)) {
+        if (! CompareRestaurant.ListRestaurantIsEqual(bookedRestaurant,results)) {
             bookedRestaurant = results;
             if (mGoogleMap != null) {
                 initListForMarker();
@@ -371,7 +371,7 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
     }
 
     public static void setNearbyRestaurant(List<RestaurantDetails> results) {
-        if (! CompareRestaurant.isEqual(nearbyRestaurant,results)) {
+        if (! CompareRestaurant.ListRestaurantIsEqual(nearbyRestaurant,results)) {
             nearbyRestaurant = results;
             if (mGoogleMap != null) {
                 initListForMarker();

@@ -69,8 +69,6 @@ public class UtilNotification {
 
 
     private static void setNotification() {
-        Log.d("TAG", "setNotification: " );
-
 
         if (currentUser.getBookedRestaurant() == null) {
             setNoRestaurant();
@@ -129,7 +127,6 @@ public class UtilNotification {
         notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_TITLE, title);
         notificationIntent.putExtra(NotificationReceiver.NOTIFICATION_CONTENT, content);
         notificationIntent.putExtra(NotificationReceiver.BOOLEAN_IS_BOOKED,isBooked);
-        Log.d("TAG", "initNotification: " + content);
         PendingIntent pendingIntent = PendingIntent. getBroadcast ( context, 0 , notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_MUTABLE ) ;
 
 

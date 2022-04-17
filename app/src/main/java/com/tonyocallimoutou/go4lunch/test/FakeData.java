@@ -2,6 +2,7 @@ package com.tonyocallimoutou.go4lunch.test;
 
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,6 +32,14 @@ public class FakeData {
             new RestaurantDetails("FAKE0","name0","type0","address0","phoneNumber0","website0")
     );
 
+    private static final List<Prediction> FAKE_PREDICTION_RESTAURANT = Arrays.asList(
+            new Prediction("FAKE1","nameOfPrediction1"),
+            new Prediction("FAKE2","nameOfPrediction2"),
+            new Prediction("FAKE3","nameOfPrediction3"),
+            new Prediction("FAKE4","nameOfPrediction4"),
+            new Prediction("FAKE5","nameOfPrediction5")
+    );
+
     public static List<User> getFakeWorkmates() {
         return FAKE_WORKMATES;
     }
@@ -39,5 +48,8 @@ public class FakeData {
     }
     public static List<RestaurantDetails> getFakeBookedRestaurant() {
         return FAKE_BOOKED_RESTAURANT;
+    }
+    public static List<Prediction> getFakePredictionRestaurant() {
+        return FAKE_PREDICTION_RESTAURANT;
     }
 }

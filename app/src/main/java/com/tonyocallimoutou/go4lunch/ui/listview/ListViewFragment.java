@@ -146,7 +146,6 @@ public class ListViewFragment extends BaseFragment {
 
     public void setPrediction() {
         viewModelRestaurant.getDetailPrediction().observe(this, result -> {
-            Log.d("TAG", "setPrediction: ");
             mRestaurants.clear();
             mRestaurants.add(result);
             adapter.notifyDataSetChanged();

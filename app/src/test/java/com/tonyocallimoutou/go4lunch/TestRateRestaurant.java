@@ -20,7 +20,7 @@ import org.mockito.Mock;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RateRestaurantTest {
+public class TestRateRestaurant {
 
     @Mock
     private static ImageView restaurantRate1;

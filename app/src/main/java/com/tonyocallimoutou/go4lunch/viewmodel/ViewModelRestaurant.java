@@ -101,7 +101,6 @@ public class ViewModelRestaurant extends ViewModel {
 
     public void setSearchRestaurant(String input) {
         if (input != null) {
-            Log.d("TAG", "setSearchRestaurant: " + input);
             restaurantRepository.setSearchRestaurant(userLocation, input, predictionsMutableLiveData);
         }
     }
@@ -109,7 +108,6 @@ public class ViewModelRestaurant extends ViewModel {
     public void setSearchWorkmates(String input, List<User> workmates) {
         if (input != null) {
             List<Prediction> predictions = PredictionOfWorkmates.getWorkmates(input,workmates);
-            Log.d("TAG", "setSearchWorkmates: " + predictions);
             predictionsMutableLiveData.postValue(predictions);
         }
     }

@@ -13,6 +13,7 @@ import static org.mockito.MockitoAnnotations.openMocks;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Log;
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.LiveData;
@@ -20,6 +21,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 import com.tonyocallimoutou.go4lunch.test.FakeData;
@@ -37,6 +39,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -64,6 +67,7 @@ public class TestViewModel {
     private final List<User> fakeWorkmates = new ArrayList<>(FakeData.getFakeWorkmates());
     private final List<RestaurantDetails> fakeNearbyRestaurants = new ArrayList<>(FakeData.getFakeNearbyRestaurant());
     private final List<RestaurantDetails> fakeBookedRestaurants = new ArrayList<>(FakeData.getFakeBookedRestaurant());
+    private final List<Prediction> fakePredictionRestaurant = new ArrayList<>(FakeData.getFakePredictionRestaurant());
 
     private final RestaurantDetails restaurantTest =
             new RestaurantDetails("99", "NameTest","TypeTest", "AddressTest","phoneTest","websiteTest");
@@ -73,9 +77,6 @@ public class TestViewModel {
 
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
-
-    public TestViewModel() {
-    }
 
     @Before
     public void setup() {
@@ -126,7 +127,7 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(restaurantRepository).bookedThisRestaurant(any(RestaurantDetails.class));
+        }).when(restaurantRepository).createBookedRestaurantInFirebase(any(RestaurantDetails.class));
 
 
         doAnswer(new Answer() {
@@ -147,7 +148,7 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(restaurantRepository).cancelBookedRestaurant(any(RestaurantDetails.class));
+        }).when(restaurantRepository).cancelBookedRestaurantInFirebase(any(RestaurantDetails.class));
 
 
         doAnswer(new Answer() {
@@ -237,6 +238,16 @@ public class TestViewModel {
             }
         }).when(userRepository).dislikeThisRestaurant(any(RestaurantDetails.class));
 
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                MutableLiveData<List<Prediction>> liveData = (MutableLiveData<List<Prediction>>) args[2];
+                liveData.postValue(fakePredictionRestaurant);
+                return null;
+            }
+        }).when(restaurantRepository).setSearchRestaurant(any(),any(),any(MutableLiveData.class));
+
     }
 
     @Test
@@ -281,7 +292,7 @@ public class TestViewModel {
         LiveData<List<User>> test = viewModelUser.getWorkmates();
 
         assertEquals(fakeWorkmates.size(), test.getValue().size());
-        assertEquals(test.getValue(), fakeWorkmates);
+        assertEquals(fakeWorkmates, test.getValue());
     }
 
     @Test
@@ -293,7 +304,7 @@ public class TestViewModel {
         LiveData<List<RestaurantDetails>> liveData = viewModelRestaurant.getNearbyRestaurantLiveData();
 
         assertEquals(fakeNearbyRestaurants.size(), liveData.getValue().size());
-        assertEquals(liveData.getValue(), fakeNearbyRestaurants);
+        assertEquals(fakeNearbyRestaurants, liveData.getValue());
     }
 
 
@@ -421,6 +432,39 @@ public class TestViewModel {
         viewModelRestaurant.dislikeThisRestaurant(restaurantTest);
         assertEquals(0,currentUser.getLikeRestaurantId().size());
 
+    }
+
+    @Test
+    public void setSearchRestaurant() {
+        viewModelRestaurant.setSearchRestaurant("test");
+
+        LiveData<List<Prediction>> liveData = viewModelRestaurant.getPredictionLiveData();
+
+        assertEquals(fakePredictionRestaurant, liveData.getValue());
+        assertEquals(fakePredictionRestaurant.size(), liveData.getValue().size());
+    }
+
+    @Test
+    public void setSearchWorkmates() {
+        List<User> newUsers = Arrays.asList(
+                new User("test1","TEST1",null),
+                new User("test2","Test2",null),
+                new User("test3","test3",null)
+        );
+
+        fakeWorkmates.addAll(newUsers);
+
+        viewModelRestaurant.setSearchWorkmates("tes",fakeWorkmates);
+
+
+        LiveData<List<Prediction>> liveData = viewModelRestaurant.getPredictionLiveData();
+
+        // JEAN1 - JEAN2 - JEAN3
+        assertEquals(3, liveData.getValue().size());
+        for (int i=0; i<3; i++) {
+            assertEquals(liveData.getValue().get(i).getPlaceId(), newUsers.get(i).getUid());
+            assertEquals(liveData.getValue().get(i).getDescription(), newUsers.get(i).getUsername());
+        }
     }
 
 }
