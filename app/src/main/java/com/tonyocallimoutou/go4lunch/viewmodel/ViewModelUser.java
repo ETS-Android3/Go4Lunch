@@ -1,6 +1,7 @@
 package com.tonyocallimoutou.go4lunch.viewmodel;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -56,6 +57,10 @@ public class ViewModelUser extends ViewModel {
 
     public Task<Void> deleteUser(Context context){
         return userRepository.deleteUser(context);
+    }
+
+    public void setNameOfCurrentUser(String name) {
+        userRepository.setNameOfCurrentUser(name);
     }
 
     // Workmates

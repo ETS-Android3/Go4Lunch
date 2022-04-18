@@ -14,6 +14,7 @@ public class User implements Serializable {
     private String username;
     @Nullable
     private String urlPicture;
+    private String email;
     @Nullable
     private RestaurantDetails bookedRestaurant;
     private List<String> likeRestaurantId;
@@ -24,14 +25,16 @@ public class User implements Serializable {
         uid = user.getUid();
         username = user.getUsername();
         urlPicture = user.getUrlPicture();
+        email = user.getEmail();
         bookedRestaurant = user.getBookedRestaurant();
         likeRestaurantId = user.getLikeRestaurantId();
     }
 
-    public User(String uid, String username, @Nullable String urlPicture) {
+    public User(String uid, String username, @Nullable String urlPicture, String email) {
         this.uid = uid;
         this.username = username;
         this.urlPicture = urlPicture;
+        this.email = email;
         this.bookedRestaurant = null;
         this.likeRestaurantId = new ArrayList<>();  
     }
@@ -59,6 +62,14 @@ public class User implements Serializable {
 
     public void setUrlPicture(@Nullable String urlPicture) {
         this.urlPicture = urlPicture;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
     }
 
     @Nullable

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.preference.PreferenceScreen
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <androidx.preference.PreferenceCategory
+        android:title="@string/preferences_general"
+        android:key="@string/preferences_general">
+
+        <androidx.preference.ListPreference
+            android:key="@string/preferences_languages"
+            android:title="@string/preferences_languages"
+            android:entries="@array/language"
+            android:entryValues="@array/language"/>
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/preferences_personal"
+        android:key="@string/preferences_personal">
+
+        <androidx.preference.EditTextPreference
+            android:key="@string/preferences_name"
+            android:title="@string/preferences_name"
+            android:dialogTitle="Your Name"
+            android:dialogMessage="Enter Your Complete Name"
+            android:inputType="textCapWords"/>
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/preferences_notification"
+        android:key="@string/preferences_notification">
+
+        <androidx.preference.Preference
+            android:key="@string/preferences_notification_no_restaurant"
+            android:title="@string/preferences_notification_no_restaurant" />
+
+        <androidx.preference.Preference
+            android:key="@string/preferences_notification_restaurant"
+            android:title="@string/preferences_notification_restaurant"/>
+
+    </androidx.preference.PreferenceCategory>
+
+    <androidx.preference.PreferenceCategory
+        android:title="@string/preferences_account"
+        android:key="@string/preferences_account">
+
+        <androidx.preference.Preference
+            android:key="@string/preferences_remove_account"
+            android:title="@string/preferences_remove_account"/>
+
+    </androidx.preference.PreferenceCategory>
+
+</androidx.preference.PreferenceScreen>

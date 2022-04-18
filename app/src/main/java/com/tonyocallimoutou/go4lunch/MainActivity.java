@@ -1,9 +1,11 @@
 package com.tonyocallimoutou.go4lunch;
 
+import static java.security.AccessController.getContext;
+
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -19,6 +21,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
+import androidx.preference.PreferenceManager;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
@@ -59,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private View sideView;
     private ActionBar actionBar;
 
+    private User currentUser;
+
     private List<RestaurantDetails> nearbyRestaurant = new ArrayList<>();
     private List<RestaurantDetails> bookedRestaurant = new ArrayList<>();
     private List<User> workmates = new ArrayList<>();
@@ -82,7 +87,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onResume();
         if (viewModelUser.isCurrentLogged()) {
             viewModelUser.createUser();
-            initSideView();
             initData();
         }
         else {
@@ -155,15 +159,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         nav.setNavigationItemSelectedListener(this);
         sideView = nav.getHeaderView(0);
 
-        FirebaseUser user = viewModelUser.getCurrentFirebaseUser();
-
-        if (user.getPhotoUrl() != null) {
-            setProfilePicture(user.getPhotoUrl());
+        if (currentUser.getUrlPicture() != null) {
+            setProfilePicture(currentUser.getUrlPicture());
         }
-        setTextUser(user);
+        setTextUser(currentUser);
     }
 
-    private void setProfilePicture(Uri profilePictureUrl) {
+    private void setProfilePicture(String profilePictureUrl) {
         ImageView profilePicture = sideView.findViewById(R.id.profile_picture_header_side_view);
 
         Glide.with(this)
@@ -172,12 +174,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .into(profilePicture);
     }
 
-    private void setTextUser(FirebaseUser user) {
+    private void setTextUser(User user) {
         TextView email = sideView.findViewById(R.id.user_email);
         TextView name = sideView.findViewById(R.id.user_name);
 
         email.setText(user.getEmail());
-        name.setText(user.getDisplayName());
+        name.setText(user.getUsername());
     }
 
 
@@ -220,6 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // InitData
 
     public void initData() {
+
         viewModelUser.setCurrentUserLiveData();
         viewModelUser.setWorkmatesList();
         viewModelRestaurant.setBookedRestaurantList();
@@ -255,6 +258,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewModelUser.getCurrentUserLiveData().observe(this, currentUserResults -> {
             if (currentUserResults != null) {
                 UtilNotification.newInstance(null,null,this,currentUserResults);
+
+                SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
+                sharedPreferences
+                        .edit()
+                        .putString(getString(R.string.shared_preference_username), currentUserResults.getUsername())
+                        .apply();
+
+                currentUser = currentUserResults;
+                initSideView();
             }
         });
 

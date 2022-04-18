@@ -59,14 +59,42 @@
     <string name="setting_text_language"> Language </string>
     <string name="setting_text_account"> Account </string>
     <string name="setting_text_remove_account"> Remove Account </string>
-    <string name="setting_text_notification_no_restaurant"> alarm when you didn\'t choose a restaurant </string>
-    <string name="setting_text_notification_restaurant"> alarm to remind you to go to restaurant </string>
+    <string name="setting_text_notification_no_restaurant"> Notification when you didn\'t choose a restaurant </string>
+    <string name="setting_text_notification_restaurant"> Notification to remind you to go to restaurant </string>
 
     <string name="setting_account_title_alert"> Remove Account </string>
     <string name="setting_account_message_alert"> Are you sure you want to delete your account ? </string>
     <string name="setting_account_button_alert"> remove </string>
 
+    <string name="setting_title_time_picker_no_restaurant"> remind you to book a restaurant at : </string>
+    <string name="setting_message_time_picker_no_restaurant"> (default value : 11H00) </string>
+    <string name="setting_title_time_picker_restaurant"> Notification to go to a restaurant at : </string>
+    <string name="setting_message_time_picker_restaurant"> (default value : 12H00) </string>
+    <string name="setting_save_time_picker"> Save </string>
+    <string name="setting_default_time_picker"> default </string>
 
+    <string name="shared_preference_username"> USERNAME </string>
+    <string name="shared_preference_hour_no_restaurant"> HOUR NO RESTAURANT </string>
+    <string name="shared_preference_minutes_no_restaurant"> MINUTES NO RESTAURANT </string>
+    <string name="shared_preference_hour_restaurant"> HOUR RESTAURANT </string>
+    <string name="shared_preference_minutes_restaurant"> MINUTES RESTAURANT </string>
+    <string name="shared_preference_language"> LANGUAGE </string>
+
+
+    <string-array name="language">
+        <item>English</item>
+        <item>French</item>
+    </string-array>
+    <string name="preferences_general"> General </string>
+    <string name="preferences_languages"> Languages </string>
+    <string name="preferences_personal"> Personal informations </string>
+    <string name="preferences_name"> Name </string>
+    <string name="preferences_your_actual_name"> Your actual name is </string>
+    <string name="preferences_notification"> Notifications </string>
+    <string name="preferences_notification_no_restaurant"> remind you to book a restaurant at : </string>
+    <string name="preferences_notification_restaurant"> Remind you to go a to the restaurant at : </string>
+    <string name="preferences_account"> Account </string>
+    <string name="preferences_remove_account"> Remove account </string>
 
 
 </resources>

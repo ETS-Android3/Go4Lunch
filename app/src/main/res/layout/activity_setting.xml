@@ -1,89 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".SettingActivity">
+    android:layout_height="match_parent">
 
-    <TextView
-        android:id="@+id/setting_text_language"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:text="@string/setting_text_language" />
+    <fragment
+        android:id="@+id/setting_host_fragment"
+        android:name="com.tonyocallimoutou.go4lunch.SettingFragment"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
 
-    <Spinner
-        android:id="@+id/setting_spinner_language"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:layout_toRightOf="@+id/setting_text_language"/>
-
-    <TextView
-        android:id="@+id/setting_text_account"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:layout_below="@id/setting_text_language"
-        android:text="@string/setting_text_account" />
-
-    <TextView
-        android:id="@+id/setting_remove_account"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:layout_toRightOf="@+id/setting_text_account"
-        android:layout_alignBaseline="@+id/setting_text_account"
-        android:text="@string/setting_text_remove_account" />
-
-
-    <TextView
-        android:id="@+id/setting_text_notification_without_Restaurant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:layout_below="@+id/setting_text_account"
-        android:text="@string/setting_text_notification_no_restaurant" />
-
-    <Spinner
-        android:id="@+id/setting_spinner_hours_no_restaurant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/setting_text_notification_without_Restaurant"
-        android:layout_toRightOf="@+id/setting_text_notification_without_Restaurant" />
-
-    <Spinner
-        android:id="@+id/setting_spinner_minutes_no_restaurant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/setting_spinner_hours_no_restaurant"
-        android:layout_toRightOf="@+id/setting_spinner_hours_no_restaurant" />
-
-
-    <TextView
-        android:id="@+id/setting_text_notification_with_restaurant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_margin="12dp"
-        android:layout_below="@+id/setting_text_notification_without_Restaurant"
-        android:text="@string/setting_text_notification_restaurant" />
-
-    <Spinner
-        android:id="@+id/setting_spinner_hours_restaurant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/setting_text_notification_with_restaurant"
-        android:layout_toRightOf="@+id/setting_text_notification_with_restaurant" />
-
-    <Spinner
-        android:id="@+id/setting_spinner_minutes_restaurant"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/setting_spinner_hours_restaurant"
-        android:layout_toRightOf="@+id/setting_spinner_hours_restaurant" />
-
-
-
-</RelativeLayout>
+</LinearLayout>

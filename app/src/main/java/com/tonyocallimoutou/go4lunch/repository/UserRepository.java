@@ -1,15 +1,20 @@
 package com.tonyocallimoutou.go4lunch.repository;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -18,6 +23,7 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
@@ -101,8 +107,9 @@ public class UserRepository {
                                         : null;
                                 String username = user.getDisplayName();
                                 String uid = user.getUid();
+                                String email = user.getEmail();
 
-                                currentUser = new User(uid, username, urlPicture);
+                                currentUser = new User(uid, username, urlPicture,email);
 
                                 getUsersCollection().document(currentUser.getUid()).set(currentUser);
                             }
@@ -115,7 +122,14 @@ public class UserRepository {
         return AuthUI.getInstance().signOut(context);
     }
 
-    public Task<Void> deleteUser(Context context) {return AuthUI.getInstance().delete(context);}
+    public Task<Void> deleteUser(Context context) {
+        return AuthUI.getInstance().delete(context);
+    }
+
+    public void setNameOfCurrentUser(String name) {
+        currentUser.setUsername(name);
+        getUsersCollection().document(currentUser.getUid()).set(currentUser);
+    }
 
     // List of Workmates
 

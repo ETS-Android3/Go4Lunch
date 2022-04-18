@@ -10,12 +10,12 @@ import java.util.List;
 public class FakeData {
 
     private static final List<User> FAKE_WORKMATES = Arrays.asList(
-            new User("1","Tonyo",null),
-            new User("2","Jennifer",null),
-            new User("3","Marc",null),
-            new User("4","Alfred",null),
-            new User("5","Jean",null),
-            new User("6","Belle",null)
+            new User("1","Tonyo",null,"emailTonyo"),
+            new User("2","Jennifer",null,"emailJennifer"),
+            new User("3","Marc",null,"emailMarc"),
+            new User("4","Alfred",null,"emailAlfred"),
+            new User("5","Jean",null,"emailJean"),
+            new User("6","Belle",null,"emailBelle")
     );
 
     private static final List<RestaurantDetails> FAKE_NEARBY_RESTAURANT = Arrays.asList(

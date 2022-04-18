@@ -12,6 +12,7 @@ import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.NotificationCompat;
+import androidx.preference.PreferenceManager;
 
 import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
@@ -84,15 +85,15 @@ public class UtilNotification {
     private static void setNoRestaurant() {
         title = context.getString(R.string.notification_title_no_restaurant);
         content = context.getString(R.string.notification_content_no_restaurant);
-        hour = UtilData.getHoursNoRestaurant();
-        minutes = UtilData.getMinutesNoRestaurant();
+        hour = PreferenceManager.getDefaultSharedPreferences(context).getInt(context.getString(R.string.shared_preference_hour_no_restaurant),11);
+        minutes = PreferenceManager.getDefaultSharedPreferences(context).getInt(context.getString(R.string.shared_preference_minutes_no_restaurant),0);
         isBooked = false;
     }
 
     private static void setRestaurant() {
         title = context.getString(R.string.notification_title);
-        hour = UtilData.getHoursRestaurant();
-        minutes = UtilData.getMinutesRestaurant();
+        hour = PreferenceManager.getDefaultSharedPreferences(context).getInt(context.getString(R.string.shared_preference_hour_restaurant),12);
+        minutes = PreferenceManager.getDefaultSharedPreferences(context).getInt(context.getString(R.string.shared_preference_minutes_restaurant),0);
         isBooked = true;
 
         for (RestaurantDetails result : restaurants) {
