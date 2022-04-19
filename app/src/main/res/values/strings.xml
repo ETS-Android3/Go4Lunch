@@ -52,7 +52,8 @@
     <string name="notification_title"> Go4Lunch </string>
     <string name="notification_title_no_restaurant"> Where to eat ? </string>
     <string name="notification_content_no_restaurant"> you still have time to decide</string>
-    <string name="notification_content_no_workmates"> no workmates </string>
+    <string name="notification_content_no_workmates"> No workmates </string>
+    <string name="notification_new_alarm"> New alarm at </string>
 
     <string name="no_prediction">no result found</string>
 
@@ -66,7 +67,7 @@
     <string name="setting_account_message_alert"> Are you sure you want to delete your account ? </string>
     <string name="setting_account_button_alert"> remove </string>
 
-    <string name="setting_title_time_picker_no_restaurant"> remind you to book a restaurant at : </string>
+    <string name="setting_title_time_picker_no_restaurant"> Remind you to book a restaurant at : </string>
     <string name="setting_message_time_picker_no_restaurant"> (default value : 11H00) </string>
     <string name="setting_title_time_picker_restaurant"> Notification to go to a restaurant at : </string>
     <string name="setting_message_time_picker_restaurant"> (default value : 12H00) </string>
@@ -85,13 +86,19 @@
         <item>English</item>
         <item>French</item>
     </string-array>
+
+    <string-array name="language_key">
+        <item> en </item>
+        <item> fr </item>
+    </string-array>
+
     <string name="preferences_general"> General </string>
     <string name="preferences_languages"> Languages </string>
-    <string name="preferences_personal"> Personal informations </string>
+    <string name="preferences_personal"> Personal information </string>
     <string name="preferences_name"> Name </string>
     <string name="preferences_your_actual_name"> Your actual name is </string>
     <string name="preferences_notification"> Notifications </string>
-    <string name="preferences_notification_no_restaurant"> remind you to book a restaurant at : </string>
+    <string name="preferences_notification_no_restaurant"> Remind you to book a restaurant at : </string>
     <string name="preferences_notification_restaurant"> Remind you to go a to the restaurant at : </string>
     <string name="preferences_account"> Account </string>
     <string name="preferences_remove_account"> Remove account </string>

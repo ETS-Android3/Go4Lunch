@@ -15,6 +15,7 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.BuildConfig;
 import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
+import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
 import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;
@@ -78,11 +79,13 @@ public class RestaurantRepository {
 
     // Booked Restaurant
 
-    public void createBookedRestaurantInFirebase (RestaurantDetails restaurant) {
+    public void createBookedRestaurantInFirebase (User currentUser, RestaurantDetails restaurant) {
+        restaurant.getWorkmatesId().add(currentUser.getUid());
         getBookedRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
     }
 
-    public void cancelBookedRestaurantInFirebase (RestaurantDetails restaurant) {
+    public void cancelBookedRestaurantInFirebase (User currentUser, RestaurantDetails restaurant) {
+        restaurant.getWorkmatesId().remove(currentUser.getUid());
 
         if (restaurant.getWorkmatesId().size() == 0) {
             getBookedRestaurantsCollection().document(restaurant.getPlaceId()).delete();

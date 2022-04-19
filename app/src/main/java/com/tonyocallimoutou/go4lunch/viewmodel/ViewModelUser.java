@@ -1,16 +1,20 @@
 package com.tonyocallimoutou.go4lunch.viewmodel;
 
+import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.tonyocallimoutou.go4lunch.model.User;
+import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 
 import java.util.List;
@@ -18,13 +22,15 @@ import java.util.List;
 public class ViewModelUser extends ViewModel {
 
     private UserRepository userRepository;
+    private RestaurantRepository restaurantRepository;
 
     private MutableLiveData<List<User>> workmates = new MutableLiveData<>();
     private MutableLiveData<User> currentUserLiveData = new MutableLiveData<>();
 
 
-    public ViewModelUser (UserRepository userRepository) {
+    public ViewModelUser (UserRepository userRepository, RestaurantRepository restaurantRepository) {
         this.userRepository = userRepository ;
+        this.restaurantRepository = restaurantRepository;
     }
 
     // Current User
@@ -56,6 +62,10 @@ public class ViewModelUser extends ViewModel {
     }
 
     public Task<Void> deleteUser(Context context){
+        if (userRepository.getCurrentUser().getBookedRestaurant() != null) {
+            restaurantRepository.cancelBookedRestaurantInFirebase(userRepository.getCurrentUser(), userRepository.getCurrentUser().getBookedRestaurant());
+            userRepository.cancelRestaurant();
+        }
         return userRepository.deleteUser(context);
     }
 

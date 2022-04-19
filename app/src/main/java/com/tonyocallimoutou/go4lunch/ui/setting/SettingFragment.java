@@ -1,8 +1,7 @@
-package com.tonyocallimoutou.go4lunch;
+package com.tonyocallimoutou.go4lunch.ui.setting;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,14 +10,14 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.preference.DropDownPreference;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
 
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
+import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 public class SettingFragment extends PreferenceFragmentCompat implements SettingTimePickerFragment.TimeDialogListener {
@@ -62,7 +61,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
         minutesRestaurant = sharedPreferences.getInt(getString(R.string.shared_preference_minutes_restaurant),0);
         hourNoRestaurant = sharedPreferences.getInt(getString(R.string.shared_preference_hour_no_restaurant),11);
         minutesNoRestaurant = sharedPreferences.getInt(getString(R.string.shared_preference_minutes_no_restaurant),0);
-        defaultLanguage = sharedPreferences.getString(getString(R.string.shared_preference_language),null);
+        defaultLanguage = sharedPreferences.getString(getString(R.string.shared_preference_language),getResources().getConfiguration().locale.getDisplayCountry());
 
 
         namePreference = findPreference(getString(R.string.preferences_name));
@@ -70,6 +69,12 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
         namePreference.setText(name);
 
         languagePreference = findPreference(getString(R.string.preferences_languages));
+        String summary = "";
+        if (defaultLanguage.equals("fr")) {
+        }
+        else{
+
+        }
         languagePreference.setSummary(defaultLanguage);
         languagePreference.setValue(defaultLanguage);
 
@@ -103,11 +108,13 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
         languagePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                Log.d("TAG", "onPreferenceChange: " + newValue);
                 sharedPreferences
                         .edit()
                         .putString(getString(R.string.shared_preference_language), (String) newValue)
                         .apply();
+
+                getActivity().finish();
+                startActivity(getActivity().getIntent());
 
                 initInformation();
                 return false;
@@ -182,7 +189,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
         }
 
         String timeStr = hourToString(hour,minutes);
-        String toast = "New alarm at " + timeStr;
+        String toast = getString(R.string.notification_new_alarm)+ " " + timeStr;
         Toast.makeText(getContext(), toast, Toast.LENGTH_SHORT).show();
 
         initInformation();

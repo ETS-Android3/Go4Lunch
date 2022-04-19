@@ -1,4 +1,4 @@
-package com.tonyocallimoutou.go4lunch;
+package com.tonyocallimoutou.go4lunch.ui.setting;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -15,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.preference.PreferenceManager;
+
+import com.tonyocallimoutou.go4lunch.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;

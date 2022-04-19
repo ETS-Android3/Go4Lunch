@@ -50,7 +50,7 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
         if (modelClass.isAssignableFrom(ViewModelUser.class)) {
 
-            return (T) new ViewModelUser(userRepository);
+            return (T) new ViewModelUser(userRepository, restaurantRepository);
         }
         else if (modelClass.isAssignableFrom(ViewModelRestaurant.class)) {
 

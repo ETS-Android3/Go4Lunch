@@ -109,7 +109,7 @@ public class WorkmatesFragment extends BaseFragment {
 
     public static void initUserList() {
 
-        if (adapter != null) {
+        if (adapter != null && viewModelUser.getCurrentUser() != null) {
 
             workmatesWithoutUser.clear();
 

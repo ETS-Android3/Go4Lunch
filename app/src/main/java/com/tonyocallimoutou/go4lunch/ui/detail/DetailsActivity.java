@@ -25,13 +25,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.tonyocallimoutou.go4lunch.MainActivity;
+import com.tonyocallimoutou.go4lunch.ui.BaseActivity;
+import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
-import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
-import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
-import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
@@ -47,7 +45,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class DetailsActivity extends AppCompatActivity {
+public class DetailsActivity extends BaseActivity {
 
     @BindView(R.id.detail_relative_layout)
     RelativeLayout view;
@@ -129,13 +127,11 @@ public class DetailsActivity extends AppCompatActivity {
                             initWorkmatesList();
                         }
 
-
-
                     }
                 });
             }
             else {
-                Log.e("TAG", "onCreate: ");
+                Log.w("TAG", "onCreate: ");
             }
         }
         else {

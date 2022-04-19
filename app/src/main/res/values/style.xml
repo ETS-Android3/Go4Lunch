@@ -44,10 +44,12 @@
     </style>
 
     <!-- Setting -->
-    <style name="TimePickerTheme" parent="Theme.AppCompat.Light.Dialog">
-        <item name="colorPrimary">@color/colorPrimary</item>
-        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+    <style name="TimePickerTheme" parent="Widget.MaterialComponents.TimePicker">
         <item name="colorAccent">@color/colorPrimary</item>
+    </style>
+
+    <style name="PreferenceCategory" parent="Theme.Go4Lunch" >
+        <item name="colorAccent"> @color/colorPrimary </item>
     </style>
 
 </resources>

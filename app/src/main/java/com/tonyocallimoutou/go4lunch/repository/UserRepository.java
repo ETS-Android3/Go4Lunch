@@ -1,20 +1,14 @@
 package com.tonyocallimoutou.go4lunch.repository;
 
-import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.util.Log;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import com.firebase.ui.auth.AuthUI;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -23,7 +17,6 @@ import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.tonyocallimoutou.go4lunch.MainActivity;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
@@ -123,7 +116,9 @@ public class UserRepository {
     }
 
     public Task<Void> deleteUser(Context context) {
-        return AuthUI.getInstance().delete(context);
+        getUsersCollection().document(currentUser.getUid()).delete();
+        currentUser = null;
+        return signOut(context);
     }
 
     public void setNameOfCurrentUser(String name) {
@@ -160,6 +155,7 @@ public class UserRepository {
     // Booked Restaurant
 
     public void bookedRestaurant(RestaurantDetails restaurant) {
+        restaurant.getWorkmatesId().add(getCurrentUser().getUid());
         currentUser.setBookedRestaurant(restaurant);
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
@@ -203,8 +199,10 @@ public class UserRepository {
 
                 for (DocumentSnapshot document : value) {
                     User user = document.toObject(User.class);
-                    if (user.getUid().equals(getCurrentFirebaseUser().getUid())) {
-                        liveData.setValue(user);
+                    if (getCurrentFirebaseUser()!=null) {
+                        if (user.getUid().equals(getCurrentFirebaseUser().getUid())) {
+                            liveData.setValue(user);
+                        }
                     }
 
                 }

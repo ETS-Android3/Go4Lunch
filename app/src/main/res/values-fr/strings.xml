@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Go4Lunch</string>
+    <string name="actionbar_title_map_view">I\'m Hungry</string>
+    <string name="actionbar_title_list_view">I\'m Hungry</string>
+    <string name="actionbar_title_workmates">Collègues</string>
+
+    <string name="tabItem1">Carte</string>
+    <string name="tabItem2">Liste</string>
+    <string name="tabItem3">Collègues</string>
+    <string name="sideview1"> Ta réservation </string>
+    <string name="sideview2"> Paramètres </string>
+    <string name="sideview3"> Déconnexion </string>
+
+    <string name="facebook_application_id">947763842588942</string>
+    <string name="fb_login_protocol_scheme">fb947763842588942</string>
+
+    <string name="your_lunch"> Désolé vous n\'avez pas encore choisi de restaurant</string>
+    <string name="search_hint_restaurant"> Nom du restaurant </string>
+    <string name="search_hint_workmates"> Nom de collègues </string>
+
+    <string name="workmate_is_eating"> mange chez </string>
+    <string name="workmate_has_not_decided_yet"> n\'a pas encore décidé </string>
+    <string name="workmate_is_joining"> vous rejoinds </string>
+    <string name="no_workmates"> AUCUN COLLEGUES </string>
+
+    <string name="title_message_map_view"> Nous sommes désolés </string>
+    <string name="message_map_view"> Nous avons besoin d\'accéder à votre emplacement pour vous montrer la carte.\nVoulez-vous nous accorder cette autorisation ?</string>
+    <string name="button_message_map_view"> OK</string>
+
+    <string name="title_alertDialog_permission"> Nous sommes désolés </string>
+    <string name="message_alertDialog_permission"> Nous avons besoin d\'accéder à votre emplacement pour vous montrer la carte.\nVoulez-vous nous accorder cette autorisation ?</string>
+    <string name="positive_button_alertDialog_permission"> OK</string>
+
+    <string name="restaurant_data_no_location">Aucune Cooredonnées</string>
+    <string name="restaurant_data_open"> Ouvert </string>
+    <string name="restaurant_data_open_until"> Ouvert j\'usqu\'à </string>
+    <string name="restaurant_data_open_24h"> Ouvert 24h/24 </string>
+    <string name="restaurant_data_open_24h7j"> Ouvert 24/7 </string>
+    <string name="restaurant_data_close"> Fermé </string>
+    <string name="restaurant_data_no_data"> Aucune information </string>
+
+    <string name="detail_call"> CALL </string>
+    <string name="detail_like"> LIKE </string>
+    <string name="detail_website"> WEBSITE </string>
+
+    <string name="explain_call"> Désolé, nous avons besoin de votre permission pour appeler</string>
+    <string name="you_like_it"> Vous aimez </string>
+    <string name="you_not_like_it"> vous n\'aimez plus </string>
+
+    <string name="notification_channel_name"> Go4Lunch </string>
+    <string name="notification_channel_description"> c\'est l\'heure de manger </string>
+    <string name="notification_title"> Go4Lunch </string>
+    <string name="notification_title_no_restaurant"> Où manger ? </string>
+    <string name="notification_content_no_restaurant"> Vous avez encore le temps de décider</string>
+    <string name="notification_content_no_workmates"> Aucun collègues </string>
+    <string name="notification_new_alarm"> nouvelle alarm à  </string>
+
+    <string name="no_prediction">Aucun résultat trouvé </string>
+
+    <string name="setting_text_language"> Langues </string>
+    <string name="setting_text_account"> Comptes </string>
+    <string name="setting_text_remove_account"> Supprimer le compte </string>
+    <string name="setting_text_notification_no_restaurant"> Notification lorsque vous n\avez pas encore réserver à </string>
+    <string name="setting_text_notification_restaurant"> Notification pour vous rappeler d\'aller au restaurant</string>
+
+    <string name="setting_account_title_alert"> Supprimer le compte </string>
+    <string name="setting_account_message_alert"> Êtes-vous sûr de vouloir supprimer votre compte ? </string>
+    <string name="setting_account_button_alert"> Supprimer </string>
+
+    <string name="setting_title_time_picker_no_restaurant"> vous rappeler de réserver un restaurant à : </string>
+    <string name="setting_message_time_picker_no_restaurant"> (valeur par défaut : 11H00) </string>
+    <string name="setting_title_time_picker_restaurant"> Notification pour aller au restaurant à : </string>
+    <string name="setting_message_time_picker_restaurant"> (valeur par défaut : 12H00) </string>
+    <string name="setting_save_time_picker"> Sauvegarder </string>
+    <string name="setting_default_time_picker"> Défaut </string>
+
+    <string name="shared_preference_username"> USERNAME </string>
+    <string name="shared_preference_hour_no_restaurant"> HOUR NO RESTAURANT </string>
+    <string name="shared_preference_minutes_no_restaurant"> MINUTES NO RESTAURANT </string>
+    <string name="shared_preference_hour_restaurant"> HOUR RESTAURANT </string>
+    <string name="shared_preference_minutes_restaurant"> MINUTES RESTAURANT </string>
+    <string name="shared_preference_language"> LANGUAGE </string>
+
+
+    <string-array name="language">
+        <item>Englais</item>
+        <item>Français</item>
+    </string-array>
+    <string name="preferences_general"> Général </string>
+    <string name="preferences_languages"> Langues </string>
+    <string name="preferences_personal"> Informations personnel </string>
+    <string name="preferences_name"> Nom </string>
+    <string name="preferences_your_actual_name"> Ton nom actuel est </string>
+    <string name="preferences_notification"> Notifications </string>
+    <string name="preferences_notification_no_restaurant">Vous rappelez de réserver un restaurant à : </string>
+    <string name="preferences_notification_restaurant"> Vous rappeler d\'aller au restaurant à : </string>
+    <string name="preferences_account"> Compte </string>
+    <string name="preferences_remove_account"> Supprimer le compte </string>
+</resources>

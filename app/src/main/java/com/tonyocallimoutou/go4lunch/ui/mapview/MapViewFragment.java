@@ -105,6 +105,7 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
 
         viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
 
+        mGoogleMap = null;
         fabMap.setVisibility(View.INVISIBLE);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(getActivity());

@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/setting_host_fragment"
-        android:name="com.tonyocallimoutou.go4lunch.SettingFragment"
+        android:name="com.tonyocallimoutou.go4lunch.ui.setting.SettingFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

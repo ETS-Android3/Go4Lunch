@@ -9,7 +9,7 @@
             android:key="@string/preferences_languages"
             android:title="@string/preferences_languages"
             android:entries="@array/language"
-            android:entryValues="@array/language"/>
+            android:entryValues="@array/language_key"/>
 
     </androidx.preference.PreferenceCategory>
 
