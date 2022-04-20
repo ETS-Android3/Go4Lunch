@@ -63,15 +63,19 @@ public class ViewModelRestaurant extends ViewModel {
             cancelBookedRestaurant(getRestaurantOfCurrentUser());
         }
 
-        restaurantRepository.createBookedRestaurantInFirebase(userRepository.getCurrentUser(), restaurant);
+        restaurant.getWorkmatesId().add(userRepository.getCurrentUser().getUid());
+
+        restaurantRepository.createBookedRestaurantInFirebase(restaurant);
 
         userRepository.bookedRestaurant(restaurant);
     }
 
     public void cancelBookedRestaurant(RestaurantDetails restaurant) {
 
+        restaurant.getWorkmatesId().remove(userRepository.getCurrentUser().getUid());
+
         userRepository.cancelRestaurant();
-        restaurantRepository.cancelBookedRestaurantInFirebase(userRepository.getCurrentUser(),restaurant);
+        restaurantRepository.cancelBookedRestaurantInFirebase(restaurant);
     }
 
     public void setBookedRestaurantList() {

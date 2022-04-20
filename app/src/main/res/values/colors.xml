@@ -6,6 +6,7 @@
     <color name="green"> #5cf19e </color>
     <color name="white"> #ffff </color>
     <color name="black"> #FF000000 </color>
+    <color name="black_reverse"> #FF000000 </color>
     <color name="grey"> #474a4b</color>
     <color name="light_grey"> #F0F0F2</color>
     <color name="orange"> #fc7540 </color>

@@ -71,7 +71,7 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
             String type = user.getBookedRestaurant().getTypes().get(0);
             String name = '(' + user.getBookedRestaurant().getName() + ')';
             text += mContext.getString(R.string.workmate_is_eating) + " "+ type + name;
-            holder.workmateText.setTextColor(ContextCompat.getColor(mContext,R.color.black));
+            holder.workmateText.setTextColor(ContextCompat.getColor(mContext,R.color.black_reverse));
         }
 
         holder.workmateText.setText(text);

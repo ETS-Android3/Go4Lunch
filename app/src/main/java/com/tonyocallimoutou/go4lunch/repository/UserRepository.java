@@ -155,7 +155,6 @@ public class UserRepository {
     // Booked Restaurant
 
     public void bookedRestaurant(RestaurantDetails restaurant) {
-        restaurant.getWorkmatesId().add(getCurrentUser().getUid());
         currentUser.setBookedRestaurant(restaurant);
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }

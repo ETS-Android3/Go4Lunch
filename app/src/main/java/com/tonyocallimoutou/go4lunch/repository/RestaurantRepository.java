@@ -79,13 +79,12 @@ public class RestaurantRepository {
 
     // Booked Restaurant
 
-    public void createBookedRestaurantInFirebase (User currentUser, RestaurantDetails restaurant) {
-        restaurant.getWorkmatesId().add(currentUser.getUid());
+    public void createBookedRestaurantInFirebase (RestaurantDetails restaurant) {
         getBookedRestaurantsCollection().document(restaurant.getPlaceId()).set(restaurant);
     }
 
-    public void cancelBookedRestaurantInFirebase (User currentUser, RestaurantDetails restaurant) {
-        restaurant.getWorkmatesId().remove(currentUser.getUid());
+    public void cancelBookedRestaurantInFirebase (RestaurantDetails restaurant) {
+        Log.d("TAG", "cancelBookedRestaurantInFirebase: "+ restaurant.getWorkmatesId());
 
         if (restaurant.getWorkmatesId().size() == 0) {
             getBookedRestaurantsCollection().document(restaurant.getPlaceId()).delete();
@@ -255,25 +254,27 @@ public class RestaurantRepository {
     // SEARCH
 
     public void setSearchRestaurant(Location userLocation, String input, MutableLiveData<List<Prediction>> liveData) {
-        String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
+        if (userLocation != null) {
+            String location = userLocation.getLatitude() + "," + userLocation.getLongitude();
 
-        retrofitMap.getSearchPlace(location, input).enqueue(new Callback<SearchPlace>() {
-            @Override
-            public void onResponse(Call<SearchPlace> call, Response<SearchPlace> response) {
-                List<Prediction> predictions = new ArrayList<>();
-                for (Prediction prediction : response.body().getResults()) {
-                    if (prediction.getTypes().contains("food") || prediction.getTypes().contains("restaurant")) {
-                        predictions.add(prediction);
+            retrofitMap.getSearchPlace(location, input).enqueue(new Callback<SearchPlace>() {
+                @Override
+                public void onResponse(Call<SearchPlace> call, Response<SearchPlace> response) {
+                    List<Prediction> predictions = new ArrayList<>();
+                    for (Prediction prediction : response.body().getResults()) {
+                        if (prediction.getTypes().contains("food") || prediction.getTypes().contains("restaurant")) {
+                            predictions.add(prediction);
+                        }
                     }
+                    liveData.setValue(predictions);
                 }
-                liveData.setValue(predictions);
-            }
 
-            @Override
-            public void onFailure(Call<SearchPlace> call, Throwable t) {
+                @Override
+                public void onFailure(Call<SearchPlace> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+        }
     }
 
     // Detail

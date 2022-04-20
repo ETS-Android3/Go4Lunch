@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
@@ -31,6 +32,9 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ListViewFragment#newInstance} factory method to
@@ -38,6 +42,7 @@ import java.util.List;
  */
 public class ListViewFragment extends BaseFragment {
 
+    private static TextView lblNoRestaurant;
     private static RecyclerView mRecyclerView;
 
     private AutocompleteFragment autocompleteFragment;
@@ -88,7 +93,9 @@ public class ListViewFragment extends BaseFragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_list_view, container, false);
-        mRecyclerView = (RecyclerView) view;
+        mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_recycler_view);
+        lblNoRestaurant = view.findViewById(R.id.lbl_no_restaurant);
+
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
 
@@ -107,6 +114,14 @@ public class ListViewFragment extends BaseFragment {
         }
         mRestaurants.addAll(bookedRestaurant);
         mRestaurants.addAll(nearbyWithoutBooked);
+
+        if (lblNoRestaurant != null) {
+            if (mRestaurants.size() == 0) {
+                lblNoRestaurant.setVisibility(View.VISIBLE);
+            } else {
+                lblNoRestaurant.setVisibility(View.GONE);
+            }
+        }
 
         if (mRecyclerView != null) {
             initAdapter();

@@ -8,6 +8,7 @@
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_launcher_background.xml" value="0.174" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_list_black_24dp.xml" value="0.174" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_local_dining_black_24dp.xml" value="0.174" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_local_dining_white_24dp.xml" value="0.174" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_local_phone_black_24dp.xml" value="0.1695" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_menu_white_24dp.xml" value="0.174" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/drawable/ic_my_location_black_24dp.xml" value="0.1695" />
@@ -44,6 +45,7 @@
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/include_list_view_workmate.xml" value="0.16041666666666668" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/include_message_map_view.xml" value="0.14666666666666667" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/include_message_mapv_view.xml" value="0.1956521739130435" />
+        <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/include_no_restaurant.xml" value="0.16041666666666668" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/include_no_workmates.xml" value="0.16041666666666668" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/include_rate1.xml" value="0.16041666666666668" />
         <entry key="..\:/Documents/Code/OpenClassroom/Projet_7/Go4Lunch/app/src/main/res/layout/include_rate2.xml" value="0.16041666666666668" />

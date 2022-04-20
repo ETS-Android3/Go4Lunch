@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
@@ -66,7 +67,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class MapViewFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener{
+public class MapViewFragment extends BaseFragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener, ViewTreeObserver.OnGlobalLayoutListener {
 
     @BindView(R.id.message_map_view)
     LinearLayout message_map_view;
@@ -254,14 +255,17 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
         mGoogleMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(getContext(),R.raw.style_json));
 
         SetupForUserLocation();
-
-        // Click on Marker = Restaurant
-        initListForMarker();
         mGoogleMap.setOnMarkerClickListener(this);
 
+        mapFragment.getView().getViewTreeObserver().addOnGlobalLayoutListener(this);
 
     }
 
+    @Override
+    public void onGlobalLayout() {
+        mapFragment.getView().getViewTreeObserver().removeOnGlobalLayoutListener(this);
+        initListForMarker();
+    }
 
     // SETUP USER LOCATION
 
@@ -340,8 +344,9 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
             builder.include(new LatLng(userLocation.getLatitude(),userLocation.getLongitude()));
             LatLngBounds bounds = builder.build();
 
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 50);
 
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 50);
+            Log.d("TAG", "addMarker: " + cu);
             mGoogleMap.moveCamera(cu);
         }
     }

@@ -6,14 +6,14 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/lbl_no_workmates"
+        android:id="@+id/lbl_no_restaurant"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:text="@string/no_workmates"
+        android:text="@string/no_restaurant"
         android:textSize="22sp"
         android:visibility="gone"
-        app:drawableTopCompat="@drawable/ic_group_black_24dp"
-        app:drawableTint="@color/black_reverse"  />
+        app:drawableTopCompat="@drawable/ic_local_dining_white_24dp"
+        app:drawableTint="@color/black_reverse" />
 
 </RelativeLayout>

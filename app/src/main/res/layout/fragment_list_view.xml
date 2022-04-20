@@ -1,9 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.recyclerview.widget.RecyclerView
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:listitem="@layout/fragment_list_view_item"
-    tools:context=".ui.listview.ListViewFragment"
-    />
+    tools:context=".ui.listview.ListViewFragment">
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/list_view_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:listitem="@layout/fragment_list_view_item" />
+
+    <include
+        layout="@layout/include_no_restaurant"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent" />
+
+</RelativeLayout>

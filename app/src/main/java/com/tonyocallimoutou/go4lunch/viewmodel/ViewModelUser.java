@@ -63,7 +63,7 @@ public class ViewModelUser extends ViewModel {
 
     public Task<Void> deleteUser(Context context){
         if (userRepository.getCurrentUser().getBookedRestaurant() != null) {
-            restaurantRepository.cancelBookedRestaurantInFirebase(userRepository.getCurrentUser(), userRepository.getCurrentUser().getBookedRestaurant());
+            restaurantRepository.cancelBookedRestaurantInFirebase(userRepository.getCurrentUser().getBookedRestaurant());
             userRepository.cancelRestaurant();
         }
         return userRepository.deleteUser(context);

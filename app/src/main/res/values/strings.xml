@@ -39,6 +39,7 @@
     <string name="restaurant_data_open_24h7j"> Open 24/7 </string>
     <string name="restaurant_data_close"> Close </string>
     <string name="restaurant_data_no_data"> No data </string>
+    <string name="no_restaurant"> NO RESTAURANT </string>
 
     <string name="detail_call"> CALL </string>
     <string name="detail_like"> LIKE </string>
