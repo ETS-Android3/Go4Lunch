@@ -49,14 +49,12 @@ import java.util.List;
 @RunWith(MockitoJUnitRunner.class)
 public class TestUtils {
 
+
+
     List<RestaurantDetails> nearbyRestaurant = new ArrayList<>(FakeData.getFakeNearbyRestaurant());
     List<RestaurantDetails> bookedRestaurant = new ArrayList<>(FakeData.getFakeBookedRestaurant());
     List<User> workmates = new ArrayList<>(FakeData.getFakeWorkmates());
 
-    @Before
-    public void init() {
-        openMocks(this);
-    }
 
     @Test
     public void getNearbyRestaurantWithoutBooked() {
@@ -101,11 +99,11 @@ public class TestUtils {
     @Test
     public void getPredictionOfWorkmates() {
         List<User> workmates = Arrays.asList(
-                new User("test1","Jean",null),
-                new User("test2","JEAN",null),
-                new User("test3","Jeannette",null),
-                new User("test4","Jules",null),
-                new User("test5","Patrick",null)
+                new User("test1","Jean",null,"emailTest1"),
+                new User("test2","JEAN",null,"emailTest2"),
+                new User("test3","Jeannette",null,"emailTest3"),
+                new User("test4","Jules",null,"emailTest1"),
+                new User("test5","Patrick",null,"emailTest1")
         );
 
         List<Prediction> predictions = PredictionOfWorkmates.getWorkmates("jea",workmates);
@@ -121,50 +119,6 @@ public class TestUtils {
         assertEquals(1,predictions2.size());
         assertEquals("test5", predictions2.get(0).getPlaceId());
         assertEquals("Patrick", predictions2.get(0).getDescription());
-    }
-
-    @Test
-    public void roundToNearestFiftyMeters() {
-        Location locationWitness = new Location("");
-        locationWitness.setLatitude(32.59999);
-        locationWitness.setLongitude(99.566677);
-
-
-        Location locationTest = new Location("");
-        locationTest.setLatitude(locationWitness.getLatitude());
-        locationTest.setLongitude(locationWitness.getLongitude());
-
-        UtilDistance.roundToNearestFiftyMeters(locationTest);
-
-        assertSame(locationTest.getLongitude(),locationWitness.getLatitude());
-        assertEquals(50, locationWitness.distanceTo(locationTest), 0.0);
-    }
-
-    @Test
-    public void distanceWithRestaurant() {
-        Location locationWitness = new Location("");
-        locationWitness.setLatitude(32.59999);
-        locationWitness.setLongitude(99.566677);
-
-        Location locationTest = new Location("");
-        locationTest.setLatitude(31);
-        locationTest.setLongitude(98);
-
-        int distance = Math.round(locationWitness.distanceTo(locationTest));
-
-        RestaurantDetails restaurant = new RestaurantDetails();
-
-        Geometry geo = new Geometry();
-        com.tonyocallimoutou.go4lunch.model.places.Location location = new com.tonyocallimoutou.go4lunch.model.places.Location();
-        location.setLat(locationTest.getLatitude());
-        location.setLng(locationTest.getLongitude());
-        geo.setLocation(location);
-
-        restaurant.setGeometry(geo);
-
-        int distanceRestaurant = UtilDistance.getDistanceWithRestaurant(locationWitness,restaurant);
-
-        assertEquals(distance, distanceRestaurant);
     }
 
 

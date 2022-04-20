@@ -2,6 +2,19 @@
 <androidx.preference.PreferenceScreen
     xmlns:android="http://schemas.android.com/apk/res/android">
     <androidx.preference.PreferenceCategory
+        android:title="@string/preferences_theme"
+        android:key="@string/preferences_theme">
+
+        <androidx.preference.SwitchPreference
+            android:key="@string/preferences_dark_theme"
+            android:title="@string/preferences_dark_theme"
+            android:summaryOff="@string/preferences_light_theme"
+            android:summaryOn="@string/preferences_dark_theme"/>
+
+    </androidx.preference.PreferenceCategory>
+
+
+    <androidx.preference.PreferenceCategory
         android:title="@string/preferences_general"
         android:key="@string/preferences_general">
 

@@ -17,7 +17,7 @@
 
     <!-- List View -->
     <style name="ListViewRestaurantName" >
-        <item name="android:textColor"> @color/black </item>
+        <item name="android:textColorPrimary"> @color/black </item>
         <item name="android:textStyle"> bold </item>
     </style>
 
@@ -35,6 +35,14 @@
     <style name="MapViewMessageTitle" >
         <item name="android:textColor"> @color/black </item>
         <item name="android:textStyle"> bold </item>
+    </style>
+    <style name="MapViewMessage" >
+        <item name="android:textColor"> @color/black </item>
+    </style>
+
+    <!-- Workmates -->
+    <style name="WorkmatesText">
+        <item name="android:textColorPrimary"> @color/black</item>
     </style>
 
     <!-- SearchAutocomplete -->

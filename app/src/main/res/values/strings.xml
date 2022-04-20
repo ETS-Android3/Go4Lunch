@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Go4Lunch</string>
     <string name="actionbar_title_map_view">I\'m Hungry</string>
@@ -80,6 +81,7 @@
     <string name="shared_preference_hour_restaurant"> HOUR RESTAURANT </string>
     <string name="shared_preference_minutes_restaurant"> MINUTES RESTAURANT </string>
     <string name="shared_preference_language"> LANGUAGE </string>
+    <string name="shared_preference_theme"> THEME </string>
 
 
     <string-array name="language">
@@ -92,6 +94,9 @@
         <item> fr </item>
     </string-array>
 
+    <string name="preferences_theme"> Theme </string>
+    <string name="preferences_dark_theme"> Dark theme </string>
+    <string name="preferences_light_theme"> Light theme </string>
     <string name="preferences_general"> General </string>
     <string name="preferences_languages"> Languages </string>
     <string name="preferences_personal"> Personal information </string>

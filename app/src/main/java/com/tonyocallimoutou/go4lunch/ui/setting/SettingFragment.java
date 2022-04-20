@@ -9,12 +9,14 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 import androidx.preference.PreferenceFragmentCompat;
 import androidx.preference.PreferenceManager;
+import androidx.preference.SwitchPreference;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.ui.MainActivity;
@@ -27,6 +29,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
     private Preference notificationRestaurant;
     private Preference notificationNoRestaurant;
     private Preference removeAccount;
+    private SwitchPreference darkTheme;
 
     private SharedPreferences sharedPreferences;
     private ViewModelUser viewModelUser;
@@ -37,6 +40,7 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
     private int hourRestaurant;
     private int minutesRestaurant;
     private String defaultLanguage;
+    private boolean isDarkTheme;
 
 
     @Override
@@ -62,7 +66,11 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
         hourNoRestaurant = sharedPreferences.getInt(getString(R.string.shared_preference_hour_no_restaurant),11);
         minutesNoRestaurant = sharedPreferences.getInt(getString(R.string.shared_preference_minutes_no_restaurant),0);
         defaultLanguage = sharedPreferences.getString(getString(R.string.shared_preference_language),getResources().getConfiguration().locale.getDisplayCountry());
+        isDarkTheme = sharedPreferences.getBoolean(getString(R.string.shared_preference_theme), false);
 
+
+        darkTheme = findPreference(getString(R.string.preferences_dark_theme));
+        darkTheme.setChecked(isDarkTheme);
 
         namePreference = findPreference(getString(R.string.preferences_name));
         namePreference.setSummary(getString(R.string.preferences_your_actual_name)+ " " + name);
@@ -89,6 +97,30 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
     }
 
     private void setPreferences() {
+
+        darkTheme.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+            @Override
+            public boolean onPreferenceClick(@NonNull Preference preference) {
+                if (darkTheme.isChecked()) {
+                    isDarkTheme = true;
+                }
+                else {
+                    isDarkTheme = false;
+                }
+                sharedPreferences
+                        .edit()
+                        .putBoolean(getString(R.string.shared_preference_theme), isDarkTheme)
+                        .apply();
+
+                getActivity().finish();
+                startActivity(getActivity().getIntent());
+
+                initInformation();
+                return false;
+            }
+        });
+
+
         namePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {

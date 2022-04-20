@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/margin_message_text_map_view"
         android:layout_gravity="center"
+        style="@style/MapViewMessage"
         android:text="@string/message_map_view" />
 
     <Button

@@ -73,7 +73,7 @@ public class TestViewModel {
             new RestaurantDetails("99", "NameTest","TypeTest", "AddressTest","phoneTest","websiteTest");
 
 
-    private User currentUser = new User("test","NameCurrentUser",null);
+    private User currentUser = new User("test","NameCurrentUser",null,"emailTest");
 
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
@@ -86,7 +86,7 @@ public class TestViewModel {
 
         initAnswer();
 
-        viewModelUser = new ViewModelUser(userRepository);
+        viewModelUser = new ViewModelUser(userRepository,restaurantRepository);
         viewModelRestaurant = new ViewModelRestaurant(restaurantRepository,userRepository);
     }
 
@@ -114,9 +114,12 @@ public class TestViewModel {
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                RestaurantDetails arg = invocation.getArgument(0);
+                RestaurantDetails arg = invocation.getArgument(1);
+
+                arg.getWorkmatesId().add(currentUser.getUid());
 
                 RestaurantDetails restaurantToRemove = new RestaurantDetails();
+
                 for (RestaurantDetails restaurant : fakeBookedRestaurants) {
                     if (restaurant.getPlaceId().equals(arg.getPlaceId())) {
                         restaurantToRemove = restaurant;
@@ -127,13 +130,15 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(restaurantRepository).createBookedRestaurantInFirebase(any(RestaurantDetails.class));
+        }).when(restaurantRepository).createBookedRestaurantInFirebase(any(User.class),any(RestaurantDetails.class));
 
 
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                RestaurantDetails arg = invocation.getArgument(0);
+                RestaurantDetails arg = invocation.getArgument(1);
+
+                arg.getWorkmatesId().remove(currentUser.getUid());
 
                 RestaurantDetails restaurantToRemove = new RestaurantDetails();
                 for (RestaurantDetails restaurant : fakeBookedRestaurants) {
@@ -148,7 +153,7 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(restaurantRepository).cancelBookedRestaurantInFirebase(any(RestaurantDetails.class));
+        }).when(restaurantRepository).cancelBookedRestaurantInFirebase(any(User.class),any(RestaurantDetails.class));
 
 
         doAnswer(new Answer() {
@@ -193,6 +198,16 @@ public class TestViewModel {
                 return null;
             }
         }).when(userRepository).deleteUser(any(Context.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                String newName = (String) args[0];
+                currentUser.setUsername(newName);
+                return null;
+            }
+        }).when(userRepository).setNameOfCurrentUser(any(String.class));
 
 
         doAnswer(new Answer() {
@@ -258,6 +273,7 @@ public class TestViewModel {
         assertEquals(currentUser.getUid(), user.getUid());
         assertEquals(currentUser.getUsername(), user.getUsername());
         assertEquals(currentUser.getUrlPicture(), user.getUrlPicture());
+        assertEquals(currentUser.getEmail(), user.getEmail());
     }
 
     @Test
@@ -285,6 +301,14 @@ public class TestViewModel {
     }
 
     @Test
+    public void setName() {
+        assertEquals("NameCurrentUser", currentUser.getUsername());
+
+        viewModelUser.setNameOfCurrentUser("newNameTest");
+        assertEquals("newNameTest", currentUser.getUsername());
+    }
+
+    @Test
     public void setWorkmatesLiveData() {
 
         viewModelUser.setWorkmatesList();
@@ -297,7 +321,6 @@ public class TestViewModel {
 
     @Test
     public void setNearbyRestaurantsLiveData() {
-
 
         viewModelRestaurant.setNearbyPlace(userLocation);
 
@@ -447,9 +470,9 @@ public class TestViewModel {
     @Test
     public void setSearchWorkmates() {
         List<User> newUsers = Arrays.asList(
-                new User("test1","TEST1",null),
-                new User("test2","Test2",null),
-                new User("test3","test3",null)
+                new User("test1","TEST1",null,"email1"),
+                new User("test2","Test2",null,"email2"),
+                new User("test3","test3",null,"email3")
         );
 
         fakeWorkmates.addAll(newUsers);

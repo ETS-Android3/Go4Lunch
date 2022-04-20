@@ -81,12 +81,22 @@
     <string name="shared_preference_hour_restaurant"> HOUR RESTAURANT </string>
     <string name="shared_preference_minutes_restaurant"> MINUTES RESTAURANT </string>
     <string name="shared_preference_language"> LANGUAGE </string>
+    <string name="shared_preference_theme"> THEME </string>
 
 
     <string-array name="language">
         <item>Englais</item>
         <item>Français</item>
     </string-array>
+
+    <string-array name="language_key">
+        <item> en </item>
+        <item> fr </item>
+    </string-array>
+
+    <string name="preferences_theme"> Thème </string>
+    <string name="preferences_dark_theme"> Thème sombre</string>
+    <string name="preferences_light_theme"> Thème clair </string>
     <string name="preferences_general"> Général </string>
     <string name="preferences_languages"> Langues </string>
     <string name="preferences_personal"> Informations personnel </string>
