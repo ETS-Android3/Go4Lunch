@@ -114,9 +114,7 @@ public class TestViewModel {
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                RestaurantDetails arg = invocation.getArgument(1);
-
-                arg.getWorkmatesId().add(currentUser.getUid());
+                RestaurantDetails arg = invocation.getArgument(0);
 
                 RestaurantDetails restaurantToRemove = new RestaurantDetails();
 
@@ -130,15 +128,13 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(restaurantRepository).createBookedRestaurantInFirebase(any(User.class),any(RestaurantDetails.class));
+        }).when(restaurantRepository).createBookedRestaurantInFirebase(any(RestaurantDetails.class));
 
 
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                RestaurantDetails arg = invocation.getArgument(1);
-
-                arg.getWorkmatesId().remove(currentUser.getUid());
+                RestaurantDetails arg = invocation.getArgument(0);
 
                 RestaurantDetails restaurantToRemove = new RestaurantDetails();
                 for (RestaurantDetails restaurant : fakeBookedRestaurants) {
@@ -153,7 +149,7 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(restaurantRepository).cancelBookedRestaurantInFirebase(any(User.class),any(RestaurantDetails.class));
+        }).when(restaurantRepository).cancelBookedRestaurantInFirebase(any(RestaurantDetails.class));
 
 
         doAnswer(new Answer() {
