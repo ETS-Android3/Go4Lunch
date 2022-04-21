@@ -108,4 +108,7 @@
     <string name="preferences_notification_restaurant"> Vous rappeler d\'aller au restaurant à : </string>
     <string name="preferences_account"> Compte </string>
     <string name="preferences_remove_account"> Supprimer le compte </string>
+
+    <string name="chat_send_button"> Envoyer </string>
+
 </resources>

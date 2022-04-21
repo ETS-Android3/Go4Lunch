@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    // Side View
+    <!--Side View -->
     <dimen name="logo_header_side_view_height">100dp</dimen>
     <dimen name="logo_header_side_view_width">176dp</dimen>
     <dimen name="profile_picture_header_side_view_height">60dp</dimen>
@@ -9,17 +9,17 @@
     <dimen name="margin_information_header"> 16dp </dimen>
     <dimen name="margin_text_information_start"> 16dp </dimen>
     <dimen name="margin_text_information_top"> 8dp </dimen>
-        // Calculation = 100 + 60 + 16
+        <!--Calculation = 100 + 60 + 16 -->
     <dimen name="side_view_header_height"> 176dp </dimen>
 
-    // workmates
+    <!--workmates -->
     <dimen name="profile_picture_workmates_height"> 56dp </dimen>
     <dimen name="profile_picture_workmates_width"> 56dp </dimen>
     <dimen name="profile_picture_workmates_margin"> 16dp </dimen>
-        //Calculation 56/2 + 16
+        <!--Calculation 56/2 + 16 -->
     <dimen name="text_workmates_margin"> 34dp </dimen>
 
-    // MapView
+    <!-- MapView -->
     <dimen name="margin_end_fab_map"> 24dp </dimen>
     <dimen name="margin_bottom_fab_map"> 40dp </dimen>
 
@@ -28,14 +28,14 @@
     <dimen name="margin_message_button_map_view"> 16dp </dimen>
 
 
-    // ListView
+    <!-- ListView -->
     <dimen name="restaurant_picture_list_height"> 68dp </dimen>
     <dimen name="restaurant_picture_list_width"> 68dp </dimen>
     <dimen name="margin_restaurant_picture_list"> 8dp </dimen>
     <dimen name="margin_item_list_view"> 8dp </dimen>
 
 
-    // Detail Activity
+    <!--Detail Activity -->
     <dimen name="detail_picture_height"> 200dp </dimen>
     <dimen name="detail_padding_info"> 16dp </dimen>
     <dimen name="detail_padding_action"> 16dp </dimen>
@@ -45,6 +45,11 @@
     <dimen name="margin_bottom_detail_fab"> -24dp </dimen>
     <dimen name="margin_detail_action"> 16dp </dimen>
 
+    <!-- Chat Activity -->
+    <dimen name="chat_profile_image_width"> 48dp </dimen>
+    <dimen name="chat_profile_image_height"> 48dp </dimen>
+    <dimen name="chat_profile_image_margin"> 16dp</dimen>
+    <dimen name="chat_message_margin"> 16dp </dimen>
 
 
 

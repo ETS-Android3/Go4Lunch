@@ -19,7 +19,9 @@ import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.ui.BaseFragment;
 import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
+import com.tonyocallimoutou.go4lunch.ui.chat.ChatActivity;
 import com.tonyocallimoutou.go4lunch.utils.PredictionOfWorkmates;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelChat;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -32,7 +34,7 @@ import butterknife.ButterKnife;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class WorkmatesFragment extends BaseFragment {
+public class WorkmatesFragment extends BaseFragment implements WorkmatesRecyclerViewAdapter.WorkmatesItemClickListener {
 
 
     private static TextView lblWorkmates;
@@ -100,7 +102,7 @@ public class WorkmatesFragment extends BaseFragment {
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-        adapter = new WorkmatesRecyclerViewAdapter(getContext(),workmatesWithoutUser);
+        adapter = new WorkmatesRecyclerViewAdapter(getContext(),workmatesWithoutUser, this);
         initUserList();
         mRecyclerView.setAdapter(adapter);
         return view;
@@ -135,6 +137,14 @@ public class WorkmatesFragment extends BaseFragment {
             adapter.notifyDataSetChanged();
         }
 
+    }
+
+    @Override
+    public void onWorkmatesItemClick(int position) {
+        User user = workmatesWithoutUser.get(position);
+        List<User> users = new ArrayList<>();
+        users.add(user);
+        ChatActivity.navigate(getActivity(), users, null);
     }
 
     public static void setWorkmates(List<User> result) {

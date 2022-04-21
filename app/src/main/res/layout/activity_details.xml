@@ -88,5 +88,12 @@
         android:layout_alignBottom="@+id/detail_restaurant_picture"
         android:layout_alignParentEnd="true" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_chat_restaurant"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_margin="@dimen/margin_end_fab_map" />
 
 </RelativeLayout>

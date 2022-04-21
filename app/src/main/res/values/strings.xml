@@ -109,5 +109,6 @@
     <string name="preferences_account"> Account </string>
     <string name="preferences_remove_account"> Remove account </string>
 
+    <string name="chat_send_button"> Send </string>
 
 </resources>

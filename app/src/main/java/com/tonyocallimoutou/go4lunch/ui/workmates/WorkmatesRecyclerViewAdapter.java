@@ -15,6 +15,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
+import com.tonyocallimoutou.go4lunch.ui.chat.ChatActivity;
 
 import java.util.List;
 
@@ -25,11 +26,13 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
 
     private final List<User> mUsers;
     private final Context mContext;
+    private final WorkmatesItemClickListener workmatesItemClickListener;
 
 
-    public WorkmatesRecyclerViewAdapter(Context context, List<User> users) {
+    public WorkmatesRecyclerViewAdapter(Context context, List<User> users, WorkmatesItemClickListener listener) {
         mContext = context;
         mUsers = users;
+        workmatesItemClickListener = listener;
     }
 
 
@@ -60,6 +63,9 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
         return mUsers.size();
     }
 
+    public interface WorkmatesItemClickListener{
+        void onWorkmatesItemClick(int position);
+    }
 
     public void initText(WorkmatesRecyclerViewAdapter.ViewHolder holder, User user) {
         String text = user.getUsername()+ " ";
@@ -88,6 +94,14 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
             ButterKnife.bind(this,itemView);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    int position = getAdapterPosition();
+                    workmatesItemClickListener.onWorkmatesItemClick(position);
+                }
+            });
         }
     }
 }

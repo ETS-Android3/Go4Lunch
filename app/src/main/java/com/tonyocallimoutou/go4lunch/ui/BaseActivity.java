@@ -38,7 +38,6 @@ public class BaseActivity extends AppCompatActivity {
     @Override
     public void onConfigurationChanged(@NonNull Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
-        Log.d("TAG", "onConfigurationChanged: ");
     }
 
     @Override
@@ -47,7 +46,6 @@ public class BaseActivity extends AppCompatActivity {
 
         SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isDarkTheme = sharedPreferences.getBoolean(getString(R.string.shared_preference_theme), false);
-        Log.d("TAG", "onCreate: " + isDarkTheme);
         if (isDarkTheme) {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES);
         }

@@ -30,6 +30,7 @@ import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.ui.chat.ChatActivity;
 import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
@@ -104,7 +105,7 @@ public class DetailsActivity extends BaseActivity {
         viewModelRestaurant = new ViewModelProvider(this,ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
 
 
-        initDataWhithoutCurrentUserLiveData();
+        initDataWithoutCurrentUserLiveData();
 
         // Come From Notification
         Bundle extras = getIntent().getExtras();
@@ -254,6 +255,11 @@ public class DetailsActivity extends BaseActivity {
         }
     }
 
+    @OnClick(R.id.fab_chat_restaurant)
+    public void goToChat() {
+        ChatActivity.navigate(this,workmatesLunch,restaurant);
+    }
+
 
     // CALL
 
@@ -324,7 +330,7 @@ public class DetailsActivity extends BaseActivity {
 
     // INIT
 
-    public void initDataWhithoutCurrentUserLiveData() {
+    public void initDataWithoutCurrentUserLiveData() {
         viewModelUser.setWorkmatesList();
         viewModelRestaurant.setBookedRestaurantList();
 

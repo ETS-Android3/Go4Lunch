@@ -346,7 +346,6 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
 
 
             CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, 50);
-            Log.d("TAG", "addMarker: " + cu);
             mGoogleMap.moveCamera(cu);
         }
     }
