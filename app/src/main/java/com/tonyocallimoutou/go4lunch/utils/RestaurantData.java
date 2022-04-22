@@ -2,11 +2,10 @@ package com.tonyocallimoutou.go4lunch.utils;
 
 import android.content.Context;
 import android.location.Location;
-import android.util.Log;
 
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.model.places.details.Period;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.model.places.details.Period;
 
 import java.util.Calendar;
 import java.util.Random;

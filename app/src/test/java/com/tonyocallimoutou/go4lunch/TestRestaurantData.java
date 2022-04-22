@@ -1,21 +1,19 @@
 package com.tonyocallimoutou.go4lunch;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
 import android.content.Context;
 
+import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.details.Close;
 import com.tonyocallimoutou.go4lunch.model.places.details.Open;
 import com.tonyocallimoutou.go4lunch.model.places.details.OpeningHours;
 import com.tonyocallimoutou.go4lunch.model.places.details.Period;
-import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.test.FakeData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
-import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 
 import org.junit.Before;
 import org.junit.Test;

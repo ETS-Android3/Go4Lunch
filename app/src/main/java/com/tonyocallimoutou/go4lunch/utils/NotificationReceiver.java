@@ -11,8 +11,8 @@ import android.os.Build;
 
 import androidx.core.app.NotificationCompat;
 
-import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 
 public class NotificationReceiver extends BroadcastReceiver {

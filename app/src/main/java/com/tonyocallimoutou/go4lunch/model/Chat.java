@@ -6,7 +6,6 @@ import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.utils.UtilChatId;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class Chat {

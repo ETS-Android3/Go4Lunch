@@ -9,7 +9,6 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatDelegate;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.EditTextPreference;
 import androidx.preference.ListPreference;
@@ -19,7 +18,6 @@ import androidx.preference.PreferenceManager;
 import androidx.preference.SwitchPreference;
 
 import com.tonyocallimoutou.go4lunch.R;
-import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 public class SettingFragment extends PreferenceFragmentCompat implements SettingTimePickerFragment.TimeDialogListener {

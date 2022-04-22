@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -16,8 +17,8 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,15 +26,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.tonyocallimoutou.go4lunch.ui.BaseActivity;
-import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.ui.BaseActivity;
+import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.ui.chat.ChatActivity;
-import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
+import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
 import com.tonyocallimoutou.go4lunch.utils.WorkmatesLunch;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
@@ -216,10 +217,10 @@ public class DetailsActivity extends BaseActivity {
 
     private void setFAB() {
         if (isBooked) {
-            //Set FAB
+            fabBooked.setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary));
         }
         else {
-            // Set FAB
+            fabBooked.setColorFilter(ContextCompat.getColor(this,R.color.green));
         }
     }
 

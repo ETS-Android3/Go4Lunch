@@ -2,7 +2,6 @@ package com.tonyocallimoutou.go4lunch.utils;
 
 import android.location.Location;
 
-import com.google.android.gms.maps.model.LatLngBounds;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
 public class UtilDistance {

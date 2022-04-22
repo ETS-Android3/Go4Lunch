@@ -2,7 +2,6 @@ package com.tonyocallimoutou.go4lunch.model.places.search;
 
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 
 import java.util.ArrayList;
 import java.util.List;

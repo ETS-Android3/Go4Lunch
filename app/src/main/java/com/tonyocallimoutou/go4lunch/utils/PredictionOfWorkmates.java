@@ -2,7 +2,6 @@ package com.tonyocallimoutou.go4lunch.utils;
 
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
-import com.tonyocallimoutou.go4lunch.model.places.search.StructuredFormatting;
 
 import java.util.ArrayList;
 import java.util.List;

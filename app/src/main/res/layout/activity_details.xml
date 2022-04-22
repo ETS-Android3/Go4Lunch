@@ -94,6 +94,10 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
+        android:src="@drawable/ic_chat_black_24dp"
+        app:borderWidth="0dp"
+        app:tint="@color/white"
+        android:backgroundTint="@color/colorPrimary"
         android:layout_margin="@dimen/margin_end_fab_map" />
 
 </RelativeLayout>

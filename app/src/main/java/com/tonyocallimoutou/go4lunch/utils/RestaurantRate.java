@@ -1,10 +1,8 @@
 package com.tonyocallimoutou.go4lunch.utils;
 
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
-import com.google.android.gms.maps.UiSettings;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 

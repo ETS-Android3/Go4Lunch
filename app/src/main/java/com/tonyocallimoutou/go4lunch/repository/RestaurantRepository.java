@@ -15,7 +15,6 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.tonyocallimoutou.go4lunch.BuildConfig;
 import com.tonyocallimoutou.go4lunch.api.RetrofitMap;
-import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.details.PlaceDetails;
 import com.tonyocallimoutou.go4lunch.model.places.nearby.NearbyPlace;

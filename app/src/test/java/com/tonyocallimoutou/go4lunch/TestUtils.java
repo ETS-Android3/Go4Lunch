@@ -2,49 +2,25 @@ package com.tonyocallimoutou.go4lunch;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotSame;
-import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.openMocks;
-
-import android.content.Context;
-import android.location.Location;
-
-import androidx.lifecycle.MutableLiveData;
 
 import com.tonyocallimoutou.go4lunch.model.Chat;
 import com.tonyocallimoutou.go4lunch.model.User;
-import com.tonyocallimoutou.go4lunch.model.places.Geometry;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.test.FakeData;
 import com.tonyocallimoutou.go4lunch.utils.CompareRestaurant;
 import com.tonyocallimoutou.go4lunch.utils.PredictionOfWorkmates;
-import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
-import com.tonyocallimoutou.go4lunch.utils.UtilDistance;
 import com.tonyocallimoutou.go4lunch.utils.WorkmatesLunch;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.runner.RunWith;
-import org.junit.runners.JUnit4;
-import org.mockito.Mock;
-import org.mockito.MockedStatic;
-import org.mockito.invocation.InvocationOnMock;
 import org.mockito.junit.MockitoJUnitRunner;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.List;
 
 @RunWith(MockitoJUnitRunner.class)

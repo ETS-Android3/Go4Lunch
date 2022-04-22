@@ -1,7 +1,6 @@
 package com.tonyocallimoutou.go4lunch.viewmodel;
 
 import android.location.Location;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

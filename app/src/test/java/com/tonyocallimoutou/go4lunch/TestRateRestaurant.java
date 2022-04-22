@@ -1,10 +1,8 @@
 package com.tonyocallimoutou.go4lunch;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
 
-import android.view.View;
 import android.widget.ImageView;
 
 import com.tonyocallimoutou.go4lunch.model.User;
@@ -14,7 +12,6 @@ import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.BeforeAll;
 import org.mockito.Mock;
 
 import java.util.ArrayList;

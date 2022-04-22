@@ -1,7 +1,6 @@
 package com.tonyocallimoutou.go4lunch.ui;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.View;
@@ -9,19 +8,14 @@ import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.ActionBar;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
-import androidx.lifecycle.ViewModelProvider;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
 import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteRecyclerViewAdapter;
 import com.tonyocallimoutou.go4lunch.utils.SearchAction;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.Timer;
 import java.util.TimerTask;
