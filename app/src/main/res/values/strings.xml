@@ -110,5 +110,7 @@
     <string name="preferences_remove_account"> Remove account </string>
 
     <string name="chat_send_button"> Send </string>
+    <string name="chat_with_user"> Chat with </string>
+    <string name="chat_for_restaurant"> Restaurant : </string>
 
 </resources>

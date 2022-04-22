@@ -4,12 +4,19 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <TextView
+        android:id="@+id/chat_text_resume"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        style="@style/ChatTextResume"
+        android:layout_margin="@dimen/chat_text_resume_margin"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginTop="@dimen/chat_profile_image_margin"
+        android:layout_below="@id/chat_text_resume"
         tools:listitem="@layout/activity_chat_item"
         android:layout_above="@+id/chat_message_container"/>
 

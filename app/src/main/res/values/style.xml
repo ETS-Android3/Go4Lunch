@@ -60,4 +60,13 @@
         <item name="colorAccent"> @color/colorPrimary </item>
     </style>
 
+    <!-- Chat -->
+    <style name="ChatTextResume">
+        <item name="android:textColorPrimary">@color/black</item>
+        <item name="android:textStyle"> bold </item>
+    </style>
+    <style name="ChatTextMessage">
+        <item name="android:textColorPrimary">@color/black</item>
+    </style>
+
 </resources>

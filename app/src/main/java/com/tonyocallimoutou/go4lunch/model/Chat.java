@@ -48,4 +48,12 @@ public class Chat {
     public void setMessages(List<Message> messages) {
         this.messages = messages;
     }
+
+    public RestaurantDetails getRestaurant() {
+        return restaurant;
+    }
+
+    public void setRestaurant(RestaurantDetails restaurant) {
+        this.restaurant = restaurant;
+    }
 }

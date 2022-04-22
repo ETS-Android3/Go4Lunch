@@ -240,14 +240,8 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
         MapsInitializer.initialize(getActivity());
 
         // Camera
-        if (mGoogleMap == null) {
-            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(
-                    new LatLng(userLocation.getLatitude(),
-                            userLocation.getLongitude()), cameraZoomDefault));
-        } else {
-            if (cameraPosition != null) {
-                googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition.target, cameraPosition.zoom));
-            }
+        if (cameraPosition != null) {
+            googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(cameraPosition.target, cameraPosition.zoom));
         }
 
         mGoogleMap = googleMap;

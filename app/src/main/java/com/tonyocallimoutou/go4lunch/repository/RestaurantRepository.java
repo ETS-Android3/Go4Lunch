@@ -84,7 +84,6 @@ public class RestaurantRepository {
     }
 
     public void cancelBookedRestaurantInFirebase (RestaurantDetails restaurant) {
-        Log.d("TAG", "cancelBookedRestaurantInFirebase: "+ restaurant.getWorkmatesId());
 
         if (restaurant.getWorkmatesId().size() == 0) {
             getBookedRestaurantsCollection().document(restaurant.getPlaceId()).delete();

@@ -76,7 +76,8 @@ public class DetailsActivity extends BaseActivity {
     RecyclerView recyclerView;
     @BindView(R.id.lbl_no_workmates)
     TextView lblWorkmates;
-
+    @BindView(R.id.fab_chat_restaurant)
+    FloatingActionButton goToChat;
 
     DetailRecyclerViewAdapter adapter;
 
@@ -140,12 +141,6 @@ public class DetailsActivity extends BaseActivity {
         }
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        restaurant = null;
-    }
-
     public void initRecyclerView(){
 
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -165,6 +160,13 @@ public class DetailsActivity extends BaseActivity {
         }
         else {
             lblWorkmates.setVisibility(View.GONE);
+        }
+
+        goToChat.setVisibility(View.GONE);
+        for (User user : workmatesLunch) {
+            if (user.getUid().equals(currentUser.getUid())) {
+                goToChat.setVisibility(View.VISIBLE);
+            }
         }
 
 
@@ -341,6 +343,13 @@ public class DetailsActivity extends BaseActivity {
 
         viewModelRestaurant.getBookedRestaurantLiveData().observe(this, bookedRestaurantResult -> {
             UtilNotification.newInstance(null,bookedRestaurantResult,null,null);
+            if (restaurant != null) {
+                for (RestaurantDetails result : bookedRestaurantResult) {
+                    if (result.getPlaceId().equals(restaurant.getPlaceId())) {
+                        restaurant = result;
+                    }
+                }
+            }
         });
     }
 

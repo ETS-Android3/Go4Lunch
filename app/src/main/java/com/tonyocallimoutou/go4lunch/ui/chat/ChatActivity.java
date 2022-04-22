@@ -16,12 +16,14 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Chat;
 import com.tonyocallimoutou.go4lunch.model.Message;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
+import com.tonyocallimoutou.go4lunch.ui.BaseActivity;
 import com.tonyocallimoutou.go4lunch.ui.detail.DetailsActivity;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesRecyclerViewAdapter;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelChat;
@@ -35,12 +37,14 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ChatActivity extends AppCompatActivity {
+public class ChatActivity extends BaseActivity {
 
     @BindView(R.id.chat_recycler_view)
     RecyclerView recyclerView;
     @BindView(R.id.chat_edit_text)
     EditText newMessageEditText;
+    @BindView(R.id.chat_text_resume)
+    TextView chatResume;
 
     private ViewModelChat viewModelChat;
     private ViewModelUser viewModelUser;
@@ -76,6 +80,8 @@ public class ChatActivity extends AppCompatActivity {
 
     public void initChat() {
 
+        initTextResume();
+
         viewModelChat.getCurrentChatLivedata().observe(this, chatResult -> {
             currentChat = chatResult;
             viewModelChat.setAllMessageForChat(currentChat);
@@ -88,6 +94,26 @@ public class ChatActivity extends AppCompatActivity {
 
             recyclerView.smoothScrollToPosition(adapter.getItemCount());
         });
+    }
+
+    private void initTextResume() {
+        if (restaurant != null) {
+            String str = getString(R.string.chat_for_restaurant) + " " + restaurant.getName();
+            chatResume.setText(str);
+        }
+        else {
+            StringBuilder userStr = new StringBuilder();
+            List<User> newList = new ArrayList<>();
+            newList.addAll(listReceiver);
+            newList.remove(viewModelUser.getCurrentUser());
+
+            for (User user : newList) {
+                userStr.append(user.getUsername());
+                userStr.append(", ");
+            }
+            String str = getString(R.string.chat_with_user) + " " + userStr;
+            chatResume.setText(str);
+        }
     }
 
 

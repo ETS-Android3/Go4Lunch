@@ -50,6 +50,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         TextView messageTextView;
         ImageView workmatePicture;
 
+        // Current User or others
         if (userSender.getUid().equals(currentUser.getUid())) {
             holder.view.setVisibility(View.GONE);
             messageTextView = holder.messageTextViewCurrentUser;
@@ -61,18 +62,20 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
             workmatePicture = holder.workmatePicture;
         }
 
+        // If last message is same user
+        if (position != 0) {
+            if (listMessage.get(position - 1).getUserSender().getUid().equals(userSender.getUid())) {
+                workmatePicture.setVisibility(View.INVISIBLE);
+            }
+        }
+
+        // Init
         messageTextView.setText(message.getMessage());
         if (userSender.getUrlPicture() != null) {
             Glide.with(mContext)
                     .load(message.getUserSender().getUrlPicture())
                     .apply(RequestOptions.circleCropTransform())
                     .into(workmatePicture);
-        }
-
-        if (position != 0) {
-            if (listMessage.get(position - 1).getUserSender().getUid().equals(userSender.getUid())) {
-                workmatePicture.setVisibility(View.INVISIBLE);
-            }
         }
     }
 

@@ -23,7 +23,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:background="@drawable/chat_message"
-            android:backgroundTint="@color/light_grey"
+            android:backgroundTint="@color/light_grey_reverse"
             android:padding="4dp"
             android:layout_toRightOf="@+id/chat_profile_image"
             android:layout_marginStart="@dimen/chat_message_margin"
@@ -33,6 +33,7 @@
                 android:id="@+id/chat_message_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/ChatTextMessage"
                 android:textIsSelectable="true"/>
 
         </LinearLayout>
@@ -68,6 +69,7 @@
                 android:id="@+id/chat_message_text_view_current_user"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                style="@style/ChatTextMessage"
                 android:textIsSelectable="true"/>
 
         </LinearLayout>
