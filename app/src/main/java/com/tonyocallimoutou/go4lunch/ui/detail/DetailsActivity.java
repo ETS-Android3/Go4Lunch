@@ -4,7 +4,6 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.ColorStateList;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -217,10 +216,10 @@ public class DetailsActivity extends BaseActivity {
 
     private void setFAB() {
         if (isBooked) {
-            fabBooked.setColorFilter(ContextCompat.getColor(this,R.color.colorPrimary));
+            fabBooked.setColorFilter(ContextCompat.getColor(this,R.color.green));
         }
         else {
-            fabBooked.setColorFilter(ContextCompat.getColor(this,R.color.green));
+            fabBooked.setColorFilter(ContextCompat.getColor(this,R.color.red));
         }
     }
 
