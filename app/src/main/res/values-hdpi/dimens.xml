@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!--Detail Activity -->
+    <dimen name="detail_picture_height"> 140dp </dimen>
+    <dimen name="detail_padding_info"> 8dp </dimen>
+    <dimen name="detail_padding_action"> 8dp </dimen>
+    <dimen name="detail_margin_bottom_name"> 8dp </dimen>
+    <dimen name="detail_margin_start_rate"> 8dp </dimen>
+    <dimen name="margin_end_detail_fab"> 24dp </dimen>
+    <dimen name="margin_bottom_detail_fab"> -24dp </dimen>
+    <dimen name="margin_detail_action"> 16dp </dimen>
+
+</resources>

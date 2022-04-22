@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/chat_message"
             android:backgroundTint="@color/light_grey_reverse"
-            android:padding="4dp"
+            android:padding="@dimen/chat_message_padding"
             android:layout_toRightOf="@+id/chat_profile_image"
             android:layout_marginStart="@dimen/chat_message_margin"
             android:layout_centerVertical="true">
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:background="@drawable/chat_message"
             android:backgroundTint="@color/colorPrimary"
-            android:padding="4dp"
+            android:padding="@dimen/chat_message_padding"
             android:layout_marginEnd="@dimen/chat_message_margin"
             android:layout_toLeftOf="@+id/chat_profile_image_current_user"
             android:layout_centerVertical="true">

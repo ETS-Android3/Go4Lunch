@@ -325,9 +325,6 @@ public class DetailsActivity extends BaseActivity {
             Toast.makeText(this, getString(R.string.you_like_it), Toast.LENGTH_SHORT).show();
         }
 
-        isLike = !isLike;
-        setInformation();
-
     }
 
     // INIT

@@ -1,6 +1,8 @@
 package com.tonyocallimoutou.go4lunch.ui;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -24,6 +27,8 @@ import androidx.preference.PreferenceManager;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -56,7 +61,6 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     @BindView(R.id.bottom_nav_view)
     BottomNavigationView navigationView;
 
-    private SearchView searchView;
     private ViewModelUser viewModelUser;
     private ViewModelRestaurant viewModelRestaurant;
     private View sideView;
@@ -72,26 +76,64 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
-        viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+        // Check Google play service
+        int status = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if(status == ConnectionResult.SUCCESS) {
+            viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
+            viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
 
-        setContentView(R.layout.activity_main);
-        ButterKnife.bind(this);
+            setContentView(R.layout.activity_main);
+            ButterKnife.bind(this);
 
-        initActionBar();
-        initBottomNavigationView();
+            initActionBar();
+            initBottomNavigationView();
+        }
+        else {
+            errorGooglePlayService(status);
+        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (viewModelUser.isCurrentLogged()) {
-            viewModelUser.createUser();
-            initData();
+        int status = GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(this);
+        if(status == ConnectionResult.SUCCESS) {
+            if (viewModelUser.isCurrentLogged()) {
+                viewModelUser.createUser();
+                initData();
+            } else {
+                startSignInActivity();
+            }
+        }
+    }
+
+    // error Google PLay Service
+
+    private void errorGooglePlayService(int status) {
+        String message = "";
+        if(status == ConnectionResult.SERVICE_VERSION_UPDATE_REQUIRED){
+            message =  getString(R.string.message_alertDialog_google_play_service_update);
+
         }
         else {
-            startSignInActivity();
+            message =  getString(R.string.message_alertDialog_google_play_service_download);
         }
+
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.title_alertDialog_google_play_service);
+        builder.setMessage(message);
+        builder.setCancelable(false);
+
+        builder.setPositiveButton(getResources().getString(R.string.positive_button_alertDialog_permission), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                finish();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
 

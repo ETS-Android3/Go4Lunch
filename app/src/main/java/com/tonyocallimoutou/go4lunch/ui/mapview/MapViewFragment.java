@@ -227,8 +227,29 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
                         mapFragment.getMapAsync(MapViewFragment.this);
                     }
                 }
+                else {
+                    showAlertDialogErrorLocation();
+                }
             }
         });
+    }
+
+    public void showAlertDialogErrorLocation() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+
+        builder.setTitle(R.string.title_alertDialog_error_location);
+        builder.setMessage(R.string.message_alertDialog_error_location);
+        builder.setCancelable(false);
+
+        builder.setPositiveButton(getContext().getResources().getString(R.string.positive_button_alertDialog_permission), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                getActivity().finish();
+            }
+        });
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
 

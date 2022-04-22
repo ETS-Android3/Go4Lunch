@@ -18,6 +18,7 @@ import android.location.Location;
 
 import androidx.lifecycle.MutableLiveData;
 
+import com.tonyocallimoutou.go4lunch.model.Chat;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.Geometry;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
@@ -141,5 +142,29 @@ public class TestUtils {
 
         assertEquals(workmates, workmatesLunch);
 
+    }
+
+    @Test
+    public void getIdOfChat() {
+        RestaurantDetails restaurant = nearbyRestaurant.get(0);
+        List<User> userAlone = new ArrayList<>();
+        userAlone.add(workmates.get(0));
+        List<User> users = workmates;
+
+        Chat chat1 = new Chat(restaurant,users);
+        Chat chat2 = new Chat(null, userAlone);
+        Chat chat3 = new Chat(null, users);
+
+        String strChat1 = "restaurantId:" + restaurant.getPlaceId();
+        String strChat2 = workmates.get(0).getUid();
+
+        String strChat3 = "";
+        for (User user : users) {
+            strChat3 += user.getUid();
+        }
+
+        assertEquals(strChat1,chat1.getId());
+        assertEquals(strChat2,chat2.getId());
+        assertEquals(strChat3,chat3.getId());
     }
 }

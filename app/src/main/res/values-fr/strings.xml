@@ -5,6 +5,10 @@
     <string name="actionbar_title_list_view">I\'m Hungry</string>
     <string name="actionbar_title_workmates">Collègues</string>
 
+    <string name="title_alertDialog_google_play_service"> ERREUR !!</string>
+    <string name="message_alertDialog_google_play_service_download"> Veuillez télécharger "Google play service"</string>
+    <string name="message_alertDialog_google_play_service_update"> Veuillez mettre à jour "Google Play service"</string>
+
     <string name="tabItem1">Carte</string>
     <string name="tabItem2">Liste</string>
     <string name="tabItem3">Collègues</string>
@@ -31,6 +35,9 @@
     <string name="title_alertDialog_permission"> Nous sommes désolés </string>
     <string name="message_alertDialog_permission"> Nous avons besoin d\'accéder à votre emplacement pour vous montrer la carte.\nVoulez-vous nous accorder cette autorisation ?</string>
     <string name="positive_button_alertDialog_permission"> OK</string>
+
+    <string name="title_alertDialog_error_location"> Nous sommes désolés </string>
+    <string name="message_alertDialog_error_location"> Nous n\'avons pas pu vous localiser</string>
 
     <string name="restaurant_data_no_location">Aucune Cooredonnées</string>
     <string name="restaurant_data_open"> Ouvert </string>

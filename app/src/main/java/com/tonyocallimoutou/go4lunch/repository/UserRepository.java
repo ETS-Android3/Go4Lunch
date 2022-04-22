@@ -173,15 +173,16 @@ public class UserRepository {
         }
 
         getCurrentUser().setLikeRestaurantId(listRestaurantId);
+        Log.d("TAG", "likeThisRestaurant: " + listRestaurantId.size());
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
 
     public void dislikeThisRestaurant(RestaurantDetails restaurant) {
         List<String> listRestaurantId = getCurrentUser().getLikeRestaurantId();
-        if ( listRestaurantId.contains(restaurant.getPlaceId())) {
-            listRestaurantId.remove(restaurant.getPlaceId());
-        }
+        listRestaurantId.remove(restaurant.getPlaceId());
+
         getCurrentUser().setLikeRestaurantId(listRestaurantId);
+        Log.d("TAG", "dislikeThisRestaurant: " + listRestaurantId.size());
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
 
