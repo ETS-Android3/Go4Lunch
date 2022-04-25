@@ -1,10 +1,12 @@
 package com.tonyocallimoutou.go4lunch.ui.chat;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -27,11 +29,13 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
     private final List<Message> listMessage;
     private final Context mContext;
     private final User currentUser;
+    private final ChatDeleteMessageListener chatDeleteMessageListener;
 
-    public ChatRecyclerViewAdapter(Context context, User user, List<Message> messages) {
+    public ChatRecyclerViewAdapter(Context context, User user, List<Message> messages, ChatDeleteMessageListener listener) {
         mContext = context;
         listMessage = messages;
         currentUser = user;
+        chatDeleteMessageListener = listener;
     }
 
     @NonNull
@@ -47,19 +51,33 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         Message message = listMessage.get(position);
         User userSender = message.getUserSender();
 
-        TextView messageTextView;
+
         ImageView workmatePicture;
+        TextView messageTextView;
+        TextView messageInfo;
+        ImageView removeMessageUser;
+        ImageView copyPaste;
+        LinearLayout containerMoreAction;
 
         // Current User or others
         if (userSender.getUid().equals(currentUser.getUid())) {
             holder.view.setVisibility(View.GONE);
             messageTextView = holder.messageTextViewCurrentUser;
             workmatePicture = holder.workmatePictureCurrentUser;
+            messageInfo = holder.messageInfoCurrentUser;
+            containerMoreAction = holder.containerMoreActionCurrentUser;
+            removeMessageUser = holder.removeMessageCurrentUser;
+            copyPaste = holder.copyPasteCurrentUser;
+
         }
         else {
             holder.viewCurrentUser.setVisibility(View.GONE);
             messageTextView = holder.messageTextView;
             workmatePicture = holder.workmatePicture;
+            messageInfo = holder.messageInfo;
+            containerMoreAction = holder.containerMoreAction;
+            removeMessageUser =holder.removeMessage;
+            copyPaste = holder.copyPaste;
         }
 
         // If last message is same user
@@ -71,17 +89,69 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
 
         // Init
         messageTextView.setText(message.getMessage());
+        messageInfo.setText(message.getDateString(mContext));
         if (userSender.getUrlPicture() != null) {
             Glide.with(mContext)
                     .load(message.getUserSender().getUrlPicture())
                     .apply(RequestOptions.circleCropTransform())
                     .into(workmatePicture);
         }
+
+        // ON Click On message
+        messageTextView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (containerMoreAction.getVisibility() == View.VISIBLE) {
+                    containerMoreAction.setVisibility(View.GONE);
+                }
+                else {
+                    if (messageInfo.getVisibility() == View.GONE) {
+                        messageInfo.setVisibility(View.VISIBLE);
+                    } else {
+                        messageInfo.setVisibility(View.GONE);
+                    }
+                }
+            }
+        });
+
+        messageTextView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                messageInfo.setVisibility(View.GONE);
+                if (containerMoreAction.getVisibility() == View.GONE) {
+                    containerMoreAction.setVisibility(View.VISIBLE);
+                }
+                else {
+                    containerMoreAction.setVisibility(View.GONE);
+                }
+                return true;
+            }
+        });
+
+        // Remove and Copy Paste
+
+        removeMessageUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                chatDeleteMessageListener.deleteMessage(message);
+            }
+        });
+
+        copyPaste.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("TAG", "onClick: Copy Paste");
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return listMessage.size();
+    }
+
+    public interface ChatDeleteMessageListener {
+        void deleteMessage(Message message);
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -91,6 +161,14 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         ImageView workmatePicture;
         @BindView(R.id.chat_message_text_view)
         TextView messageTextView;
+        @BindView(R.id.chat_message_info)
+        TextView messageInfo;
+        @BindView(R.id.chat_container_more_action)
+        LinearLayout containerMoreAction;
+        @BindView(R.id.chat_message_remove)
+        ImageView removeMessage;
+        @BindView(R.id.chat_message_copy_paste)
+        ImageView copyPaste;
 
         @BindView(R.id.chat_current_user_sender)
         RelativeLayout viewCurrentUser;
@@ -98,6 +176,14 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         ImageView workmatePictureCurrentUser;
         @BindView(R.id.chat_message_text_view_current_user)
         TextView messageTextViewCurrentUser;
+        @BindView(R.id.chat_message_info_current_user)
+        TextView messageInfoCurrentUser;
+        @BindView(R.id.chat_container_more_action_current_user)
+        LinearLayout containerMoreActionCurrentUser;
+        @BindView(R.id.chat_message_remove_current_user)
+        ImageView removeMessageCurrentUser;
+        @BindView(R.id.chat_message_copy_paste_current_user)
+        ImageView copyPasteCurrentUser;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

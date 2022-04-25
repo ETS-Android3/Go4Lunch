@@ -18,6 +18,7 @@ import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.utils.UtilChatId;
 
+import java.util.Collections;
 import java.util.List;
 
 public class ChatRepository {
@@ -88,6 +89,22 @@ public class ChatRepository {
         chat.getMessages().add(newMessage);
         getChatCollection().document(chat.getId()).set(chat);
 
+    }
+
+    public void removeMessageInChat(Message messageToRemove, Chat chat, String newMessage) {
+        Log.d("TAG", "removeMessageInChat: ");
+        getChatCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                for (DocumentSnapshot document : list) {
+                    Chat chatDocument = document.toObject(Chat.class);
+                    if (chatDocument.getId().equals(chat.getId())) {
+                        Log.d("TAG", "onSuccess: ");
+                    }
+                }
+            }
+        });
     }
 
 }

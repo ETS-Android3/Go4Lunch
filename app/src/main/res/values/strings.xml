@@ -119,5 +119,7 @@
     <string name="chat_send_button"> Send </string>
     <string name="chat_with_user"> Chat with </string>
     <string name="chat_for_restaurant"> Restaurant : </string>
+    <string name="chat_message_info"> send : </string>
+    <string name="chat_message_delete_by"> message delete by:</string>
 
 </resources>

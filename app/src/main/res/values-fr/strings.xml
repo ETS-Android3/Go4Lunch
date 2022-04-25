@@ -119,5 +119,7 @@
     <string name="chat_send_button"> Envoyer </string>
     <string name="chat_with_user"> Discussion avec </string>
     <string name="chat_for_restaurant"> Restaurant : </string>
+    <string name="chat_message_info"> Envoyer :  </string>
+    <string name="chat_message_delete_by"> Message supprimer par </string>
 
 </resources>

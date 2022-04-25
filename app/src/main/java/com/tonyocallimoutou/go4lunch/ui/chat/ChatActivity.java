@@ -32,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ChatActivity extends BaseActivity {
+public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapter.ChatDeleteMessageListener {
 
     @BindView(R.id.chat_recycler_view)
     RecyclerView recyclerView;
@@ -61,16 +61,15 @@ public class ChatActivity extends BaseActivity {
 
         viewModelChat.createChat(restaurant,listReceiver);
 
-        initRecyclerView();
-    }
-
-    public void initRecyclerView() {
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         initChat();
     }
 
+    @Override
+    public void deleteMessage(Message message) {
+        Log.d("TAG", "deleteMessage: ");
+        String str = getString(R.string.chat_message_delete_by) + " " + viewModelUser.getCurrentUser().getUsername();
+        viewModelChat.removeMessageInChat(message,currentChat,str);
+    }
 
     public void initChat() {
 
@@ -83,11 +82,17 @@ public class ChatActivity extends BaseActivity {
 
         viewModelChat.getAllMessage().observe(this, messageResult -> {
             listMessages = messageResult;
-            adapter = new ChatRecyclerViewAdapter(this, viewModelUser.getCurrentUser(), listMessages);
-            recyclerView.setAdapter(adapter);
-
-            recyclerView.smoothScrollToPosition(adapter.getItemCount());
+            initRecyclerView();
         });
+    }
+
+    public void initRecyclerView() {
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ChatRecyclerViewAdapter(this, viewModelUser.getCurrentUser(), listMessages, this);
+        recyclerView.setAdapter(adapter);
+
+        recyclerView.smoothScrollToPosition(adapter.getItemCount());
     }
 
     private void initTextResume() {
@@ -115,7 +120,6 @@ public class ChatActivity extends BaseActivity {
     public void sendMessage() {
         if (!TextUtils.isEmpty(newMessageEditText.getText())) {
             String message = newMessageEditText.getText().toString();
-            Log.d("TAG", "sendMessage: " + message);
 
             viewModelChat.createMessagesInChat(message, currentChat);
 
