@@ -9,7 +9,7 @@ import com.tonyocallimoutou.go4lunch.model.Chat;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
-import com.tonyocallimoutou.go4lunch.test.FakeData;
+import com.tonyocallimoutou.go4lunch.FAKE.FakeData;
 import com.tonyocallimoutou.go4lunch.utils.CompareRestaurant;
 import com.tonyocallimoutou.go4lunch.utils.PredictionOfWorkmates;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;

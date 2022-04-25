@@ -20,6 +20,9 @@ public class Chat {
 
     public Chat(@Nullable RestaurantDetails restaurant, List<User> users) {
         this.users = users;
+        if (restaurant != null) {
+            this.restaurant = restaurant;
+        }
         id = UtilChatId.getChatIdWithUsers(restaurant,users);
         messages = new ArrayList<>();
     }

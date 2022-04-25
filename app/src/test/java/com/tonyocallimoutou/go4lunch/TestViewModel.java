@@ -3,9 +3,11 @@ package com.tonyocallimoutou.go4lunch;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.mockito.MockitoAnnotations.openMocks;
@@ -17,12 +19,17 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import com.tonyocallimoutou.go4lunch.model.Chat;
+import com.tonyocallimoutou.go4lunch.model.Message;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
+import com.tonyocallimoutou.go4lunch.repository.ChatRepository;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
-import com.tonyocallimoutou.go4lunch.test.FakeData;
+import com.tonyocallimoutou.go4lunch.FAKE.FakeData;
+import com.tonyocallimoutou.go4lunch.utils.UtilChatId;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelChat;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
@@ -52,11 +59,15 @@ public class TestViewModel {
     @Mock
     private UserRepository userRepository;
     @Mock
+    private ChatRepository chatRepository;
+    @Mock
     private Location userLocation;
     @Mock
     private ViewModelUser viewModelUser;
     @Mock
     private ViewModelRestaurant viewModelRestaurant;
+    @Mock
+    private ViewModelChat viewModelChat;
     @Mock
     private Context context;
 
@@ -66,6 +77,7 @@ public class TestViewModel {
     private final List<RestaurantDetails> fakeNearbyRestaurants = new ArrayList<>(FakeData.getFakeNearbyRestaurant());
     private final List<RestaurantDetails> fakeBookedRestaurants = new ArrayList<>(FakeData.getFakeBookedRestaurant());
     private final List<Prediction> fakePredictionRestaurant = new ArrayList<>(FakeData.getFakePredictionRestaurant());
+    private final List<Chat> fakeChat = new ArrayList<>(FakeData.getFakeChats());
 
     private final RestaurantDetails restaurantTest =
             new RestaurantDetails("99", "NameTest","TypeTest", "AddressTest","phoneTest","websiteTest");
@@ -86,6 +98,7 @@ public class TestViewModel {
 
         viewModelUser = new ViewModelUser(userRepository,restaurantRepository);
         viewModelRestaurant = new ViewModelRestaurant(restaurantRepository,userRepository);
+        viewModelChat = new ViewModelChat(chatRepository,userRepository);
     }
 
     private void initAnswer() {
@@ -256,6 +269,73 @@ public class TestViewModel {
                 return null;
             }
         }).when(restaurantRepository).setSearchRestaurant(any(),any(),any(MutableLiveData.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantDetails restaurant = (RestaurantDetails) args[0];
+                List<User> users = (List<User>) args[1];
+                MutableLiveData<Chat> liveData = (MutableLiveData<Chat>) args[2];
+
+                String id = UtilChatId.getChatIdWithUsers(restaurant, users);
+
+                boolean isExisting = false;
+                for (Chat chat : fakeChat) {
+                    if (chat.getId().equals(id)) {
+                        isExisting = true;
+                        liveData.setValue(chat);
+                    }
+                }
+                if (!isExisting) {
+                    Chat chat = new Chat(restaurant,users);
+                    fakeChat.add(chat);
+                    liveData.setValue(chat);
+                }
+
+                return null;
+            }
+        }).when(chatRepository).createChat(nullable(RestaurantDetails.class),any(List.class),any(MutableLiveData.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                String message = (String) args[0];
+                User user = (User) args[1];
+                Chat currentChat = (Chat) args[2];
+
+                Message newMessage = new Message(message,user);
+
+                List<Message> list = new ArrayList<>();
+                for (Chat chat : fakeChat) {
+                    if (chat.getId().equals(currentChat.getId())) {
+                        list.addAll(chat.getMessages());
+                        list.add(newMessage);
+                        chat.setMessages(list);
+                    }
+                }
+
+                return null;
+            }
+        }).when(chatRepository).createMessagesInChat(any(String.class),any(User.class),any(Chat.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                Chat currentChat = (Chat) args[0];
+                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[1];
+
+                for (Chat chat : fakeChat) {
+                    if (chat.getId().equals(currentChat.getId())) {
+                        liveData.setValue(chat.getMessages());
+                    }
+                }
+
+                return null;
+            }
+        }).when(chatRepository).getAllMessageForChat(any(Chat.class),any(MutableLiveData.class));
 
     }
 
@@ -482,6 +562,67 @@ public class TestViewModel {
             assertEquals(liveData.getValue().get(i).getPlaceId(), newUsers.get(i).getUid());
             assertEquals(liveData.getValue().get(i).getDescription(), newUsers.get(i).getUsername());
         }
+    }
+
+    @Test
+    public void createChatBetweenUser() {
+        List<User> users = new ArrayList<>();
+        users.add(fakeWorkmates.get(0));
+        users.add(fakeWorkmates.get(4));
+
+        int chatsSize = fakeChat.size();
+
+        viewModelChat.createChat(null,users);
+
+        Chat currentChat = viewModelChat.getCurrentChatLivedata().getValue();
+
+        assertEquals(chatsSize+1, fakeChat.size());
+        assertNotNull(currentChat);
+        assertTrue(fakeChat.contains(currentChat));
+        assertEquals(users,currentChat.getUsers());
+
+    }
+
+    @Test
+    public void createChatWithRestaurant() {
+        List<User> users = new ArrayList<>();
+        users.add(fakeWorkmates.get(0));
+        users.add(fakeWorkmates.get(4));
+
+        int chatsSize = fakeChat.size();
+
+        viewModelChat.createChat(restaurantTest,users);
+
+        Chat currentChat = viewModelChat.getCurrentChatLivedata().getValue();
+
+        assertEquals(chatsSize+1, fakeChat.size());
+        assertNotNull(currentChat);
+        assertTrue(fakeChat.contains(currentChat));
+        assertEquals(users,currentChat.getUsers());
+        assertEquals(restaurantTest,currentChat.getRestaurant());
+    }
+
+    @Test
+    public void getMessageFromChat() {
+        viewModelChat.setAllMessageForChat(fakeChat.get(0));
+
+        List<Message> messages = viewModelChat.getAllMessage().getValue();
+
+        assertEquals(messages,fakeChat.get(0).getMessages());
+        assertNotNull(messages);
+    }
+
+
+    @Test
+    public void createMessageInChat() {
+        String newMessage = "new message";
+        int messageSize = fakeChat.get(0).getMessages().size();
+
+        viewModelChat.createMessagesInChat(newMessage, fakeChat.get(0));
+
+        assertEquals(messageSize+1, fakeChat.get(0).getMessages().size());
+        assertEquals(fakeChat.get(0).getMessages().get(messageSize).getMessage(), newMessage);
+
     }
 
 }

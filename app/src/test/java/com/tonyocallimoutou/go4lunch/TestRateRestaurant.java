@@ -7,7 +7,7 @@ import android.widget.ImageView;
 
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
-import com.tonyocallimoutou.go4lunch.test.FakeData;
+import com.tonyocallimoutou.go4lunch.FAKE.FakeData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 
 import org.junit.Before;
