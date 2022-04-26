@@ -18,7 +18,6 @@ import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.ui.BaseFragment;
 import com.tonyocallimoutou.go4lunch.ui.chat.ChatActivity;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,11 +35,10 @@ public class WorkmatesFragment extends BaseFragment implements WorkmatesRecycler
     @BindView(R.id.workmates_recycler_view)
     RecyclerView mRecyclerView;
 
-    private static ViewModelUser viewModelUser;
     private static ViewModelRestaurant viewModelRestaurant;
     private static List<User> workmatesWithoutUser = new ArrayList<>();
-
     private static List<User> workmates = new ArrayList<>();
+    private static User currentUser;
 
     private static WorkmatesRecyclerViewAdapter adapter;
 
@@ -58,7 +56,6 @@ public class WorkmatesFragment extends BaseFragment implements WorkmatesRecycler
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        viewModelUser = new ViewModelProvider(requireActivity()).get(ViewModelUser.class);
         viewModelRestaurant = new ViewModelProvider(requireActivity()).get(ViewModelRestaurant.class);
     }
 
@@ -106,7 +103,7 @@ public class WorkmatesFragment extends BaseFragment implements WorkmatesRecycler
 
     public static void initUserList() {
 
-        if (adapter != null && viewModelUser.getCurrentUser() != null) {
+        if (adapter != null && currentUser != null) {
 
             workmatesWithoutUser.clear();
 
@@ -114,7 +111,7 @@ public class WorkmatesFragment extends BaseFragment implements WorkmatesRecycler
 
             List<User> userToRemove = new ArrayList<>();
             for (User user : workmatesWithoutUser) {
-                if (user.getUid().equals(viewModelUser.getCurrentUser().getUid())) {
+                if (user.getUid().equals(currentUser.getUid())) {
                     userToRemove.add(user);
                 }
             }
@@ -144,6 +141,11 @@ public class WorkmatesFragment extends BaseFragment implements WorkmatesRecycler
 
     public static void setWorkmates(List<User> result) {
         workmates = result;
+        initUserList();
+    }
+
+    public static void setCurrentUser(User result) {
+        currentUser = result;
         initUserList();
     }
 }

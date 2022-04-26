@@ -36,7 +36,7 @@ public class ViewModelChat extends ViewModel {
     }
 
     public void createChat(@Nullable RestaurantDetails restaurant, List<User> users) {
-        if (! users.contains(userRepository.getCurrentUser())) {
+        if (! users.contains(userRepository.getCurrentUser()) && userRepository.getCurrentUser() != null) {
             users.add(userRepository.getCurrentUser());
         }
         chatRepository.createChat(restaurant,users,currentChatLiveData);

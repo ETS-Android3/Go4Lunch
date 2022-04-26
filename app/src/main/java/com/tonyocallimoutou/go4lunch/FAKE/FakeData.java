@@ -30,17 +30,17 @@ public class FakeData {
     );
 
     private static final List<RestaurantDetails> FAKE_NEARBY_RESTAURANT = Arrays.asList(
-            new RestaurantDetails("FAKE1","name1","type1","address1","phoneNumber1","website1"),
-            new RestaurantDetails("FAKE2","name2","type2","address2","phoneNumber2","website2"),
-            new RestaurantDetails("FAKE3","name3","type3","address3","phoneNumber3","website3"),
-            new RestaurantDetails("FAKE4","name4","type4","address4","phoneNumber4","website4"),
-            new RestaurantDetails("FAKE5","name5","type5","address5","phoneNumber5","website5")
+            new RestaurantDetails("FAKE1","name1","type1","address1",0.0,0.0,"phoneNumber1","website1"),
+            new RestaurantDetails("FAKE2","name2","type2","address2",0.0,0.0,"phoneNumber2","website2"),
+            new RestaurantDetails("FAKE3","name3","type3","address3",0.0,0.0,"phoneNumber3","website3"),
+            new RestaurantDetails("FAKE4","name4","type4","address4",0.0,0.0,"phoneNumber4","website4"),
+            new RestaurantDetails("FAKE5","name5","type5","address5",0.0,0.0,"phoneNumber5","website5")
     );
 
     private static final List<RestaurantDetails> FAKE_BOOKED_RESTAURANT = Arrays.asList(
-            new RestaurantDetails("FAKE1","name1","type1","address1","phoneNumber1","website1"),
-            new RestaurantDetails("FAKE3","name3","type3","address3","phoneNumber3","website3"),
-            new RestaurantDetails("FAKE0","name0","type0","address0","phoneNumber0","website0")
+            new RestaurantDetails("FAKE1","name1","type1","address1",0.0,0.0,"phoneNumber1","website1"),
+            new RestaurantDetails("FAKE3","name3","type3","address3",0.0,0.0,"phoneNumber3","website3"),
+            new RestaurantDetails("FAKE0","name0","type0","address0",0.0,0.0,"phoneNumber0","website0")
     );
 
     private static final List<Prediction> FAKE_PREDICTION_RESTAURANT = Arrays.asList(

@@ -11,6 +11,7 @@
 
         <ImageView
             android:id="@+id/profile_picture_header_side_view"
+            android:src="@drawable/ic_no_image_available"
             android:layout_width="@dimen/profile_picture_header_side_view_height"
             android:layout_height="@dimen/profile_picture_header_side_view_width"
             android:layout_marginStart="@dimen/margin_information_header"

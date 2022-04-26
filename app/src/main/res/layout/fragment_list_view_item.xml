@@ -12,8 +12,7 @@
         style="@style/ListViewRestaurantName"
         android:layout_margin="@dimen/margin_item_list_view"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/list_view_restaurant_distance"
-        android:text="Name of Restaurant" />
+        android:layout_toStartOf="@+id/list_view_restaurant_distance" />
 
     <TextView
         android:id="@+id/list_view_restaurant_distance"
@@ -21,8 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/margin_item_list_view"
         android:layout_gravity="end"
-        android:layout_toStartOf="@+id/list_view_restaurant_picture"
-        android:text="distance" />
+        android:layout_toStartOf="@+id/list_view_restaurant_picture" />
 
 
     <TextView
@@ -34,8 +32,7 @@
         android:layout_alignParentStart="true"
         android:layout_toStartOf="@+id/include_workmate"
         android:ellipsize="end"
-        android:maxLines="1"
-        android:text="type - address" />
+        android:maxLines="1" />
 
     <include
         android:id="@+id/include_workmate"
@@ -56,8 +53,7 @@
         android:layout_margin="@dimen/margin_item_list_view"
         android:layout_below="@+id/list_view_restaurant_type_and_address"
         android:layout_alignParentStart="true"
-        android:layout_toStartOf="@+id/include_rate"
-        android:text="opening_time" />
+        android:layout_toStartOf="@+id/include_rate" />
 
     <include
         android:id="@+id/include_rate"

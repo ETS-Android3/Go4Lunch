@@ -303,6 +303,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
                         .apply();
 
                 currentUser = currentUserResults;
+                WorkmatesFragment.setCurrentUser(currentUserResults);
                 initSideView();
             }
         });

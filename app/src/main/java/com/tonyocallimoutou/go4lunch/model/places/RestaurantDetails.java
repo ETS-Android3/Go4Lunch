@@ -270,6 +270,8 @@ public class RestaurantDetails {
                              String name,
                              String type,
                              String adrAddress,
+                             double lat,
+                             double lng,
                              String internationalPhoneNumber,
                              String website) {
         this.placeId = placeId;
@@ -279,5 +281,11 @@ public class RestaurantDetails {
         this.vicinity = adrAddress;
         this.internationalPhoneNumber = internationalPhoneNumber;
         this.website = website;
+        Location location = new Location();
+        location.setLat(lat);
+        location.setLng(lng);
+        Geometry geo = new Geometry();
+        geo.setLocation(location);
+        this.geometry = geo;
     }
 }
