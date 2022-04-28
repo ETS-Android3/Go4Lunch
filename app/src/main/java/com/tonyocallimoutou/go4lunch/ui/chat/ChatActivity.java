@@ -7,9 +7,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
@@ -43,9 +46,13 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
     @BindView(R.id.chat_text_resume)
     TextView chatResume;
 
+    private static LinearLayout layoutErrorConnection;
+
     private ViewModelChat viewModelChat;
     private ViewModelUser viewModelUser;
     private ChatRecyclerViewAdapter adapter;
+
+    private static boolean isConnected;
 
     private Chat currentChat;
     private static RestaurantDetails restaurant;
@@ -61,6 +68,7 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
         setContentView(R.layout.activity_chat);
         ButterKnife.bind(this);
 
+        layoutErrorConnection = findViewById(R.id.layout_error_connection);
         viewModelChat.createChat(restaurant,listReceiver);
 
         initChat();
@@ -92,20 +100,27 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
         alert.show();
     }
 
+    private static void initLayoutConnection() {
+        if (!isConnected) {
+            layoutErrorConnection.setVisibility(View.VISIBLE);
+        }
+        else {
+            layoutErrorConnection.setVisibility(View.GONE);
+        }
+    }
+
     public void initChat() {
 
         initTextResume();
 
         viewModelChat.getCurrentChatLivedata().observe(this, chatResult -> {
             currentChat = chatResult;
+            Log.d("TAG", "initChat: " + currentChat.getMessages().size());
             viewModelChat.setAllMessageForChat(currentChat);
         });
 
         viewModelChat.getAllMessage().observe(this, messageResult -> {
             listMessages = messageResult;
-            if (listMessages.size() > 1){
-                Log.d("TAG", "initChat: " + listMessages.get(1).getIsDelete());
-            }
             initRecyclerView();
         });
     }
@@ -145,7 +160,13 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
         if (!TextUtils.isEmpty(newMessageEditText.getText())) {
             String message = newMessageEditText.getText().toString();
 
-            viewModelChat.createMessagesInChat(message, currentChat);
+            if (isConnected) {
+                Log.d("TAG", "sendMessage: " + currentChat.getMessages().size());
+                viewModelChat.createMessagesInChat(message, currentChat);
+            }
+            else {
+                Toast.makeText(this, getString(R.string.no_connection), Toast.LENGTH_SHORT).show();
+            }
 
             hideKeyboard();
         }
@@ -164,6 +185,13 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
         listReceiver = result;
         Intent intent = new Intent(activity, ChatActivity.class);
         ActivityCompat.startActivity(activity, intent, null);
+    }
+
+    public static void initConnection(boolean result) {
+        isConnected = result;
+        if (layoutErrorConnection != null) {
+            initLayoutConnection();
+        }
     }
 
 

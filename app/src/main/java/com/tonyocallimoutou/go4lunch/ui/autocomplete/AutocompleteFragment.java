@@ -1,5 +1,6 @@
 package com.tonyocallimoutou.go4lunch.ui.autocomplete;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,8 +32,10 @@ public class AutocompleteFragment extends Fragment{
     RecyclerView mRecyclerView;
 
     private static TextView textNoPrediction;
-
     private static AutocompleteRecyclerViewAdapter adapter;
+    private static boolean isConnected;
+    private static Context context;
+
 
     private static List<Prediction> mPredictions = new ArrayList<>();
 
@@ -60,6 +63,8 @@ public class AutocompleteFragment extends Fragment{
 
         ButterKnife.bind(this,view);
 
+        context = getContext();
+
         textNoPrediction = view.findViewById(R.id.autocomplete_no_prediction);
 
         mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
@@ -77,6 +82,8 @@ public class AutocompleteFragment extends Fragment{
     }
 
     private static void initList() {
+        initTextPrediction();
+
         if (mPredictions.size() == 0) {
             textNoPrediction.setVisibility(View.VISIBLE);
         }
@@ -85,10 +92,26 @@ public class AutocompleteFragment extends Fragment{
         }
     }
 
+    private static void initTextPrediction() {
+        if (isConnected) {
+            textNoPrediction.setText(context.getString(R.string.no_prediction));
+        }
+        else {
+            textNoPrediction.setText(context.getString(R.string.no_connection));
+        }
+    }
+
     public static void setPredictions(List<Prediction> results) {
         mPredictions.clear();
         mPredictions.addAll(results);
         initList();
         adapter.notifyDataSetChanged();
+    }
+
+    public static void initWithConnection(boolean result) {
+        isConnected = result;
+        if (context != null) {
+            initTextPrediction();
+        }
     }
 }

@@ -65,6 +65,7 @@
     <string name="notification_new_alarm"> nouvelle alarm à  </string>
 
     <string name="no_prediction">Aucun résultat trouvé </string>
+    <string name="no_connection"> Aucune connexion disponible</string>
 
     <string name="setting_text_language"> Langues </string>
     <string name="setting_text_account"> Comptes </string>

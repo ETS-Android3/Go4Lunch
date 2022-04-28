@@ -21,6 +21,7 @@ import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.utils.UtilChatId;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,9 +59,6 @@ public class ChatRepository {
                     return;
                 }
                 Chat chat = value.toObject(Chat.class);
-                for (Message message : chat.getMessages()) {
-                    Log.d("TAG", "onEvent: "+ message.getIsDelete());
-                }
                 liveData.setValue(chat.getMessages());
             }
         });
@@ -92,13 +90,23 @@ public class ChatRepository {
     public void createMessagesInChat(String message, User user, Chat chat) {
         Message newMessage = new Message(message,user);
 
-        chat.getMessages().add(newMessage);
-        getChatCollection().document(chat.getId()).set(chat);
+        getChatCollection().document(chat.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Chat chatDocument = document.toObject(Chat.class);
+                        chatDocument.getMessages().add(newMessage);
+                        getChatCollection().document(chat.getId()).set(chatDocument);
+                    }
+                }
+            }
+        });
 
     }
 
     public void removeMessageInChat(Message messageToRemove, Chat chat, User userDeleter) {
-        Log.d("TAG", "removeMessageInChat: ");
 
         getChatCollection().document(chat.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override

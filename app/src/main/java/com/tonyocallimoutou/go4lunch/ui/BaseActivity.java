@@ -10,10 +10,14 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.preference.PreferenceManager;
 
 import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
+import com.tonyocallimoutou.go4lunch.ui.chat.ChatActivity;
 import com.tonyocallimoutou.go4lunch.utils.LocaleHelper;
+import com.tonyocallimoutou.go4lunch.utils.UtilStatusConnection;
 
 public class BaseActivity extends AppCompatActivity {
 
@@ -46,6 +50,14 @@ public class BaseActivity extends AppCompatActivity {
         else {
             AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO);
         }
+
+
+        UtilStatusConnection statusConnection = new ViewModelProvider(this).get(UtilStatusConnection.class);
+
+        statusConnection.getConnected().observe(this, isConnected -> {
+            AutocompleteFragment.initWithConnection(isConnected);
+            ChatActivity.initConnection(isConnected);
+        });
     }
 
 }

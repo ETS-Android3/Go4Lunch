@@ -12,11 +12,29 @@
         style="@style/ChatTextResume"
         android:layout_margin="@dimen/chat_text_resume_margin"/>
 
+    <LinearLayout
+        android:id="@+id/layout_error_connection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/chat_text_resume"
+        android:background="@color/light_grey"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/red_warning"
+            android:text="@string/no_connection"
+            android:gravity="center_horizontal" />
+
+
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/chat_recycler_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/chat_text_resume"
+        android:layout_below="@id/layout_error_connection"
         tools:listitem="@layout/activity_chat_item"
         android:layout_above="@+id/chat_message_container"/>
 

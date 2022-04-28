@@ -64,7 +64,8 @@
     <string name="notification_content_no_workmates"> No workmates </string>
     <string name="notification_new_alarm"> New alarm at </string>
 
-    <string name="no_prediction">no result found</string>
+    <string name="no_prediction">No result found</string>
+    <string name="no_connection">No connection available</string>
 
     <string name="setting_text_language"> Language </string>
     <string name="setting_text_account"> Account </string>
