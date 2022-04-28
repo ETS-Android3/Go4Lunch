@@ -1,6 +1,8 @@
 package com.tonyocallimoutou.go4lunch.ui.chat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -66,9 +68,28 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
 
     @Override
     public void deleteMessage(Message message) {
-        Log.d("TAG", "deleteMessage: ");
-        String str = getString(R.string.chat_message_delete_by) + " " + viewModelUser.getCurrentUser().getUsername();
-        viewModelChat.removeMessageInChat(message,currentChat,str);
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.chat_title_alert_dialog_delete);
+        builder.setMessage(R.string.chat_message_alert_dialog_delete);
+        builder.setCancelable(true);
+
+        builder.setPositiveButton(getString(R.string.chat_positive_alert_dialog_delete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                viewModelChat.removeMessageInChat(message,currentChat);
+            }
+        });
+        builder.setNegativeButton(getString(R.string.chat_negative_alert_dialog_delete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Log.d("TAG", "onClick: ");
+            }
+        });
+
+
+        AlertDialog alert = builder.create();
+        alert.show();
     }
 
     public void initChat() {
@@ -82,6 +103,9 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
 
         viewModelChat.getAllMessage().observe(this, messageResult -> {
             listMessages = messageResult;
+            if (listMessages.size() > 1){
+                Log.d("TAG", "initChat: " + listMessages.get(1).getIsDelete());
+            }
             initRecyclerView();
         });
     }

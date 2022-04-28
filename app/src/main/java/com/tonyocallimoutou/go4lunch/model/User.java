@@ -7,6 +7,7 @@ import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class User implements Serializable {
 
@@ -87,5 +88,18 @@ public class User implements Serializable {
 
     public void setLikeRestaurantId(List<String> likeRestaurantId) {
         this.likeRestaurantId = likeRestaurantId;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return Objects.equals(uid, user.uid);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(uid);
     }
 }

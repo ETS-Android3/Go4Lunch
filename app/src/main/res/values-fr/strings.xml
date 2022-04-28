@@ -121,5 +121,11 @@
     <string name="chat_for_restaurant"> Restaurant : </string>
     <string name="chat_message_info"> Envoyer :  </string>
     <string name="chat_message_delete_by"> Message supprimer par </string>
+    <string name="chat_copy_paste_toast"> texte copié dans le presse-papiers</string>
+
+    <string name="chat_title_alert_dialog_delete"> Supprimer le message </string>
+    <string name="chat_message_alert_dialog_delete"> Voulez-vous vraiment supprimer ce message ?</string>
+    <string name="chat_positive_alert_dialog_delete"> SUPPRIMER </string>
+    <string name="chat_negative_alert_dialog_delete"> ANNULER </string>
 
 </resources>

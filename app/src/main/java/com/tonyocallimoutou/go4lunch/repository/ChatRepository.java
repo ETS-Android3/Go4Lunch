@@ -2,10 +2,13 @@ package com.tonyocallimoutou.go4lunch.repository;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.MutableLiveData;
 
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
@@ -55,6 +58,9 @@ public class ChatRepository {
                     return;
                 }
                 Chat chat = value.toObject(Chat.class);
+                for (Message message : chat.getMessages()) {
+                    Log.d("TAG", "onEvent: "+ message.getIsDelete());
+                }
                 liveData.setValue(chat.getMessages());
             }
         });
@@ -91,16 +97,23 @@ public class ChatRepository {
 
     }
 
-    public void removeMessageInChat(Message messageToRemove, Chat chat, String newMessage) {
+    public void removeMessageInChat(Message messageToRemove, Chat chat, User userDeleter) {
         Log.d("TAG", "removeMessageInChat: ");
-        getChatCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+        getChatCollection().document(chat.getId()).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                for (DocumentSnapshot document : list) {
-                    Chat chatDocument = document.toObject(Chat.class);
-                    if (chatDocument.getId().equals(chat.getId())) {
-                        Log.d("TAG", "onSuccess: ");
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Chat chatDocument = document.toObject(Chat.class);
+                        for (Message message : chatDocument.getMessages()) {
+                            if (message.equals(messageToRemove)) {
+                                message.delete(userDeleter);
+                                Log.d("TAG", "onComplete: ");
+                            }
+                        }
+                        getChatCollection().document(chat.getId()).set(chatDocument);
                     }
                 }
             }

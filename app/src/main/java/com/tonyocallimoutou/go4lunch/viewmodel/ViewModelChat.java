@@ -50,8 +50,8 @@ public class ViewModelChat extends ViewModel {
         chatRepository.createMessagesInChat(message, userRepository.getCurrentUser(), chat);
     }
 
-    public void removeMessageInChat(Message messageToRemove, Chat chat, String newMessage) {
-        chatRepository.removeMessageInChat(messageToRemove,chat,newMessage);
+    public void removeMessageInChat(Message messageToRemove, Chat chat) {
+        chatRepository.removeMessageInChat(messageToRemove,chat, userRepository.getCurrentUser());
     }
 
 }

@@ -1,5 +1,7 @@
 package com.tonyocallimoutou.go4lunch.ui.chat;
 
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -53,6 +56,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
 
 
         ImageView workmatePicture;
+        LinearLayout containerMessage;
         TextView messageTextView;
         TextView messageInfo;
         ImageView removeMessageUser;
@@ -62,6 +66,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         // Current User or others
         if (userSender.getUid().equals(currentUser.getUid())) {
             holder.view.setVisibility(View.GONE);
+            containerMessage = holder.containerMessageCurrentUser;
             messageTextView = holder.messageTextViewCurrentUser;
             workmatePicture = holder.workmatePictureCurrentUser;
             messageInfo = holder.messageInfoCurrentUser;
@@ -72,6 +77,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         }
         else {
             holder.viewCurrentUser.setVisibility(View.GONE);
+            containerMessage = holder.containerMessage;
             messageTextView = holder.messageTextView;
             workmatePicture = holder.workmatePicture;
             messageInfo = holder.messageInfo;
@@ -79,6 +85,7 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
             removeMessageUser =holder.removeMessage;
             copyPaste = holder.copyPaste;
         }
+
 
         // If last message is same user
         if (position != 0) {
@@ -97,36 +104,44 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
                     .into(workmatePicture);
         }
 
+        // If message is delete
+        if (message.getIsDelete()) {
+            String str = mContext.getString(R.string.chat_message_delete_by) + " " + message.getUserDeleter().getUsername();
+            messageTextView.setText(str);
+            containerMessage.getBackground().setTint(mContext.getResources().getColor(R.color.grey));
+        }
         // ON Click On message
-        messageTextView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (containerMoreAction.getVisibility() == View.VISIBLE) {
-                    containerMoreAction.setVisibility(View.GONE);
-                }
-                else {
-                    if (messageInfo.getVisibility() == View.GONE) {
-                        messageInfo.setVisibility(View.VISIBLE);
-                    } else {
-                        messageInfo.setVisibility(View.GONE);
+        else {
+            messageTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (containerMoreAction.getVisibility() == View.VISIBLE) {
+                        containerMoreAction.setVisibility(View.GONE);
+                    }
+                    else {
+                        if (messageInfo.getVisibility() == View.GONE) {
+                            messageInfo.setVisibility(View.VISIBLE);
+                        } else {
+                            messageInfo.setVisibility(View.GONE);
+                        }
                     }
                 }
-            }
-        });
+            });
 
-        messageTextView.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                messageInfo.setVisibility(View.GONE);
-                if (containerMoreAction.getVisibility() == View.GONE) {
-                    containerMoreAction.setVisibility(View.VISIBLE);
+            messageTextView.setOnLongClickListener(new View.OnLongClickListener() {
+                @Override
+                public boolean onLongClick(View view) {
+                    messageInfo.setVisibility(View.GONE);
+                    if (containerMoreAction.getVisibility() == View.GONE) {
+                        containerMoreAction.setVisibility(View.VISIBLE);
+                    }
+                    else {
+                        containerMoreAction.setVisibility(View.GONE);
+                    }
+                    return true;
                 }
-                else {
-                    containerMoreAction.setVisibility(View.GONE);
-                }
-                return true;
-            }
-        });
+            });
+        }
 
         // Remove and Copy Paste
 
@@ -140,7 +155,12 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         copyPaste.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.d("TAG", "onClick: Copy Paste");
+                ClipboardManager clipboard = (ClipboardManager)mContext.getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("copy",message.getMessage());
+                clipboard.setPrimaryClip(clip);
+                containerMoreAction.setVisibility(View.GONE);
+
+                Toast.makeText(mContext, mContext.getString(R.string.chat_copy_paste_toast), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -159,6 +179,8 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         RelativeLayout view;
         @BindView(R.id.chat_profile_image)
         ImageView workmatePicture;
+        @BindView(R.id.chat_container_message)
+        LinearLayout containerMessage;
         @BindView(R.id.chat_message_text_view)
         TextView messageTextView;
         @BindView(R.id.chat_message_info)
@@ -174,6 +196,8 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         RelativeLayout viewCurrentUser;
         @BindView(R.id.chat_profile_image_current_user)
         ImageView workmatePictureCurrentUser;
+        @BindView(R.id.chat_container_message_current_user)
+        LinearLayout containerMessageCurrentUser;
         @BindView(R.id.chat_message_text_view_current_user)
         TextView messageTextViewCurrentUser;
         @BindView(R.id.chat_message_info_current_user)
