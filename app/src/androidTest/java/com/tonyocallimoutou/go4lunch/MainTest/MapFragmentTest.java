@@ -17,8 +17,6 @@ public class MapFragmentTest {
 
     @Test
     public void CheckIfListIsNotEmpty() {
-        onView(ViewMatchers.withId(R.id.list_view_recycler_view))
-                .check(matches(hasMinimumChildCount(1)));
     }
 
     @Test

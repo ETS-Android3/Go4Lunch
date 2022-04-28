@@ -52,7 +52,6 @@ import java.util.List;
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-@RunWith(MockitoJUnitRunner.class)
 public class TestViewModel {
     @Mock
     private RestaurantRepository restaurantRepository;
@@ -83,7 +82,7 @@ public class TestViewModel {
             new RestaurantDetails("99", "NameTest","TypeTest", "AddressTest",0.0,0.0,"phoneTest","websiteTest");
 
 
-    private User currentUser = new User("test","NameCurrentUser",null,"emailTest");
+    private final User currentUser = new User("test","NameCurrentUser",null,"emailTest");
 
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
