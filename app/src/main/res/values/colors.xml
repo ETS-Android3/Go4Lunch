@@ -8,6 +8,8 @@
     <color name="black"> #FF000000 </color>
     <color name="black_reverse"> #FF000000 </color>
     <color name="grey"> #474a4b</color>
+    <color name="grey_message_delete"> #606060</color>
+    <color name="light_grey_message_delete"> #B8B8B8</color>
     <color name="light_grey"> #F0F0F2</color>
     <color name="orange"> #fc7540 </color>
     <color name="gold"> #FFD700 </color>

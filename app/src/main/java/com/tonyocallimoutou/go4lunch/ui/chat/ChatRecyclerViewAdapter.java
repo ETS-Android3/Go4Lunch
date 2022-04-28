@@ -108,7 +108,14 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
         if (message.getIsDelete()) {
             String str = mContext.getString(R.string.chat_message_delete_by) + " " + message.getUserDeleter().getUsername();
             messageTextView.setText(str);
-            containerMessage.getBackground().setTint(mContext.getResources().getColor(R.color.grey));
+            int backgroundColor;
+            if (userSender.getUid().equals(currentUser.getUid())) {
+                backgroundColor = R.color.grey_message_delete;
+            }
+            else {
+                backgroundColor = R.color.light_grey_message_delete;
+            }
+            containerMessage.getBackground().setTint(mContext.getResources().getColor(backgroundColor));
         }
         // ON Click On message
         else {
