@@ -52,6 +52,7 @@
     <dimen name="chat_message_margin"> 16dp </dimen>
     <dimen name="chat_text_resume_margin"> 16dp</dimen>
     <dimen name="chat_message_padding"> 8dp </dimen>
+    <dimen name="chat_message_marginTop"> 4dp </dimen>
 
 
 

@@ -1,6 +1,8 @@
 package com.tonyocallimoutou.go4lunch.ui.chat;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
@@ -32,7 +34,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class ChatActivity extends BaseActivity {
+public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapter.ChatDeleteMessageListener {
 
     @BindView(R.id.chat_recycler_view)
     RecyclerView recyclerView;
@@ -61,16 +63,34 @@ public class ChatActivity extends BaseActivity {
 
         viewModelChat.createChat(restaurant,listReceiver);
 
-        initRecyclerView();
-    }
-
-    public void initRecyclerView() {
-
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
         initChat();
     }
 
+    @Override
+    public void deleteMessage(Message message) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle(R.string.chat_title_alert_dialog_delete);
+        builder.setMessage(R.string.chat_message_alert_dialog_delete);
+        builder.setCancelable(true);
+
+        builder.setPositiveButton(getString(R.string.chat_positive_alert_dialog_delete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                viewModelChat.removeMessageInChat(message,currentChat);
+            }
+        });
+        builder.setNegativeButton(getString(R.string.chat_negative_alert_dialog_delete), new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                Log.d("TAG", "onClick: ");
+            }
+        });
+
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
 
     public void initChat() {
 
@@ -83,11 +103,20 @@ public class ChatActivity extends BaseActivity {
 
         viewModelChat.getAllMessage().observe(this, messageResult -> {
             listMessages = messageResult;
-            adapter = new ChatRecyclerViewAdapter(this, viewModelUser.getCurrentUser(), listMessages);
-            recyclerView.setAdapter(adapter);
-
-            recyclerView.smoothScrollToPosition(adapter.getItemCount());
+            if (listMessages.size() > 1){
+                Log.d("TAG", "initChat: " + listMessages.get(1).getIsDelete());
+            }
+            initRecyclerView();
         });
+    }
+
+    public void initRecyclerView() {
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ChatRecyclerViewAdapter(this, viewModelUser.getCurrentUser(), listMessages, this);
+        recyclerView.setAdapter(adapter);
+
+        recyclerView.smoothScrollToPosition(adapter.getItemCount());
     }
 
     private void initTextResume() {
@@ -115,7 +144,6 @@ public class ChatActivity extends BaseActivity {
     public void sendMessage() {
         if (!TextUtils.isEmpty(newMessageEditText.getText())) {
             String message = newMessageEditText.getText().toString();
-            Log.d("TAG", "sendMessage: " + message);
 
             viewModelChat.createMessagesInChat(message, currentChat);
 
