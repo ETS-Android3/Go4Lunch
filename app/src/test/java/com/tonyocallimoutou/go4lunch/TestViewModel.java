@@ -336,6 +336,23 @@ public class TestViewModel {
             }
         }).when(chatRepository).getAllMessageForChat(any(Chat.class),any(MutableLiveData.class));
 
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                Message messageToDelete = (Message) args[0];
+                Chat currentChat = (Chat) args[1];
+                User user = (User) args[2];
+
+                for (Message message : currentChat.getMessages()) {
+                    if (message.equals(messageToDelete)) {
+                        message.delete(user);
+                    }
+                }
+                return null;
+            }
+        }).when(chatRepository).removeMessageInChat(any(Message.class),any(Chat.class),any(User.class));
+
     }
 
     @Test
@@ -621,6 +638,26 @@ public class TestViewModel {
 
         assertEquals(messageSize+1, fakeChat.get(0).getMessages().size());
         assertEquals(fakeChat.get(0).getMessages().get(messageSize).getMessage(), newMessage);
+
+    }
+
+    @Test
+    public void removeMessageInChat() {
+        Chat currentChat = fakeChat.get(0);
+        String messageToDelete = "Test du message";
+
+        viewModelChat.createMessagesInChat(messageToDelete,currentChat);
+
+        int messageSize = currentChat.getMessages().size();
+
+        assertEquals(messageToDelete,currentChat.getMessages().get(messageSize-1).getMessage());
+
+        Message messageTest = currentChat.getMessages().get(messageSize-1);
+
+        assertFalse(messageTest.getIsDelete());
+
+        viewModelChat.removeMessageInChat(messageTest,currentChat);
+        assertTrue(messageTest.getIsDelete());
 
     }
 

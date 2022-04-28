@@ -110,7 +110,6 @@ public class ChatRepository {
                         for (Message message : chatDocument.getMessages()) {
                             if (message.equals(messageToRemove)) {
                                 message.delete(userDeleter);
-                                Log.d("TAG", "onComplete: ");
                             }
                         }
                         getChatCollection().document(chat.getId()).set(chatDocument);

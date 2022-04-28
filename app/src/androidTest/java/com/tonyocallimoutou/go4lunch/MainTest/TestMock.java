@@ -6,6 +6,7 @@ import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doAnswer;
 import static com.android.dx.mockito.inline.extended.ExtendedMockito.doNothing;
@@ -35,6 +36,7 @@ import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
+import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -48,12 +50,14 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BrouillonMap {
+public class TestMock {
 
     ViewModelUser viewModelUser;
     ViewModelRestaurant viewModelRestaurant;
     ViewModelChat viewModelChat;
     ViewModelFactory viewModelFactory;
+
+    MockitoSession session;
 
     private final List<User> fakeWorkmates = new ArrayList<>(FakeData.getFakeWorkmates());
     private final List<RestaurantDetails> fakeNearbyRestaurants = new ArrayList<>(FakeData.getFakeNearbyRestaurant());
@@ -76,13 +80,11 @@ public class BrouillonMap {
     @Before
     public void init() {
         initMocks(this);
-
         viewModelUser = mock(ViewModelUser.class);
         viewModelRestaurant = mock(ViewModelRestaurant.class);
         viewModelChat = mock(ViewModelChat.class);
         viewModelFactory = mock(ViewModelFactory.class);
         initAnswer();
-        initFactory();
 
         when(viewModelUser.getCurrentUser()).thenReturn(currentUser);
         when(viewModelUser.getCurrentUserLiveData()).thenReturn(userLiveData);
@@ -119,7 +121,7 @@ public class BrouillonMap {
 
     private void initFactory() {
 
-        when(viewModelFactory.create(any(Class.class))).thenAnswer(new Answer() {
+        doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
@@ -136,31 +138,31 @@ public class BrouillonMap {
                     return null;
                 }
             }
-        });
+        }).when(viewModelFactory).create(any(Class.class));
     }
 
     @Test
     public void CheckIfListIsNotEmpty() {
-        MockitoSession session = mockitoSession().mockStatic(ViewModelFactory.class).startMocking();
+
+        session = mockitoSession().spyStatic(ViewModelFactory.class).startMocking();
 
         try {
             lenient().when(ViewModelFactory.getInstance()).thenReturn(viewModelFactory);
+            initFactory();
 
             onView(withContentDescription("Navigate up"))
                     .perform(click());
 
-            onView(withId(R.id.logo_header_side_view))
-                    .check(matches(isDisplayed()));
+            onView(withId(R.id.user_name))
+                    .check(matches(withText(currentUser.getUsername())));
 
-            onView(withId(R.id.profile_picture_header_side_view))
-                    .check(matches(isDisplayed()));
-
-            onView(withId(R.id.navigation_setting))
-                    .check(matches(isDisplayed()));
-
-        } finally {
+            onView(withId(R.id.user_email))
+                    .check(matches(withText(currentUser.getEmail())));
+        }
+        finally {
             session.finishMocking();
         }
+
 
     }
 
