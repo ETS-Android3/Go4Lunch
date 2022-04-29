@@ -161,7 +161,6 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
             String message = newMessageEditText.getText().toString();
 
             if (isConnected) {
-                Log.d("TAG", "sendMessage: " + currentChat.getMessages().size());
                 viewModelChat.createMessagesInChat(message, currentChat);
             }
             else {

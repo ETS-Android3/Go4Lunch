@@ -12,12 +12,21 @@
         style="@style/ChatTextResume"
         android:layout_margin="@dimen/chat_text_resume_margin"/>
 
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/chat_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/chat_text_resume"
+        tools:listitem="@layout/activity_chat_item"
+        android:layout_above="@+id/layout_error_connection"/>
+
     <LinearLayout
         android:id="@+id/layout_error_connection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/chat_text_resume"
-        android:background="@color/light_grey"
+        android:layout_above="@id/chat_message_container"
+        android:background="@drawable/border"
         android:orientation="horizontal">
 
         <TextView
@@ -25,18 +34,12 @@
             android:layout_height="wrap_content"
             android:textColor="@color/red_warning"
             android:text="@string/no_connection"
+            android:layout_margin="8dp"
+            android:textSize="20sp"
             android:gravity="center_horizontal" />
 
 
     </LinearLayout>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/chat_recycler_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_below="@id/layout_error_connection"
-        tools:listitem="@layout/activity_chat_item"
-        android:layout_above="@+id/chat_message_container"/>
 
     <LinearLayout
         android:id="@+id/chat_message_container"
