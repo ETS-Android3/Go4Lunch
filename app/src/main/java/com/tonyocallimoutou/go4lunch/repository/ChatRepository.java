@@ -24,6 +24,7 @@ import com.tonyocallimoutou.go4lunch.utils.UtilChatId;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public class ChatRepository {
 
@@ -50,7 +51,7 @@ public class ChatRepository {
     }
 
 
-    public void getAllMessageForChat(Chat chat, MutableLiveData<List<Message>> liveData){
+    public void getAllMessageForChat(User currentUser, Chat chat, MutableLiveData<List<Message>> liveData){
         getChatCollection().document(chat.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
@@ -60,6 +61,24 @@ public class ChatRepository {
                 }
                 Chat chat = value.toObject(Chat.class);
                 liveData.setValue(chat.getMessages());
+            }
+        });
+    }
+
+    public void readMessage(User currentUser, Chat chat) {
+        getChatCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
+                for (DocumentSnapshot document : list) {
+                    Chat chatDocument = document.toObject(Chat.class);
+                    if (chatDocument.getId().equals(chat.getId())) {
+                        for (Message message : chatDocument.getMessages()) {
+                            message.readMessage(currentUser);
+                        }
+                    }
+                    getChatCollection().document(chat.getId()).set(chatDocument);
+                }
             }
         });
     }
@@ -123,6 +142,24 @@ public class ChatRepository {
                         getChatCollection().document(chat.getId()).set(chatDocument);
                     }
                 }
+            }
+        });
+    }
+
+
+    public void setPinsNoReadingMessage(User currentUser, MutableLiveData<Map<String,Integer>> liveData) {
+        getChatCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+
+                assert value != null;
+                List<DocumentSnapshot> list = value.getDocuments();
+                List<Chat> chatList = new ArrayList<>();
+                for (DocumentSnapshot document : list) {
+                    Chat chatDocument = document.toObject(Chat.class);
+                    chatList.add(chatDocument);
+                }
+                liveData.setValue(UtilChatId.getNumberOfNoReadingMessage(currentUser,chatList));
             }
         });
     }

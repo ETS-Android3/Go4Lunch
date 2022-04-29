@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -31,16 +32,20 @@ import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.ui.BaseActivity;
 import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.ui.chat.ChatActivity;
+import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
+import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
 import com.tonyocallimoutou.go4lunch.utils.WorkmatesLunch;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelChat;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -78,6 +83,10 @@ public class DetailsActivity extends BaseActivity {
     TextView lblWorkmates;
     @BindView(R.id.fab_chat_restaurant)
     FloatingActionButton goToChat;
+    @BindView(R.id.pins_new_message)
+    LinearLayout layoutPins;
+    @BindView(R.id.pins_new_message_txt)
+    TextView nbrNewMessage;
 
     DetailRecyclerViewAdapter adapter;
 
@@ -91,6 +100,7 @@ public class DetailsActivity extends BaseActivity {
 
     private ViewModelUser viewModelUser;
     private ViewModelRestaurant viewModelRestaurant;
+    private ViewModelChat viewModelChat;
 
     private static final int MY_PERMISSION_REQUEST_CODE_CALL_PHONE = 555;
     public static final String KEY_EXTRA_DETAIL_ACTIVITY = "KEY_EXTRA_DETAIL_ACTIVITY";
@@ -104,6 +114,7 @@ public class DetailsActivity extends BaseActivity {
 
         viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
         viewModelRestaurant = new ViewModelProvider(this,ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+        viewModelChat = new ViewModelProvider(this,ViewModelFactory.getInstance()).get(ViewModelChat.class);
 
 
         initDataWithoutCurrentUserLiveData();
@@ -118,6 +129,7 @@ public class DetailsActivity extends BaseActivity {
                     if (currentUserResults != null) {
                         currentUser = currentUserResults;
                         restaurant = currentUser.getBookedRestaurant();
+                        viewModelChat.setPinsNoReadingMessage(currentUser);
 
                         // remove Restaurant before click on Notification
                         if(restaurant == null) {
@@ -199,6 +211,24 @@ public class DetailsActivity extends BaseActivity {
 
         setFAB();
         setLike();
+    }
+
+    // Init new Message
+    private void initNumberOfMessage(Map<String,Integer> numberNoReading) {
+        int numberOfMessage = 0;
+
+        if (numberNoReading.get(restaurant.getPlaceId()) != null) {
+            numberOfMessage = numberNoReading.get(restaurant.getPlaceId());
+        }
+
+        if(numberOfMessage != 0) {
+            layoutPins.setVisibility(View.VISIBLE);
+            String str = "("+ numberOfMessage +")";
+            nbrNewMessage.setText(str);
+        }
+        else {
+            layoutPins.setVisibility(View.GONE);
+        }
     }
 
     @OnClick(R.id.detail_booked_restaurant)
@@ -348,6 +378,11 @@ public class DetailsActivity extends BaseActivity {
                 }
             }
         });
+
+        viewModelChat.getNumberNoReadingMessageMap().observe(this, numberNoReading -> {
+            Log.d("TAG", "initDataWithoutCurrentUserLiveData: " + numberNoReading);
+            initNumberOfMessage(numberNoReading);
+        });
     }
 
     public void initLiveDataCurrentUser() {
@@ -357,6 +392,7 @@ public class DetailsActivity extends BaseActivity {
             if (currentUserResults != null) {
                 UtilNotification.newInstance(null,null,this,currentUserResults);
                 currentUser = currentUserResults;
+                viewModelChat.setPinsNoReadingMessage(currentUser);
                 initWorkmatesList();
             }
         });

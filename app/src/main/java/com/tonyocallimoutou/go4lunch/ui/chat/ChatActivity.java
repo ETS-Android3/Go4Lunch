@@ -75,6 +75,12 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
     }
 
     @Override
+    public void onBackPressed() {
+        viewModelChat.readMessage(currentChat);
+        super.onBackPressed();
+    }
+
+    @Override
     public void deleteMessage(Message message) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
@@ -115,7 +121,6 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
 
         viewModelChat.getCurrentChatLivedata().observe(this, chatResult -> {
             currentChat = chatResult;
-            Log.d("TAG", "initChat: " + currentChat.getMessages().size());
             viewModelChat.setAllMessageForChat(currentChat);
         });
 

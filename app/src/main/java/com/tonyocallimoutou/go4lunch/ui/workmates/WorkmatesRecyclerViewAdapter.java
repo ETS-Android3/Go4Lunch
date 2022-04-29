@@ -1,10 +1,12 @@
 package com.tonyocallimoutou.go4lunch.ui.workmates;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -26,11 +28,13 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
     private final List<User> mUsers;
     private final Context mContext;
     private final WorkmatesItemClickListener workmatesItemClickListener;
+    private final List<Integer> newMessageInt;
 
 
-    public WorkmatesRecyclerViewAdapter(Context context, List<User> users, WorkmatesItemClickListener listener) {
+    public WorkmatesRecyclerViewAdapter(Context context, List<User> users, List<Integer> listInt, WorkmatesItemClickListener listener) {
         mContext = context;
         mUsers = users;
+        newMessageInt = listInt;
         workmatesItemClickListener = listener;
     }
 
@@ -46,6 +50,13 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
     @Override
     public void onBindViewHolder(@NonNull WorkmatesRecyclerViewAdapter.ViewHolder holder, int position) {
         User user = mUsers.get(position);
+        int newMessage = newMessageInt.get(position);
+
+        if (newMessage != 0) {
+            holder.layoutPins.setVisibility(View.VISIBLE);
+            String str = "("+ newMessage +")";
+            holder.nbrNewMessage.setText(str);
+        }
 
         initText(holder, user);
 
@@ -89,6 +100,11 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
         ImageView workmatePicture;
         @BindView(R.id.workmates_text)
         TextView workmateText;
+        @BindView(R.id.pins_new_message)
+        LinearLayout layoutPins;
+        @BindView(R.id.pins_new_message_txt)
+        TextView nbrNewMessage;
+
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

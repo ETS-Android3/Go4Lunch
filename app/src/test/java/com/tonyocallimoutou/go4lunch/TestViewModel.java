@@ -46,6 +46,7 @@ import org.mockito.stubbing.Answer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Example local unit test, which will execute on the development machine (host).
@@ -323,8 +324,8 @@ public class TestViewModel {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                Chat currentChat = (Chat) args[0];
-                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[1];
+                Chat currentChat = (Chat) args[1];
+                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[2];
 
                 for (Chat chat : fakeChat) {
                     if (chat.getId().equals(currentChat.getId())) {
@@ -334,7 +335,7 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(chatRepository).getAllMessageForChat(any(Chat.class),any(MutableLiveData.class));
+        }).when(chatRepository).getAllMessageForChat(any(User.class),any(Chat.class),any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override
@@ -352,6 +353,18 @@ public class TestViewModel {
                 return null;
             }
         }).when(chatRepository).removeMessageInChat(any(Message.class),any(Chat.class),any(User.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                User user = (User) args[0];
+                MutableLiveData<Map<String,Integer>> liveData = (MutableLiveData<Map<String, Integer>>) args[1];
+                liveData.setValue(UtilChatId.getNumberOfNoReadingMessage(currentUser,fakeChat));
+
+                return null;
+            }
+        }).when(chatRepository).setPinsNoReadingMessage(any(User.class),any(MutableLiveData.class));
 
     }
 

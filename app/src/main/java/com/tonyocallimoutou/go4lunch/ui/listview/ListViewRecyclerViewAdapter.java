@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -28,13 +29,16 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
     private final Context mContext;
     private final ListItemClickListener mListItemClickListener;
     private final List<User> mWorkmates;
+    private final List<Integer> newMessageInt;
 
     public ListViewRecyclerViewAdapter(Context context,
                                        List<RestaurantDetails> restaurants,
+                                       List<Integer> listInt,
                                        List<User> workmates,
                                        ListItemClickListener listItemClickListener) {
         mRestaurants = restaurants;
         mContext = context;
+        newMessageInt = listInt;
         mListItemClickListener = listItemClickListener;
         mWorkmates = workmates;
     }
@@ -50,6 +54,13 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
     @Override
     public void onBindViewHolder(@NonNull ListViewRecyclerViewAdapter.ViewHolder holder, int position) {
         RestaurantDetails restaurant = mRestaurants.get(position);
+        int newMessage = newMessageInt.get(position);
+
+        if (newMessage != 0) {
+            holder.layoutPins.setVisibility(View.VISIBLE);
+            String str = "("+ newMessage +")";
+            holder.nbrNewMessage.setText(str);
+        }
 
         RestaurantData.newInstance(mContext, restaurant);
         RestaurantRate.newInstance(restaurant,holder.rateOne, holder.rateTwo, holder.rateThree, mWorkmates);
@@ -113,6 +124,10 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         ImageView rateTwo;
         @BindView(R.id.rate3)
         ImageView rateThree;
+        @BindView(R.id.pins_new_message)
+        LinearLayout layoutPins;
+        @BindView(R.id.pins_new_message_txt)
+        TextView nbrNewMessage;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);

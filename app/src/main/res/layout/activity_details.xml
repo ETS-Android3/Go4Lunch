@@ -96,6 +96,16 @@
         app:borderWidth="0dp"
         app:tint="@color/white"
         android:backgroundTint="@color/colorPrimary"
-        android:layout_margin="@dimen/margin_end_fab_map" />
+        android:layout_marginBottom="@dimen/margin_end_fab_map"
+        android:layout_marginEnd="@dimen/margin_end_fab_map" />
+
+    <include
+        layout="@layout/include_new_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_alignBottom="@+id/fab_chat_restaurant"
+        android:layout_margin="@dimen/margin_item_list_view"
+        android:layout_toStartOf="@+id/fab_chat_restaurant" />
 
 </RelativeLayout>

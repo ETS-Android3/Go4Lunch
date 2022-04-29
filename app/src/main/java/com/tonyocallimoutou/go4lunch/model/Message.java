@@ -8,7 +8,9 @@ import com.tonyocallimoutou.go4lunch.R;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 public class Message {
@@ -19,6 +21,7 @@ public class Message {
     private boolean isDelete;
     @Nullable
     private User userDeleter;
+    private List<String> readByUserId = new ArrayList<>();
 
     public Message() {
     }
@@ -27,6 +30,7 @@ public class Message {
         this.message = message;
         this.userSender = userSender;
         this.dateCreated = new Date();
+        readByUserId.add(userSender.getUid());
         isDelete = false;
         userDeleter = null;
     }
@@ -75,6 +79,17 @@ public class Message {
     @Nullable
     public User getUserDeleter() {
         return userDeleter;
+    }
+
+
+    public List<String> getReadByUserId() {
+        return readByUserId;
+    }
+
+    public void readMessage(User userReader) {
+        if (! readByUserId.contains(userReader.getUid())) {
+            readByUserId.add(userReader.getUid());
+        }
     }
 
     @Override

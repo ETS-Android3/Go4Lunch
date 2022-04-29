@@ -25,7 +25,9 @@ import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -44,6 +46,9 @@ public class ListViewFragment extends BaseFragment {
     private static List<RestaurantDetails> nearbyRestaurant = new ArrayList<>();
     private static List<RestaurantDetails> nearbyWithoutBooked = new ArrayList<>();
     private static List<User> workmates = new ArrayList<>();
+
+    private static List<Integer> newMessageList = new ArrayList<>();
+    private static Map<String,Integer> numberNoReading = new HashMap<>();
 
     private static ListViewRecyclerViewAdapter adapter;
     private static Context mContext;
@@ -116,13 +121,26 @@ public class ListViewFragment extends BaseFragment {
         }
 
         if (mRecyclerView != null) {
+            initNewMessageList();
             initAdapter();
         }
 
     }
 
+    private static void initNewMessageList() {
+        newMessageList.clear();
+        for (RestaurantDetails restaurant : mRestaurants) {
+            if (numberNoReading.get(restaurant.getPlaceId()) != null) {
+                newMessageList.add(numberNoReading.get(restaurant.getPlaceId()));
+            }
+            else {
+                newMessageList.add(0);
+            }
+        }
+    }
+
     private static void initAdapter() {
-        adapter = new ListViewRecyclerViewAdapter(mContext, mRestaurants, workmates, new ListViewRecyclerViewAdapter.ListItemClickListener() {
+        adapter = new ListViewRecyclerViewAdapter(mContext, mRestaurants, newMessageList, workmates, new ListViewRecyclerViewAdapter.ListItemClickListener() {
             @Override
             public void onListItemClick(int position) {
                 RestaurantDetails restaurant = mRestaurants.get(position);
@@ -157,6 +175,11 @@ public class ListViewFragment extends BaseFragment {
             mRestaurants.add(result);
             adapter.notifyDataSetChanged();
         });
+    }
+
+    public static void initPins(Map<String,Integer> result) {
+        numberNoReading = result;
+        initRestaurantList();
     }
 }
 

@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -29,6 +30,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 import com.tonyocallimoutou.go4lunch.R;
+import com.tonyocallimoutou.go4lunch.model.Message;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.ui.autocomplete.AutocompleteFragment;
@@ -38,6 +40,7 @@ import com.tonyocallimoutou.go4lunch.ui.mapview.MapViewFragment;
 import com.tonyocallimoutou.go4lunch.ui.setting.SettingActivity;
 import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
+import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelChat;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
@@ -58,6 +61,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
     private ViewModelUser viewModelUser;
     private ViewModelRestaurant viewModelRestaurant;
+    private ViewModelChat viewModelChat;
     private View sideView;
     private ActionBar actionBar;
 
@@ -76,6 +80,7 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
         if(status == ConnectionResult.SUCCESS) {
             viewModelUser = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelUser.class);
             viewModelRestaurant = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelRestaurant.class);
+            viewModelChat = new ViewModelProvider(this, ViewModelFactory.getInstance()).get(ViewModelChat.class);
 
             setContentView(R.layout.activity_main);
             ButterKnife.bind(this);
@@ -304,12 +309,18 @@ public class MainActivity extends BaseActivity implements NavigationView.OnNavig
 
                 currentUser = currentUserResults;
                 WorkmatesFragment.setCurrentUser(currentUserResults);
+                viewModelChat.setPinsNoReadingMessage(currentUser);
                 initSideView();
             }
         });
 
         viewModelRestaurant.getPredictionLiveData().observe(this, predictionsResults -> {
             AutocompleteFragment.setPredictions(predictionsResults);
+        });
+
+        viewModelChat.getNumberNoReadingMessageMap().observe(this, numberNoReading -> {
+            WorkmatesFragment.initPins(numberNoReading);
+            ListViewFragment.initPins(numberNoReading);
         });
     }
 }
