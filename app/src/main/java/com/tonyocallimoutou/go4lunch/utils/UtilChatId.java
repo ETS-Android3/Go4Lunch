@@ -42,7 +42,7 @@ public class UtilChatId {
 
     public static Map<String, Integer> getNumberOfNoReadingMessage(User currentUser, List<Chat> chatList) {
         String id;
-        int nbr = 0;
+        int nbr;
         Map<String, Integer> map = new HashMap<String, Integer>();
 
         for (Chat chat : chatList) {

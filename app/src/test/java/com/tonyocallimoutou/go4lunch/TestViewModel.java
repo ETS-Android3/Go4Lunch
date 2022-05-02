@@ -324,6 +324,20 @@ public class TestViewModel {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
+                User user = (User) args[0];
+                Chat chat = (Chat) args[1];
+                for (Message message : chat.getMessages()) {
+                    message.readMessage(user);
+                }
+
+                return null;
+            }
+        }).when(chatRepository).readMessage(any(User.class),any(Chat.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
                 Chat currentChat = (Chat) args[1];
                 MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[2];
 
@@ -671,6 +685,62 @@ public class TestViewModel {
 
         viewModelChat.removeMessageInChat(messageTest,currentChat);
         assertTrue(messageTest.getIsDelete());
+
+    }
+
+    @Test
+    public void readMessageInChat() {
+        Chat currentChat = fakeChat.get(0);
+
+        int messageSize = currentChat.getMessages().size();
+
+        assertFalse(currentChat.getMessages().get(messageSize-1).getReadByUserId().contains(currentUser.getUid()));
+
+        viewModelChat.readMessage(currentChat);
+
+        assertTrue(currentChat.getMessages().get(messageSize-1).getReadByUserId().contains(currentUser.getUid()));
+
+    }
+
+    @Test
+    public void getNumberOfNoReadingMessage() {
+        List<User> userChat1 = new ArrayList<>();
+        userChat1.add(fakeWorkmates.get(0));
+        userChat1.add(currentUser);
+        Chat chat1 = new Chat(null,userChat1);
+        Message message10 = new Message("message10NoRead",fakeWorkmates.get(0));
+        Message message11 = new Message("message11NoRead",fakeWorkmates.get(0));
+        chat1.getMessages().add(message10);
+        chat1.getMessages().add(message11);
+
+        List<User> userChat2 = new ArrayList<>();
+        userChat2.add(fakeWorkmates.get(1));
+        userChat2.add(currentUser);
+        Chat chat2 = new Chat(null, userChat2);
+        Message message2 = new Message("message2Read",fakeWorkmates.get(0));
+        message2.readMessage(currentUser);
+        chat2.getMessages().add(message2);
+
+        fakeChat.add(chat1);
+        fakeChat.add(chat2);
+
+        viewModelChat.setPinsNoReadingMessage(currentUser);
+        Map<String,Integer> map = viewModelChat.getNumberNoReadingMessageMap().getValue();
+
+        List<Integer> newListInteger = new ArrayList<>();
+        for (User user : fakeWorkmates) {
+            if (map.get(user.getUid()) != null) {
+                newListInteger.add(map.get(user.getUid()));
+            }
+            else {
+                newListInteger.add(0);
+            }
+        }
+
+        assertEquals(2, (int) newListInteger.get(0));
+        assertEquals(0, (int) newListInteger.get(1));
+        assertEquals(0,(int) newListInteger.get(2));
+
 
     }
 
