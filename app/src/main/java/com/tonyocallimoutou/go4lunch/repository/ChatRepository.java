@@ -58,6 +58,7 @@ public class ChatRepository {
                     Log.w("TAG", "Listen failed.", error);
                     return;
                 }
+
                 Chat chat = value.toObject(Chat.class);
                 liveData.setValue(chat.getMessages());
             }
@@ -150,7 +151,10 @@ public class ChatRepository {
         getChatCollection().addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-
+                if (error != null) {
+                    Log.w("TAG", "Listen failed.", error);
+                    return;
+                }
                 assert value != null;
                 List<DocumentSnapshot> list = value.getDocuments();
                 List<Chat> chatList = new ArrayList<>();
