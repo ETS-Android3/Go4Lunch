@@ -13,11 +13,11 @@ import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 
 public class ViewModelFactory implements ViewModelProvider.Factory {
 
-    private final UserRepository userRepository;
+    private static UserRepository userRepository;
 
-    private final RestaurantRepository restaurantRepository;
+    private static RestaurantRepository restaurantRepository;
 
-    private final ChatRepository chatRepository;
+    private static ChatRepository chatRepository;
 
     private static ViewModelFactory factory;
 
@@ -51,9 +51,19 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     }
 
+    public static void InstrumentedTestInitFactory(UserRepository mockUser, RestaurantRepository mockRestaurant, ChatRepository mockChat) {
+        if (factory == null) {
+            factory = new ViewModelFactory();
+        }
+        userRepository = mockUser;
+        restaurantRepository = mockRestaurant;
+        chatRepository = mockChat;
+    }
+
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
+        Log.d("TAG", "create: ");
 
         if (modelClass.isAssignableFrom(ViewModelUser.class)) {
 

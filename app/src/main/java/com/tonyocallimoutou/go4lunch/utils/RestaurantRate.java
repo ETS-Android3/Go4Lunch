@@ -1,5 +1,6 @@
 package com.tonyocallimoutou.go4lunch.utils;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -64,6 +65,8 @@ public class RestaurantRate {
     private static void setRate() {
         double count = 0;
         for (User user : listWorkmates) {
+            Log.d("TAG", "setRate: "+user);
+            Log.d("TAG", "setRate: "+user.getUid());
             if (user.getLikeRestaurantId().contains(restaurant.getPlaceId())) {
                 count ++;
             }

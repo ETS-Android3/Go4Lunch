@@ -126,7 +126,7 @@ public class WorkmatesFragment extends BaseFragment implements WorkmatesRecycler
             }
 
 
-            adapter.notifyDataSetChanged();
+            adapter.initAdapter(workmatesWithoutUser);
         }
 
     }

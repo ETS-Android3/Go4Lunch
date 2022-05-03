@@ -56,6 +56,11 @@ public class UserRepository {
 
     // Get Current User
 
+    public boolean isCurrentLogged() {
+        Log.d("TAG", "isCurrentLogged: ");
+        return this.getCurrentFirebaseUser() != null;
+    }
+
     public FirebaseUser getCurrentFirebaseUser() {
         return FirebaseAuth.getInstance().getCurrentUser();
     }

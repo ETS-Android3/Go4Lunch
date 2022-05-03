@@ -16,6 +16,7 @@ import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
+import com.tonyocallimoutou.go4lunch.utils.WorkmatesLunch;
 
 import java.util.List;
 
@@ -24,10 +25,10 @@ import butterknife.ButterKnife;
 
 public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRecyclerViewAdapter.ViewHolder> {
 
-    private final List<RestaurantDetails> mRestaurants;
+    private List<RestaurantDetails> mRestaurants;
     private final Context mContext;
     private final ListItemClickListener mListItemClickListener;
-    private final List<User> mWorkmates;
+    private List<User> mWorkmates;
 
     public ListViewRecyclerViewAdapter(Context context,
                                        List<RestaurantDetails> restaurants,
@@ -89,6 +90,12 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
 
     public interface ListItemClickListener{
         void onListItemClick(int position);
+    }
+
+    public void initAdapter(List<RestaurantDetails> restaurants, List<User> workmates) {
+        mRestaurants = restaurants;
+        mWorkmates = workmates;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

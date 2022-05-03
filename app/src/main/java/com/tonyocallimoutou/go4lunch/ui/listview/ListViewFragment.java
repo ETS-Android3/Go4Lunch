@@ -88,11 +88,22 @@ public class ListViewFragment extends BaseFragment {
         mRecyclerView = (RecyclerView) view.findViewById(R.id.list_view_recycler_view);
         lblNoRestaurant = view.findViewById(R.id.lbl_no_restaurant);
 
-        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
-        mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
-
         mContext = getContext();
         mActivity = getActivity();
+
+        mRecyclerView.setLayoutManager(new LinearLayoutManager(view.getContext()));
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL));
+        adapter = new ListViewRecyclerViewAdapter(mContext, mRestaurants, workmates, new ListViewRecyclerViewAdapter.ListItemClickListener() {
+            @Override
+            public void onListItemClick(int position) {
+                RestaurantDetails restaurant = mRestaurants.get(position);
+                DetailsActivity.navigate(mActivity, restaurant);
+            }
+        });
+
+        mRecyclerView.setAdapter(adapter);
+
+
         initRestaurantList();
         return view;
     }
@@ -115,22 +126,10 @@ public class ListViewFragment extends BaseFragment {
             }
         }
 
-        if (mRecyclerView != null) {
-            initAdapter();
+        if (adapter != null) {
+            adapter.initAdapter(mRestaurants,workmates);
         }
 
-    }
-
-    private static void initAdapter() {
-        adapter = new ListViewRecyclerViewAdapter(mContext, mRestaurants, workmates, new ListViewRecyclerViewAdapter.ListItemClickListener() {
-            @Override
-            public void onListItemClick(int position) {
-                RestaurantDetails restaurant = mRestaurants.get(position);
-                DetailsActivity.navigate(mActivity, restaurant);
-            }
-        });
-
-        mRecyclerView.setAdapter(adapter);
     }
 
     public static void setBookedRestaurant(List<RestaurantDetails> result) {

@@ -1,31 +1,33 @@
-package com.tonyocallimoutou.go4lunch.MainTest;
+package com.tonyocallimoutou.go4lunch.PredictionTest;
 
 import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.Espresso.pressBack;
+import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressKey;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
+import static androidx.test.espresso.matcher.ViewMatchers.hasChildCount;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
-import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
+import static androidx.test.platform.app.InstrumentationRegistry.getInstrumentation;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.location.Location;
+import android.view.KeyEvent;
 
 import androidx.lifecycle.MutableLiveData;
-import androidx.test.espresso.contrib.DrawerActions;
-import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.uiautomator.UiDevice;
+import androidx.test.uiautomator.UiObject;
+import androidx.test.uiautomator.UiSelector;
 
 import com.tonyocallimoutou.go4lunch.FAKE.FakeData;
 import com.tonyocallimoutou.go4lunch.R;
@@ -39,25 +41,20 @@ import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.utils.UtilChatId;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelChat;
+import com.tonyocallimoutou.go4lunch.utils.utilsTest;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityTest {
-
-
+public class PredictionMapTest {
     private static UserRepository userRepository;
     private static RestaurantRepository restaurantRepository;
     private static ChatRepository chatRepository;
@@ -86,7 +83,6 @@ public class MainActivityTest {
 
         // Restaurant repository
         initAnswerRestaurant();
-
     }
     private static void initAnswerUser() {
         doAnswer(new Answer() {
@@ -284,105 +280,35 @@ public class MainActivityTest {
     }
 
 
-    @Test
-    public void CheckIfMainActivityHaveBottomNavBar() {
-        onView(ViewMatchers.withId(R.id.bottom_nav_view))
-                .check(matches(isDisplayed()));
+    @Before
+    public void init() {
+        onView(withId(R.id.navigation_map))
+                .perform(click());
     }
 
-    @Test
-    public void CheckIfSideViewIsCreated(){
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.open());
-
-        onView(withId(R.id.logo_header_side_view))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.profile_picture_header_side_view))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.navigation_setting))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.close());
-
-        onView(withId(R.id.logo_header_side_view))
-                .check(matches(not(isDisplayed())));
-
-    }
 
     @Test
-    public void CheckIfSideViewHaveInformationOfCurrentUser() {
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.open());
-
-        onView(withId(R.id.user_name))
-                .check(matches(withText(currentUser.getUsername())));
-
-        onView(withId(R.id.user_email))
-                .check(matches(withText(currentUser.getEmail())));
-    }
-
-    @Test
-    public void goToSetting() {
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.open());
-
-        onView(withId(R.id.navigation_setting))
+    public void goToAutocompleteFragment() {
+        onView(withId(R.id.search_menu))
                 .perform(click());
 
-        onView(withId(R.id.setting_host_fragment))
+        onView(withId(R.id.autocomplete_no_prediction))
                 .check(matches(isDisplayed()));
     }
 
     @Test
-    public void goToRestaurantDetail() {
+    public void predictionFoundUser() {
 
-        onView(ViewMatchers.withId(R.id.navigation_list))
-            .perform(click());
-
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.open());
-
-        onView(withId(R.id.navigation_your_lunch))
+        onView(withId(R.id.search_menu))
                 .perform(click());
 
-        onView(withId(R.id.navigation_your_lunch))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.close());
-
-        bookedRestaurant();
-
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.open());
-
-        onView(withId(R.id.navigation_your_lunch))
-                .perform(click());
-
-        onView(withId(R.id.detail_relative_layout))
-                .check(matches(isDisplayed()));
+        onView(withId(Resources.getSystem().getIdentifier("search_src_text",
+                "id", "android")))
+                .perform(clearText(),typeText("any"))
+                .perform(pressKey(KeyEvent.KEYCODE_ENTER));
 
 
-    }
-
-    private void bookedRestaurant() {
-
-        // Test List View Go to Detail Activity
-
-        onView(withId(R.id.list_view_recycler_view))
-                .perform(actionOnItemAtPosition(0,click()));
-
-        // Test Detail Activity Booked Restaurant
-
-        onView(withId(R.id.detail_booked_restaurant))
-                .perform(click());
-
-        // Return to Main Activity
-        pressBack();
-
-
+        onView(withId(R.id.autocomplete_recycler_view))
+                .check(matches(utilsTest.atPositionOnView(0,withText("nameOfPrediction1"),R.id.prediction_text)));
     }
 }

@@ -93,34 +93,122 @@ public class TestViewModel {
 
         when(userRepository.getCurrentUser()).thenReturn(currentUser);
 
-        initAnswer();
+        initAnswerUser();
+        initAnswerRestaurant();
+        initAnswerChat();
 
         viewModelUser = new ViewModelUser(userRepository,restaurantRepository);
         viewModelRestaurant = new ViewModelRestaurant(restaurantRepository,userRepository);
         viewModelChat = new ViewModelChat(chatRepository,userRepository);
     }
 
-    private void initAnswer() {
+    private void initAnswerUser() {
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                MutableLiveData<List<RestaurantDetails>> liveData = (MutableLiveData<List<RestaurantDetails>>) args[1];
-                liveData.setValue(fakeNearbyRestaurants);
+
+                User newUser = new User("test","NameCurrentUser",null,"emailTest");
+                boolean isExisting = false;
+                for (User user : fakeWorkmates) {
+                    if (user.getUid().equals(newUser.getUid())) {
+                        isExisting = true;
+                    }
+                }
+                if (! isExisting) {
+                    fakeWorkmates.add(currentUser);
+                }
                 return null;
             }
-        }).when(restaurantRepository).setNearbyPlace(any(Location.class), any(MutableLiveData.class));
+        }).when(userRepository).createUser();
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                fakeWorkmates.remove(currentUser);
+                return null;
+            }
+        }).when(userRepository).deleteUser(any(Context.class));
 
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                MutableLiveData<List<RestaurantDetails>> liveData = (MutableLiveData<List<RestaurantDetails>>) args[0];
-                liveData.setValue(fakeBookedRestaurants);
+                String name = (String) args[0];
+                currentUser.setUsername(name);
                 return null;
             }
-        }).when(restaurantRepository).setBookedRestaurantFirestore(any(MutableLiveData.class));
+        }).when(userRepository).setNameOfCurrentUser(any(String.class));
 
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                MutableLiveData<List<User>> liveData = (MutableLiveData<List<User>>) args[0];
+                liveData.setValue(fakeWorkmates);
+                return null;
+            }
+        }).when(userRepository).setWorkmatesList(any(MutableLiveData.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantDetails restaurant = (RestaurantDetails) args[0];
+                currentUser.setBookedRestaurant(restaurant);
+                return null;
+            }
+        }).when(userRepository).bookedRestaurant(any(RestaurantDetails.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                currentUser.setBookedRestaurant(null);
+                return null;
+            }
+        }).when(userRepository).cancelRestaurant();
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantDetails restaurant = (RestaurantDetails) args[0];
+
+                List<String> listRestaurantId = currentUser.getLikeRestaurantId();
+                if ( ! listRestaurantId.contains(restaurant.getPlaceId())) {
+                    listRestaurantId.add(restaurant.getPlaceId());
+                }
+
+                currentUser.setLikeRestaurantId(listRestaurantId);
+                return null;
+            }
+        }).when(userRepository).likeThisRestaurant(any(RestaurantDetails.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantDetails restaurant = (RestaurantDetails) args[0];
+
+                List<String> listRestaurantId = currentUser.getLikeRestaurantId();
+                listRestaurantId.remove(restaurant.getPlaceId());
+
+                currentUser.setLikeRestaurantId(listRestaurantId);
+                return null;
+            }
+        }).when(userRepository).dislikeThisRestaurant(any(RestaurantDetails.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                MutableLiveData<User> liveData = (MutableLiveData<User>) args[0];
+                liveData.setValue(currentUser);
+                return null;
+            }
+        }).when(userRepository).setCurrentUserLivedata(any(MutableLiveData.class));
+    }
+
+    private void initAnswerRestaurant() {
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
@@ -139,7 +227,6 @@ public class TestViewModel {
                 return null;
             }
         }).when(restaurantRepository).createBookedRestaurantInFirebase(any(RestaurantDetails.class));
-
 
         doAnswer(new Answer() {
             @Override
@@ -161,103 +248,35 @@ public class TestViewModel {
             }
         }).when(restaurantRepository).cancelBookedRestaurantInFirebase(any(RestaurantDetails.class));
 
+        doAnswer(new Answer() {
+            @Override
+            public Void answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                MutableLiveData<List<RestaurantDetails>> liveData = (MutableLiveData<List<RestaurantDetails>>) args[0];
+                liveData.setValue(fakeBookedRestaurants);
+                return null;
+            }
+        }).when(restaurantRepository).setBookedRestaurantFirestore(any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                MutableLiveData<List<User>> liveData = (MutableLiveData<List<User>>) args[0];
-                liveData.setValue(fakeWorkmates);
+                MutableLiveData<List<RestaurantDetails>> liveData = (MutableLiveData<List<RestaurantDetails>>) args[1];
+                liveData.setValue(fakeNearbyRestaurants);
                 return null;
             }
-        }).when(userRepository).setWorkmatesList(any(MutableLiveData.class));
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                List<User> listTest = new ArrayList<>();
-                listTest.addAll(fakeWorkmates);
-                for (User user : listTest) {
-                    if (user.getUid().equals(currentUser.getUid())) {
-                        fakeWorkmates.remove(user);
-                        fakeWorkmates.add(currentUser);
-                    }
-                }
-                if (! fakeWorkmates.contains(currentUser)) {
-                    fakeWorkmates.add(currentUser);
-                }
-                return null;
-            }
-        }).when(userRepository).createUser();
-
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                List<User> listTest = new ArrayList<>();
-                listTest.addAll(fakeWorkmates);
-                for (User user : listTest) {
-                    if (user.getUid().equals(currentUser.getUid())) {
-                        fakeWorkmates.remove(user);
-                    }
-                }
-                return null;
-            }
-        }).when(userRepository).deleteUser(any(Context.class));
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                String newName = (String) args[0];
-                currentUser.setUsername(newName);
-                return null;
-            }
-        }).when(userRepository).setNameOfCurrentUser(any(String.class));
-
+        }).when(restaurantRepository).setNearbyPlace(any(Location.class), any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override
             public Void answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                RestaurantDetails restaurant = (RestaurantDetails) args[0];
-                currentUser.setBookedRestaurant(restaurant);
+                MutableLiveData<List<RestaurantDetails>> liveData = (MutableLiveData<List<RestaurantDetails>>) args[1];
+                liveData.setValue(fakeNearbyRestaurants);
                 return null;
             }
-        }).when(userRepository).bookedRestaurant(any(RestaurantDetails.class));
-
-
-        doAnswer(new Answer() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                currentUser.setBookedRestaurant(null);
-                return null;
-            }
-        }).when(userRepository).cancelRestaurant();
-
-        doAnswer(new Answer() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                RestaurantDetails restaurant = (RestaurantDetails) args[0];
-                if (! currentUser.getLikeRestaurantId().contains(restaurant.getPlaceId())) {
-                    currentUser.getLikeRestaurantId().add(restaurant.getPlaceId());
-                }
-                return null;
-            }
-        }).when(userRepository).likeThisRestaurant(any(RestaurantDetails.class));
-
-        doAnswer(new Answer() {
-            @Override
-            public Void answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                RestaurantDetails restaurant = (RestaurantDetails) args[0];
-                if (currentUser.getLikeRestaurantId().contains(restaurant.getPlaceId())) {
-                    currentUser.getLikeRestaurantId().remove(restaurant.getPlaceId());
-                }
-                return null;
-            }
-        }).when(userRepository).dislikeThisRestaurant(any(RestaurantDetails.class));
+        }).when(restaurantRepository).setNearbyPlace(any(Location.class), any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override
@@ -268,7 +287,9 @@ public class TestViewModel {
                 return null;
             }
         }).when(restaurantRepository).setSearchRestaurant(any(),any(),any(MutableLiveData.class));
+    }
 
+    private void initAnswerChat() {
         doAnswer(new Answer() {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {

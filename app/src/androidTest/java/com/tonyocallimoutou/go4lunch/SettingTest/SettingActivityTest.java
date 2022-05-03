@@ -1,32 +1,41 @@
-package com.tonyocallimoutou.go4lunch.MainTest;
+package com.tonyocallimoutou.go4lunch.SettingTest;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.Espresso.pressBack;
+import static androidx.test.espresso.action.ViewActions.clearText;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
+import static androidx.test.espresso.action.ViewActions.typeText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
+import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertNotNull;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.nullable;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.openMocks;
 
 import android.content.Context;
 import android.location.Location;
+import android.view.View;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.preference.PreferenceManager;
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.assertion.ViewAssertions;
 import androidx.test.espresso.contrib.DrawerActions;
-import androidx.test.espresso.matcher.ViewMatchers;
+import androidx.test.espresso.contrib.PickerActions;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
+import com.google.android.gms.tasks.Task;
 import com.tonyocallimoutou.go4lunch.FAKE.FakeData;
 import com.tonyocallimoutou.go4lunch.R;
 import com.tonyocallimoutou.go4lunch.model.Chat;
@@ -38,25 +47,25 @@ import com.tonyocallimoutou.go4lunch.repository.ChatRepository;
 import com.tonyocallimoutou.go4lunch.repository.RestaurantRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 import com.tonyocallimoutou.go4lunch.ui.MainActivity;
+import com.tonyocallimoutou.go4lunch.ui.setting.SettingActivity;
 import com.tonyocallimoutou.go4lunch.utils.UtilChatId;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelChat;
+import com.tonyocallimoutou.go4lunch.utils.utilsTest;
 import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelFactory;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelRestaurant;
-import com.tonyocallimoutou.go4lunch.viewmodel.ViewModelUser;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
-import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivityTest {
-
+public class SettingActivityTest {
 
     private static UserRepository userRepository;
     private static RestaurantRepository restaurantRepository;
@@ -66,7 +75,10 @@ public class MainActivityTest {
     private static final List<RestaurantDetails> fakeNearbyRestaurants = new ArrayList<>(FakeData.getFakeNearbyRestaurant());
     private static final List<RestaurantDetails> fakeBookedRestaurants = new ArrayList<>(FakeData.getFakeBookedRestaurant());
     private static final List<Prediction> fakePredictionRestaurant = new ArrayList<>(FakeData.getFakePredictionRestaurant());
+    private static final List<Chat> fakeChat = new ArrayList<>(FakeData.getFakeChats());
     private static User currentUser = new User("test","NameCurrentUser",null,"emailTest");
+
+    private Context context;
 
     @Rule
     public ActivityScenarioRule<MainActivity> mainScenarioRule = new ActivityScenarioRule<MainActivity>(MainActivity.class);
@@ -87,6 +99,8 @@ public class MainActivityTest {
         // Restaurant repository
         initAnswerRestaurant();
 
+        // Chat repository
+        initAnswerChat();
     }
     private static void initAnswerUser() {
         doAnswer(new Answer() {
@@ -283,106 +297,156 @@ public class MainActivityTest {
         }).when(restaurantRepository).setSearchRestaurant(any(),any(),any(MutableLiveData.class));
     }
 
+    private static void initAnswerChat() {
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                RestaurantDetails restaurant = (RestaurantDetails) args[0];
+                List<User> users = (List<User>) args[1];
+                MutableLiveData<Chat> liveData = (MutableLiveData<Chat>) args[2];
 
-    @Test
-    public void CheckIfMainActivityHaveBottomNavBar() {
-        onView(ViewMatchers.withId(R.id.bottom_nav_view))
-                .check(matches(isDisplayed()));
+                String id = UtilChatId.getChatIdWithUsers(restaurant, users);
+
+                boolean isExisting = false;
+                for (Chat chat : fakeChat) {
+                    if (chat.getId().equals(id)) {
+                        isExisting = true;
+                        liveData.setValue(chat);
+                    }
+                }
+                if (!isExisting) {
+                    Chat chat = new Chat(restaurant,users);
+                    fakeChat.add(chat);
+                    liveData.setValue(chat);
+                }
+
+                return null;
+            }
+        }).when(chatRepository).createChat(nullable(RestaurantDetails.class),any(List.class),any(MutableLiveData.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                String message = (String) args[0];
+                User user = (User) args[1];
+                Chat currentChat = (Chat) args[2];
+
+                Message newMessage = new Message(message,user);
+
+                List<Message> list = new ArrayList<>();
+                for (Chat chat : fakeChat) {
+                    if (chat.getId().equals(currentChat.getId())) {
+                        list.addAll(chat.getMessages());
+                        list.add(newMessage);
+                        chat.setMessages(list);
+                    }
+                }
+
+                return null;
+            }
+        }).when(chatRepository).createMessagesInChat(any(String.class),any(User.class),any(Chat.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                Chat currentChat = (Chat) args[0];
+                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[1];
+
+                for (Chat chat : fakeChat) {
+                    if (chat.getId().equals(currentChat.getId())) {
+                        liveData.setValue(chat.getMessages());
+                    }
+                }
+
+                return null;
+            }
+        }).when(chatRepository).getAllMessageForChat(any(Chat.class),any(MutableLiveData.class));
+
+        doAnswer(new Answer() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                Object[] args = invocation.getArguments();
+                Message messageToDelete = (Message) args[0];
+                Chat currentChat = (Chat) args[1];
+                User user = (User) args[2];
+
+                for (Message message : currentChat.getMessages()) {
+                    if (message.equals(messageToDelete)) {
+                        message.delete(user);
+                    }
+                }
+                return null;
+            }
+        }).when(chatRepository).removeMessageInChat(any(Message.class),any(Chat.class),any(User.class));
+
     }
 
-    @Test
-    public void CheckIfSideViewIsCreated(){
+
+
+    @Before
+    public void init() {
+        mainScenarioRule.getScenario().onActivity(new ActivityScenario.ActivityAction<MainActivity>() {
+            @Override
+            public void perform(MainActivity activity) {
+                context = activity.getApplicationContext();
+            }
+        });
+
         onView(withId(R.id.drawer_layout))
                 .perform(DrawerActions.open());
 
-        onView(withId(R.id.logo_header_side_view))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.profile_picture_header_side_view))
-                .check(matches(isDisplayed()));
-
         onView(withId(R.id.navigation_setting))
-                .check(matches(isDisplayed()));
+                .perform(click());
+    }
 
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.close());
-
-        onView(withId(R.id.logo_header_side_view))
-                .check(matches(not(isDisplayed())));
-
+    @After
+    public void resetData() {
+        PreferenceManager.getDefaultSharedPreferences(context).edit().clear().commit();
     }
 
     @Test
-    public void CheckIfSideViewHaveInformationOfCurrentUser() {
+    public void changeLanguages() {
+
+        onView(withText(R.string.preferences_languages))
+                .perform(click());
+        onView(withText("French"))
+                .perform(click());
+
+        onView(withText("Langues"))
+                .check(matches(isDisplayed()));
+
+        onView(withText(R.string.preferences_languages))
+                .perform(click());
+        onView(withText("Englais"))
+                .perform(click());
+
+        onView(withText("Languages"))
+                .check(matches(isDisplayed()));
+    }
+
+    @Test
+    public void changeName() {
+        onView(withText(R.string.preferences_name))
+                .perform(click());
+
+        onView(withText(currentUser.getUsername()))
+                .perform(replaceText("NewName"));
+
+        onView(withId(android.R.id.button1))
+                .perform(click());
+
+        pressBack();
+
         onView(withId(R.id.drawer_layout))
                 .perform(DrawerActions.open());
 
         onView(withId(R.id.user_name))
                 .check(matches(withText(currentUser.getUsername())));
 
-        onView(withId(R.id.user_email))
-                .check(matches(withText(currentUser.getEmail())));
+        assertEquals("NewName", currentUser.getUsername());
     }
 
-    @Test
-    public void goToSetting() {
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.open());
-
-        onView(withId(R.id.navigation_setting))
-                .perform(click());
-
-        onView(withId(R.id.setting_host_fragment))
-                .check(matches(isDisplayed()));
-    }
-
-    @Test
-    public void goToRestaurantDetail() {
-
-        onView(ViewMatchers.withId(R.id.navigation_list))
-            .perform(click());
-
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.open());
-
-        onView(withId(R.id.navigation_your_lunch))
-                .perform(click());
-
-        onView(withId(R.id.navigation_your_lunch))
-                .check(matches(isDisplayed()));
-
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.close());
-
-        bookedRestaurant();
-
-        onView(withId(R.id.drawer_layout))
-                .perform(DrawerActions.open());
-
-        onView(withId(R.id.navigation_your_lunch))
-                .perform(click());
-
-        onView(withId(R.id.detail_relative_layout))
-                .check(matches(isDisplayed()));
-
-
-    }
-
-    private void bookedRestaurant() {
-
-        // Test List View Go to Detail Activity
-
-        onView(withId(R.id.list_view_recycler_view))
-                .perform(actionOnItemAtPosition(0,click()));
-
-        // Test Detail Activity Booked Restaurant
-
-        onView(withId(R.id.detail_booked_restaurant))
-                .perform(click());
-
-        // Return to Main Activity
-        pressBack();
-
-
-    }
 }

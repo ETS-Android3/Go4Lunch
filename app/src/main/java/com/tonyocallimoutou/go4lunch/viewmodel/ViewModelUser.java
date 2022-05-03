@@ -1,6 +1,7 @@
 package com.tonyocallimoutou.go4lunch.viewmodel;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -30,10 +31,6 @@ public class ViewModelUser extends ViewModel {
 
     // Current User
 
-    public FirebaseUser getCurrentFirebaseUser() {
-        return userRepository.getCurrentFirebaseUser();
-    }
-
     public User getCurrentUser() {return userRepository.getCurrentUser();}
 
     public void setCurrentUserLiveData() {
@@ -45,7 +42,7 @@ public class ViewModelUser extends ViewModel {
     }
 
     public boolean isCurrentLogged() {
-        return (this.getCurrentFirebaseUser() != null);
+        return (userRepository.isCurrentLogged());
     }
 
     public Task<Void> signOut(Context context) {

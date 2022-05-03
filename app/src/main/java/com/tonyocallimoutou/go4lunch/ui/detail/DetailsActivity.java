@@ -170,7 +170,12 @@ public class DetailsActivity extends BaseActivity {
         }
 
 
-        initRecyclerView();
+        if (adapter == null) {
+            initRecyclerView();
+        }
+        else {
+            adapter.initAdapter(workmatesLunch);
+        }
         setInformation();
     }
 

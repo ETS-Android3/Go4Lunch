@@ -23,7 +23,7 @@ import butterknife.ButterKnife;
 
 public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<WorkmatesRecyclerViewAdapter.ViewHolder> {
 
-    private final List<User> mUsers;
+    private List<User> mUsers;
     private final Context mContext;
     private final WorkmatesItemClickListener workmatesItemClickListener;
 
@@ -64,6 +64,11 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
 
     public interface WorkmatesItemClickListener{
         void onWorkmatesItemClick(int position);
+    }
+
+    public void initAdapter(List<User> users) {
+        mUsers = users;
+        notifyDataSetChanged();
     }
 
     public void initText(WorkmatesRecyclerViewAdapter.ViewHolder holder, User user) {

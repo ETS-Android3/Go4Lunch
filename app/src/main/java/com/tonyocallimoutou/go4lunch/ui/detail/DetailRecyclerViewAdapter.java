@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 
 public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailRecyclerViewAdapter.ViewHolder>{
 
-    private final List<User> mUsers;
+    private List<User> mUsers;
     private final Context mContext;
 
 
@@ -55,6 +55,11 @@ public class DetailRecyclerViewAdapter extends RecyclerView.Adapter<DetailRecycl
     @Override
     public int getItemCount() {
         return mUsers.size();
+    }
+
+    public void initAdapter (List<User> users) {
+        mUsers = users;
+        notifyDataSetChanged();
     }
 
 
