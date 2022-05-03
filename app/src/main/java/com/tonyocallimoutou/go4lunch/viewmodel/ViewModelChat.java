@@ -1,5 +1,7 @@
 package com.tonyocallimoutou.go4lunch.viewmodel;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -13,6 +15,7 @@ import com.tonyocallimoutou.go4lunch.repository.ChatRepository;
 import com.tonyocallimoutou.go4lunch.repository.UserRepository;
 
 import java.util.List;
+import java.util.Map;
 
 public class ViewModelChat extends ViewModel {
 
@@ -21,6 +24,8 @@ public class ViewModelChat extends ViewModel {
 
     private MutableLiveData<List<Message>> allMessageLiveData = new MutableLiveData<>();
     private MutableLiveData<Chat> currentChatLiveData = new MutableLiveData<>();
+    private MutableLiveData<List<Chat>> chatListLiveData = new MutableLiveData<>();
+    private MutableLiveData<Map<String,Integer>> mapLiveData = new MutableLiveData<>();
 
     public ViewModelChat(ChatRepository chatRepository, UserRepository userRepository) {
         this.chatRepository = chatRepository;
@@ -28,13 +33,16 @@ public class ViewModelChat extends ViewModel {
     }
 
     public void setAllMessageForChat(Chat chat){
-        chatRepository.getAllMessageForChat(chat, allMessageLiveData);
+        chatRepository.getAllMessageForChat(userRepository.getCurrentUser(), chat, allMessageLiveData);
     }
 
     public LiveData<List<Message>> getAllMessage() {
         return allMessageLiveData;
     }
 
+    public void readMessage(Chat chat) {
+        chatRepository.readMessage(userRepository.getCurrentUser(),chat);
+    }
     public void createChat(@Nullable RestaurantDetails restaurant, List<User> users) {
         if (! users.contains(userRepository.getCurrentUser()) && userRepository.getCurrentUser() != null) {
             users.add(userRepository.getCurrentUser());
@@ -54,4 +62,11 @@ public class ViewModelChat extends ViewModel {
         chatRepository.removeMessageInChat(messageToRemove,chat, userRepository.getCurrentUser());
     }
 
+    public void setPinsNoReadingMessage(User currentUser) {
+        chatRepository.setPinsNoReadingMessage(currentUser,mapLiveData);
+    }
+
+    public MutableLiveData<Map<String, Integer>> getNumberNoReadingMessageMap() {
+        return mapLiveData;
+    }
 }

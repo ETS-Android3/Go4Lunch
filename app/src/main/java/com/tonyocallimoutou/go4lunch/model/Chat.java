@@ -58,4 +58,14 @@ public class Chat {
     public void setRestaurant(RestaurantDetails restaurant) {
         this.restaurant = restaurant;
     }
+
+    public int getNoReadingMessageNumber(User user) {
+        int noReading = 0;
+        for (Message message : messages) {
+            if (! message.getReadByUserId().contains(user.getUid())) {
+                noReading ++;
+            }
+        }
+        return noReading;
+    }
 }

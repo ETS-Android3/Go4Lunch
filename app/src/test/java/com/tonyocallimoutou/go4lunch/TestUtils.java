@@ -7,12 +7,14 @@ import static org.junit.Assert.assertTrue;
 
 import com.tonyocallimoutou.go4lunch.FAKE.FakeData;
 import com.tonyocallimoutou.go4lunch.model.Chat;
+import com.tonyocallimoutou.go4lunch.model.Message;
 import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.model.places.search.Prediction;
 import com.tonyocallimoutou.go4lunch.utils.CompareRestaurant;
 import com.tonyocallimoutou.go4lunch.utils.PredictionOfWorkmates;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantMethod;
+import com.tonyocallimoutou.go4lunch.utils.UtilChatId;
 import com.tonyocallimoutou.go4lunch.utils.WorkmatesLunch;
 
 import org.junit.Test;
@@ -21,7 +23,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TestUtils {
@@ -142,5 +146,76 @@ public class TestUtils {
         assertEquals(strChat1,chat1.getId());
         assertEquals(strChat2,chat2.getId());
         assertEquals(strChat3,chat3.getId());
+    }
+
+    @Test
+    public void getHashMapOfUserIdAndNumberOfNoReadingMessage() {
+        User currentUser = new User("currentUser","currentUserName",null,"emailCurrentUser");
+        List<User> userChat1 = new ArrayList<>();
+        userChat1.add(workmates.get(0));
+        userChat1.add(currentUser);
+        Chat chat1 = new Chat(null,userChat1);
+        Message message10 = new Message("message10NoRead",workmates.get(0));
+        Message message11 = new Message("message11NoRead",workmates.get(0));
+        chat1.getMessages().add(message10);
+        chat1.getMessages().add(message11);
+
+        List<User> userChat2 = new ArrayList<>();
+        userChat2.add(workmates.get(1));
+        userChat2.add(currentUser);
+        Chat chat2 = new Chat(null, userChat2);
+        Message message2 = new Message("message2Read",workmates.get(0));
+        message2.readMessage(currentUser);
+        chat2.getMessages().add(message2);
+
+        List<Chat> chatList = new ArrayList<>();
+        chatList.add(chat1);
+        chatList.add(chat2);
+
+        Map<String, Integer> map = UtilChatId.getNumberOfNoReadingMessage(currentUser,chatList);
+
+        List<Integer> newListInteger = new ArrayList<>();
+        for (User user : workmates) {
+            if (map.get(user.getUid()) != null) {
+                newListInteger.add(map.get(user.getUid()));
+            }
+            else {
+                newListInteger.add(0);
+            }
+        }
+
+        assertEquals(2, (int) newListInteger.get(0));
+        assertEquals(0, (int) newListInteger.get(1));
+        assertEquals(0,(int) newListInteger.get(2));
+    }
+
+    @Test
+    public void getHashMapOfRestaurantIdAndNumberOfNoReadingMessage() {
+        User currentUser = new User("currentUser","currentUserName",null,"emailCurrentUser");
+        currentUser.setBookedRestaurant(bookedRestaurant.get(0));
+        List<User> userChat3 = new ArrayList<>();
+        userChat3.add(workmates.get(2));
+        userChat3.add(currentUser);
+        Chat chat3 = new Chat(bookedRestaurant.get(0), userChat3);
+        Message message3 = new Message("message3NoRead",workmates.get(0));
+        chat3.getMessages().add(message3);
+
+        List<Chat> chatList = new ArrayList<>();
+        chatList.add(chat3);
+
+        Map<String, Integer> map = UtilChatId.getNumberOfNoReadingMessage(currentUser,chatList);
+
+        List<Integer> newListInteger = new ArrayList<>();
+        for (RestaurantDetails restaurant : bookedRestaurant) {
+            if (map.get(restaurant.getPlaceId()) != null) {
+                newListInteger.add(map.get(restaurant.getPlaceId()));
+            }
+            else {
+                newListInteger.add(0);
+            }
+        }
+
+        assertEquals(1, (int) newListInteger.get(0));
+        assertEquals(0, (int) newListInteger.get(1));
     }
 }
