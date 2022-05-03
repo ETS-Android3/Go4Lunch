@@ -54,7 +54,9 @@ public class UtilChatId {
             else if (chat.getId().contains(restaurantId)) {
                 id = chat.getId().replaceAll(restaurantId,"");
                 nbr = chat.getNoReadingMessageNumber(currentUser);
-                map.put(id, nbr);
+                if (currentUser.getBookedRestaurant() != null && currentUser.getBookedRestaurant().getPlaceId().equals(id)) {
+                    map.put(id, nbr);
+                }
             }
         }
         return map;

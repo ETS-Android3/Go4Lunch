@@ -192,6 +192,7 @@ public class TestUtils {
     @Test
     public void getHashMapOfRestaurantIdAndNumberOfNoReadingMessage() {
         User currentUser = new User("currentUser","currentUserName",null,"emailCurrentUser");
+        currentUser.setBookedRestaurant(bookedRestaurant.get(0));
         List<User> userChat3 = new ArrayList<>();
         userChat3.add(workmates.get(2));
         userChat3.add(currentUser);
