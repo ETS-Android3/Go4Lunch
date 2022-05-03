@@ -75,7 +75,6 @@ public class SettingActivityTest {
     private static final List<RestaurantDetails> fakeNearbyRestaurants = new ArrayList<>(FakeData.getFakeNearbyRestaurant());
     private static final List<RestaurantDetails> fakeBookedRestaurants = new ArrayList<>(FakeData.getFakeBookedRestaurant());
     private static final List<Prediction> fakePredictionRestaurant = new ArrayList<>(FakeData.getFakePredictionRestaurant());
-    private static final List<Chat> fakeChat = new ArrayList<>(FakeData.getFakeChats());
     private static User currentUser = new User("test","NameCurrentUser",null,"emailTest");
 
     private Context context;
@@ -99,8 +98,6 @@ public class SettingActivityTest {
         // Restaurant repository
         initAnswerRestaurant();
 
-        // Chat repository
-        initAnswerChat();
     }
     private static void initAnswerUser() {
         doAnswer(new Answer() {
@@ -295,93 +292,6 @@ public class SettingActivityTest {
                 return null;
             }
         }).when(restaurantRepository).setSearchRestaurant(any(),any(),any(MutableLiveData.class));
-    }
-
-    private static void initAnswerChat() {
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                RestaurantDetails restaurant = (RestaurantDetails) args[0];
-                List<User> users = (List<User>) args[1];
-                MutableLiveData<Chat> liveData = (MutableLiveData<Chat>) args[2];
-
-                String id = UtilChatId.getChatIdWithUsers(restaurant, users);
-
-                boolean isExisting = false;
-                for (Chat chat : fakeChat) {
-                    if (chat.getId().equals(id)) {
-                        isExisting = true;
-                        liveData.setValue(chat);
-                    }
-                }
-                if (!isExisting) {
-                    Chat chat = new Chat(restaurant,users);
-                    fakeChat.add(chat);
-                    liveData.setValue(chat);
-                }
-
-                return null;
-            }
-        }).when(chatRepository).createChat(nullable(RestaurantDetails.class),any(List.class),any(MutableLiveData.class));
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                String message = (String) args[0];
-                User user = (User) args[1];
-                Chat currentChat = (Chat) args[2];
-
-                Message newMessage = new Message(message,user);
-
-                List<Message> list = new ArrayList<>();
-                for (Chat chat : fakeChat) {
-                    if (chat.getId().equals(currentChat.getId())) {
-                        list.addAll(chat.getMessages());
-                        list.add(newMessage);
-                        chat.setMessages(list);
-                    }
-                }
-
-                return null;
-            }
-        }).when(chatRepository).createMessagesInChat(any(String.class),any(User.class),any(Chat.class));
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                Chat currentChat = (Chat) args[0];
-                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[1];
-
-                for (Chat chat : fakeChat) {
-                    if (chat.getId().equals(currentChat.getId())) {
-                        liveData.setValue(chat.getMessages());
-                    }
-                }
-
-                return null;
-            }
-        }).when(chatRepository).getAllMessageForChat(any(Chat.class),any(MutableLiveData.class));
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                Message messageToDelete = (Message) args[0];
-                Chat currentChat = (Chat) args[1];
-                User user = (User) args[2];
-
-                for (Message message : currentChat.getMessages()) {
-                    if (message.equals(messageToDelete)) {
-                        message.delete(user);
-                    }
-                }
-                return null;
-            }
-        }).when(chatRepository).removeMessageInChat(any(Message.class),any(Chat.class),any(User.class));
-
     }
 
 

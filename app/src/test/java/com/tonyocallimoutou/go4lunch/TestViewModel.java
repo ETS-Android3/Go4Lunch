@@ -370,7 +370,7 @@ public class TestViewModel {
 
                 return null;
             }
-        }).when(chatRepository).getAllMessageForChat(any(User.class),any(Chat.class),any(MutableLiveData.class));
+        }).when(chatRepository).getAllMessageForChat(any(Chat.class),any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override

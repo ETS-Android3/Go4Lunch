@@ -51,7 +51,7 @@ public class ChatRepository {
     }
 
 
-    public void getAllMessageForChat(User currentUser, Chat chat, MutableLiveData<List<Message>> liveData){
+    public void getAllMessageForChat(Chat chat, MutableLiveData<List<Message>> liveData){
         getChatCollection().document(chat.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
             public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {

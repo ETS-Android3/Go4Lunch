@@ -43,11 +43,11 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
 
     private ViewModelFactory() {
 
-        this.userRepository = UserRepository.getInstance();
+        userRepository = UserRepository.getInstance();
 
-        this.restaurantRepository = RestaurantRepository.getInstance(RetrofitMap.retrofit.create(RetrofitMap.class));
+        restaurantRepository = RestaurantRepository.getInstance(RetrofitMap.retrofit.create(RetrofitMap.class));
 
-        this.chatRepository = ChatRepository.getInstance();
+        chatRepository = ChatRepository.getInstance();
 
     }
 

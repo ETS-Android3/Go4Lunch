@@ -33,7 +33,7 @@ public class ViewModelChat extends ViewModel {
     }
 
     public void setAllMessageForChat(Chat chat){
-        chatRepository.getAllMessageForChat(userRepository.getCurrentUser(), chat, allMessageLiveData);
+        chatRepository.getAllMessageForChat(chat, allMessageLiveData);
     }
 
     public LiveData<List<Message>> getAllMessage() {

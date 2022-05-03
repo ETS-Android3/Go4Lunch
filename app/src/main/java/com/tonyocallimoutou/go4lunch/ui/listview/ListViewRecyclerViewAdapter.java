@@ -30,7 +30,7 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
     private final Context mContext;
     private final ListItemClickListener mListItemClickListener;
     private List<User> mWorkmates;
-    private final List<Integer> newMessageInt;
+    private List<Integer> newMessageInt;
 
     public ListViewRecyclerViewAdapter(Context context,
                                        List<RestaurantDetails> restaurants,
@@ -103,9 +103,10 @@ public class ListViewRecyclerViewAdapter extends RecyclerView.Adapter<ListViewRe
         void onListItemClick(int position);
     }
 
-    public void initAdapter(List<RestaurantDetails> restaurants, List<User> workmates) {
+    public void initAdapter(List<RestaurantDetails> restaurants, List<Integer> pinsMessage, List<User> workmates) {
         mRestaurants = restaurants;
         mWorkmates = workmates;
+        newMessageInt = pinsMessage;
         notifyDataSetChanged();
     }
 
