@@ -63,7 +63,6 @@ public class ViewModelFactory implements ViewModelProvider.Factory {
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        Log.d("TAG", "create: ");
 
         if (modelClass.isAssignableFrom(ViewModelUser.class)) {
 

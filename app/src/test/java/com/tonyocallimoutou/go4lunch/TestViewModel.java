@@ -37,10 +37,8 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestRule;
-import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
-import org.mockito.junit.MockitoJUnitRunner;
 import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
@@ -359,8 +357,8 @@ public class TestViewModel {
             @Override
             public Object answer(InvocationOnMock invocation) throws Throwable {
                 Object[] args = invocation.getArguments();
-                Chat currentChat = (Chat) args[1];
-                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[2];
+                Chat currentChat = (Chat) args[0];
+                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[1];
 
                 for (Chat chat : fakeChat) {
                     if (chat.getId().equals(currentChat.getId())) {

@@ -97,7 +97,6 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
         builder.setNegativeButton(getString(R.string.chat_negative_alert_dialog_delete), new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Log.d("TAG", "onClick: ");
             }
         });
 

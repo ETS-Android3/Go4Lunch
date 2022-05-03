@@ -1,19 +1,15 @@
 package com.tonyocallimoutou.go4lunch.utils;
 
 
-import android.os.IBinder;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.TextView;
 
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.test.espresso.Root;
 import androidx.test.espresso.matcher.BoundedMatcher;
 
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
-import org.hamcrest.TypeSafeMatcher;
 
 public class utilsTest {
 

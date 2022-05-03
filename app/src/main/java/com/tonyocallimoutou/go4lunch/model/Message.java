@@ -6,7 +6,6 @@ import androidx.annotation.Nullable;
 
 import com.tonyocallimoutou.go4lunch.R;
 
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

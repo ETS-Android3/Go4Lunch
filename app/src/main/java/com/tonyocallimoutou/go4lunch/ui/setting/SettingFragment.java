@@ -122,7 +122,6 @@ public class SettingFragment extends PreferenceFragmentCompat implements Setting
         namePreference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
             @Override
             public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
-                Log.d("TAG", "onPreferenceChange: " + newValue);
                 sharedPreferences
                         .edit()
                         .putString(getString(R.string.shared_preference_username), (String) newValue)

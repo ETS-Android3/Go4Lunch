@@ -17,7 +17,6 @@ import com.tonyocallimoutou.go4lunch.model.User;
 import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
-import com.tonyocallimoutou.go4lunch.utils.WorkmatesLunch;
 
 import java.util.List;
 

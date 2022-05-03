@@ -224,7 +224,7 @@ public class RestaurantRepository {
     }
 
     private void setImage (RestaurantDetails restaurant) {
-        Log.e("ERROR", "APPEL API PHOTO: " );
+        Log.w("TAG", "APPEL API PHOTO: " );
         if (restaurant.getPhotos() != null) {
             String photoId = restaurant.getPhotos().get(0).getPhotoReference();
             String request = "https://maps.googleapis.com/maps/api/place/photo?maxwidth=400&maxheight=400&key=" +

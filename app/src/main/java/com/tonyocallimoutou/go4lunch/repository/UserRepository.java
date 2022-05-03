@@ -57,7 +57,6 @@ public class UserRepository {
     // Get Current User
 
     public boolean isCurrentLogged() {
-        Log.d("TAG", "isCurrentLogged: ");
         return this.getCurrentFirebaseUser() != null;
     }
 
@@ -178,7 +177,6 @@ public class UserRepository {
         }
 
         getCurrentUser().setLikeRestaurantId(listRestaurantId);
-        Log.d("TAG", "likeThisRestaurant: " + listRestaurantId.size());
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
 
@@ -187,7 +185,6 @@ public class UserRepository {
         listRestaurantId.remove(restaurant.getPlaceId());
 
         getCurrentUser().setLikeRestaurantId(listRestaurantId);
-        Log.d("TAG", "dislikeThisRestaurant: " + listRestaurantId.size());
         getUsersCollection().document(currentUser.getUid()).set(currentUser);
     }
 

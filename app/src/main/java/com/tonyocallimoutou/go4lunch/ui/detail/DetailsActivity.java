@@ -32,8 +32,6 @@ import com.tonyocallimoutou.go4lunch.model.places.RestaurantDetails;
 import com.tonyocallimoutou.go4lunch.ui.BaseActivity;
 import com.tonyocallimoutou.go4lunch.ui.MainActivity;
 import com.tonyocallimoutou.go4lunch.ui.chat.ChatActivity;
-import com.tonyocallimoutou.go4lunch.ui.listview.ListViewFragment;
-import com.tonyocallimoutou.go4lunch.ui.workmates.WorkmatesFragment;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantData;
 import com.tonyocallimoutou.go4lunch.utils.RestaurantRate;
 import com.tonyocallimoutou.go4lunch.utils.UtilNotification;
@@ -385,7 +383,6 @@ public class DetailsActivity extends BaseActivity {
         });
 
         viewModelChat.getNumberNoReadingMessageMap().observe(this, numberNoReading -> {
-            Log.d("TAG", "initDataWithoutCurrentUserLiveData: " + numberNoReading);
             initNumberOfMessage(numberNoReading);
         });
     }
