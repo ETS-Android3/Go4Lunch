@@ -81,7 +81,7 @@ public class TestViewModel {
             new RestaurantDetails("99", "NameTest","TypeTest", "AddressTest",0.0,0.0,"phoneTest","websiteTest");
 
 
-    private final User currentUser = new User("test","NameCurrentUser",null,"emailTest");
+    private User currentUser = new User("test","NameCurrentUser",null,"emailTest");
 
     @Rule
     public TestRule rule = new InstantTaskExecutorRule();
@@ -296,6 +296,7 @@ public class TestViewModel {
                 RestaurantDetails restaurant = (RestaurantDetails) args[0];
                 List<User> users = (List<User>) args[1];
                 MutableLiveData<Chat> liveData = (MutableLiveData<Chat>) args[2];
+                MutableLiveData<List<Message>> messageLiveData = (MutableLiveData<List<Message>>) args[3];
 
                 String id = UtilChatId.getChatIdWithUsers(restaurant, users);
 
@@ -304,17 +305,19 @@ public class TestViewModel {
                     if (chat.getId().equals(id)) {
                         isExisting = true;
                         liveData.setValue(chat);
+                        messageLiveData.setValue(chat.getMessages());
                     }
                 }
                 if (!isExisting) {
                     Chat chat = new Chat(restaurant,users);
                     fakeChat.add(chat);
                     liveData.setValue(chat);
+                    messageLiveData.setValue(chat.getMessages());
                 }
 
                 return null;
             }
-        }).when(chatRepository).createChat(nullable(RestaurantDetails.class),any(List.class),any(MutableLiveData.class));
+        }).when(chatRepository).createChat(nullable(RestaurantDetails.class),any(List.class),any(MutableLiveData.class), any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override
@@ -352,23 +355,6 @@ public class TestViewModel {
                 return null;
             }
         }).when(chatRepository).readMessage(any(User.class),any(Chat.class));
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                Chat currentChat = (Chat) args[0];
-                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[1];
-
-                for (Chat chat : fakeChat) {
-                    if (chat.getId().equals(currentChat.getId())) {
-                        liveData.setValue(chat.getMessages());
-                    }
-                }
-
-                return null;
-            }
-        }).when(chatRepository).getAllMessageForChat(any(Chat.class),any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override
@@ -666,10 +652,12 @@ public class TestViewModel {
 
     @Test
     public void getMessageFromChat() {
-        viewModelChat.setAllMessageForChat(fakeChat.get(0));
+        when(userRepository.getCurrentUser()).thenReturn(fakeChat.get(0).getUsers().get(0));
+        viewModelChat.createChat(fakeChat.get(0).getRestaurant(), fakeChat.get(0).getUsers());
 
-        List<Message> messages = viewModelChat.getAllMessage().getValue();
+        List<Message> messages = viewModelChat.getAllMessage(fakeChat.get(0)).getValue();
 
+        assertTrue(messages.size() > 0);
         assertEquals(messages,fakeChat.get(0).getMessages());
         assertNotNull(messages);
     }

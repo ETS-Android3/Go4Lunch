@@ -144,7 +144,8 @@ public class WorkmatesFragment extends BaseFragment {
 
             initNewMessageList();
 
-            adapter.initAdapter(workmatesWithoutUser);
+
+            adapter.initAdapter(workmatesWithoutUser, newMessageList);
         }
 
     }
@@ -164,7 +165,6 @@ public class WorkmatesFragment extends BaseFragment {
 
     public static void setWorkmates(List<User> result) {
         workmates = result;
-        initUserList();
     }
 
     public static void setCurrentUser(User result) {

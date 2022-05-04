@@ -28,7 +28,7 @@ import butterknife.ButterKnife;
 
 public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerViewAdapter.ViewHolder> {
 
-    private final List<Message> listMessage;
+    private List<Message> listMessage;
     private final Context mContext;
     private final User currentUser;
     private final ChatDeleteMessageListener chatDeleteMessageListener;
@@ -178,6 +178,11 @@ public class ChatRecyclerViewAdapter extends RecyclerView.Adapter<ChatRecyclerVi
 
     public interface ChatDeleteMessageListener {
         void deleteMessage(Message message);
+    }
+
+    public void initAdapter(List<Message> messages) {
+        listMessage = messages;
+        notifyDataSetChanged();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {

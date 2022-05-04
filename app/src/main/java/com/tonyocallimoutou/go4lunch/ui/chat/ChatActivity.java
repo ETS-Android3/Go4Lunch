@@ -72,6 +72,7 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
         viewModelChat.createChat(restaurant,listReceiver);
 
         initChat();
+        initRecyclerView();
     }
 
     @Override
@@ -120,12 +121,15 @@ public class ChatActivity extends BaseActivity implements ChatRecyclerViewAdapte
 
         viewModelChat.getCurrentChatLivedata().observe(this, chatResult -> {
             currentChat = chatResult;
-            viewModelChat.setAllMessageForChat(currentChat);
+            initMessage();
         });
+    }
 
-        viewModelChat.getAllMessage().observe(this, messageResult -> {
+    public void initMessage() {
+
+        viewModelChat.getAllMessage(currentChat).observe(this, messageResult -> {
             listMessages = messageResult;
-            initRecyclerView();
+            adapter.initAdapter(listMessages);
         });
     }
 

@@ -27,7 +27,7 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
     private List<User> mUsers;
     private final Context mContext;
     private final WorkmatesItemClickListener workmatesItemClickListener;
-    private final List<Integer> newMessageInt;
+    private List<Integer> newMessageInt;
 
 
     public WorkmatesRecyclerViewAdapter(Context context, List<User> users, List<Integer> listInt, WorkmatesItemClickListener listener) {
@@ -76,8 +76,9 @@ public class WorkmatesRecyclerViewAdapter extends RecyclerView.Adapter<Workmates
         void onWorkmatesItemClick(int position);
     }
 
-    public void initAdapter(List<User> users) {
+    public void initAdapter(List<User> users, List<Integer> integerList) {
         mUsers = users;
+        newMessageInt = integerList;
         notifyDataSetChanged();
     }
 

@@ -283,6 +283,7 @@ public class ChatActivityAboutRestaurantTest {
                 RestaurantDetails restaurant = (RestaurantDetails) args[0];
                 List<User> users = (List<User>) args[1];
                 MutableLiveData<Chat> liveData = (MutableLiveData<Chat>) args[2];
+                MutableLiveData<List<Message>> messageLiveData = (MutableLiveData<List<Message>>) args[3];
 
                 String id = UtilChatId.getChatIdWithUsers(restaurant, users);
 
@@ -291,17 +292,19 @@ public class ChatActivityAboutRestaurantTest {
                     if (chat.getId().equals(id)) {
                         isExisting = true;
                         liveData.setValue(chat);
+                        messageLiveData.setValue(chat.getMessages());
                     }
                 }
                 if (!isExisting) {
                     Chat chat = new Chat(restaurant,users);
                     fakeChat.add(chat);
                     liveData.setValue(chat);
+                    messageLiveData.setValue(chat.getMessages());
                 }
 
                 return null;
             }
-        }).when(chatRepository).createChat(nullable(RestaurantDetails.class),any(List.class),any(MutableLiveData.class));
+        }).when(chatRepository).createChat(nullable(RestaurantDetails.class),any(List.class),any(MutableLiveData.class), any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override
@@ -325,23 +328,6 @@ public class ChatActivityAboutRestaurantTest {
                 return null;
             }
         }).when(chatRepository).createMessagesInChat(any(String.class),any(User.class),any(Chat.class));
-
-        doAnswer(new Answer() {
-            @Override
-            public Object answer(InvocationOnMock invocation) throws Throwable {
-                Object[] args = invocation.getArguments();
-                Chat currentChat = (Chat) args[0];
-                MutableLiveData<List<Message>> liveData = (MutableLiveData<List<Message>>) args[1];
-
-                for (Chat chat : fakeChat) {
-                    if (chat.getId().equals(currentChat.getId())) {
-                        liveData.setValue(chat.getMessages());
-                    }
-                }
-
-                return null;
-            }
-        }).when(chatRepository).getAllMessageForChat(any(Chat.class),any(MutableLiveData.class));
 
         doAnswer(new Answer() {
             @Override

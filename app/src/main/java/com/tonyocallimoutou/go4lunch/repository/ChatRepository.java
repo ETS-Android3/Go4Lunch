@@ -50,58 +50,59 @@ public class ChatRepository {
     }
 
 
-    public void getAllMessageForChat(Chat chat, MutableLiveData<List<Message>> liveData){
-        getChatCollection().document(chat.getId()).addSnapshotListener(new EventListener<DocumentSnapshot>() {
+    private void getAllMessageForChat(String chatId, MutableLiveData<List<Message>> liveData){
+        getChatCollection().document(chatId).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    Log.w("TAG", "Listen failed.", error);
-                    return;
-                }
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                Chat chat = value.toObject(Chat.class);
+                Chat chat = documentSnapshot.toObject(Chat.class);
                 liveData.setValue(chat.getMessages());
             }
         });
     }
 
     public void readMessage(User currentUser, Chat chat) {
-        getChatCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        getChatCollection().document(chat.getId()).get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                for (DocumentSnapshot document : list) {
-                    Chat chatDocument = document.toObject(Chat.class);
-                    if (chatDocument.getId().equals(chat.getId())) {
-                        for (Message message : chatDocument.getMessages()) {
-                            message.readMessage(currentUser);
-                        }
-                    }
-                    getChatCollection().document(chat.getId()).set(chatDocument);
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                Chat chatDocument = documentSnapshot.toObject(Chat.class);
+
+                for (Message message : chatDocument.getMessages()) {
+                    message.readMessage(currentUser);
                 }
+
+                getChatCollection().document(chat.getId()).set(chatDocument);
             }
         });
     }
 
-    public void createChat(@Nullable RestaurantDetails restaurant, List<User> users, MutableLiveData<Chat> liveData) {
+    public void createChat(@Nullable RestaurantDetails restaurant,
+                           List<User> users,
+                           MutableLiveData<Chat> liveData,
+                           MutableLiveData<List<Message>> messagesLiveData) {
+
         String id = UtilChatId.getChatIdWithUsers(restaurant, users);
-        getChatCollection().get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+
+        getChatCollection().document(id).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                List<DocumentSnapshot> list = queryDocumentSnapshots.getDocuments();
-                boolean isExisting = false;
-                for (DocumentSnapshot document : list) {
-                    Chat chatDocument = document.toObject(Chat.class);
-                    if (chatDocument.getId().equals(id)) {
-                        isExisting = true;
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w("TAG", "Listen failed.", error);
+                }
+
+                else {
+                    Chat chatDocument = value.toObject(Chat.class);
+                    if (chatDocument == null) {
+                        Chat newChat = new Chat(restaurant,users);
+                        getChatCollection().document(id).set(newChat);
+                    }
+                    else {
                         liveData.setValue(chatDocument);
                     }
                 }
-                if (! isExisting) {
-                    Chat newChat = new Chat(restaurant, users);
-                    getChatCollection().document(newChat.getId()).set(newChat);
-                    liveData.setValue(newChat);
-                }
+
+                getAllMessageForChat(id,messagesLiveData);
             }
         });
     }
