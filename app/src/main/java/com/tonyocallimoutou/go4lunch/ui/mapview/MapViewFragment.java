@@ -389,21 +389,23 @@ public class MapViewFragment extends BaseFragment implements OnMapReadyCallback,
     public void setPrediction() {
         viewModelRestaurant.getDetailPrediction().observe(this, restaurant ->  {
 
-            mGoogleMap.clear();
+            if (mGoogleMap != null) {
+                mGoogleMap.clear();
 
-            Double lat = restaurant.getGeometry().getLocation().getLat();
-            Double lng = restaurant.getGeometry().getLocation().getLng();
-            String placeName = restaurant.getName();
-            String vicinity = restaurant.getVicinity();
-            LatLng latLng = new LatLng(lat, lng);
+                Double lat = restaurant.getGeometry().getLocation().getLat();
+                Double lng = restaurant.getGeometry().getLocation().getLng();
+                String placeName = restaurant.getName();
+                String vicinity = restaurant.getVicinity();
+                LatLng latLng = new LatLng(lat, lng);
 
-            mGoogleMap.addMarker(new MarkerOptions()
-                    .position(latLng)
-                    .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_nearby_restaurant))
-                    .title(placeName + " : " + vicinity))
-                    .setTag(restaurant);
+                mGoogleMap.addMarker(new MarkerOptions()
+                        .position(latLng)
+                        .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_nearby_restaurant))
+                        .title(placeName + " : " + vicinity))
+                        .setTag(restaurant);
 
-            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,cameraZoomDefault));
+                mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, cameraZoomDefault));
+            }
         });
 
     }

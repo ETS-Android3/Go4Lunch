@@ -286,7 +286,7 @@ public class DetailsActivity extends BaseActivity {
             startActivity(intent);
         }
         else {
-            Toast.makeText(this, "Test", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, getString(R.string.no_website), Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -340,10 +340,15 @@ public class DetailsActivity extends BaseActivity {
     }
 
     private void callRestaurant() {
-        Intent intent = new Intent(Intent.ACTION_CALL);
-        intent.setData(Uri.parse("tel:" + RestaurantData.getPhone()));
+        if (RestaurantData.getPhone() != null) {
+            Intent intent = new Intent(Intent.ACTION_CALL);
+            intent.setData(Uri.parse("tel:" + RestaurantData.getPhone()));
 
-        startActivity(intent);
+            startActivity(intent);
+        }
+        else {
+            Toast.makeText(this, getString(R.string.no_phone_number), Toast.LENGTH_SHORT).show();
+        }
     }
 
     // Like

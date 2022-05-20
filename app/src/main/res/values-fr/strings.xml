@@ -52,6 +52,9 @@
     <string name="detail_like"> LIKE </string>
     <string name="detail_website"> WEBSITE </string>
 
+    <string name="no_website"> Aucun site web disponible</string>
+    <string name="no_phone_number"> Aucun numéro de téléphone disponible</string>
+
     <string name="explain_call"> Désolé, nous avons besoin de votre permission pour appeler</string>
     <string name="you_like_it"> Vous aimez </string>
     <string name="you_not_like_it"> vous n\'aimez plus </string>

@@ -32,7 +32,6 @@ import retrofit2.Response;
 public class RestaurantRepository {
 
     private static final String COLLECTION_NAME_BOOKED_RESTAURANT = "booked_restaurant";
-
     private static final String COLLECTION_NAME_LOCATION_NEARBY_RESTAURANT = "location_nearby_restaurant";
     private static final String COLLECTION_NAME_NEARBY_RESTAURANT = "nearby_restaurant";
 
